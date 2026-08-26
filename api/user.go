@@ -11,64 +11,56 @@ import (
 	"regexp"
 	"strings"
 
-	"gorm.io/gorm"
-
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
+// CreateOrFetchUser creates a user record in the DB if one doesn't exist yet
 func CreateOrFetchUser(c *gin.Context) {
 	uid := c.GetString("uid")
-	name := c.GetString("name") // Optional: you can also set this in middleware if needed
+	name := c.GetString("name")
 	email := c.GetString("email")
 
-	if uid == "" || name == "" || email == "" {
+	if uid == "" || email == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Missing user data from token"})
 		return
 	}
+	if name == "" {
+		parts := strings.Split(email, "@")
+		name = parts[0]
+	}
 
 	var registrationNo string
-
-	if strings.HasSuffix(email, "@gmail.com") {
-		// Generate a fallback reg number like "99GEN0421"
-		randomPart := rand.Intn(10000)
-		registrationNo = fmt.Sprintf("99GEN%04d", randomPart)
-	} else {
-		// Try to extract a proper registration number from name
-		regNumPattern := regexp.MustCompile(`^\d{2}[A-Z]{3}\d{4}$`)
-		parts := strings.Fields(name)
-		for _, word := range parts {
-			if regNumPattern.MatchString(strings.ToUpper(word)) {
-				registrationNo = strings.ToUpper(word)
-				break
-			}
+	regNumPattern := regexp.MustCompile(`^\d{2}[A-Z]{3}\d{4}$`)
+	parts := strings.Fields(name)
+	for _, word := range parts {
+		if regNumPattern.MatchString(strings.ToUpper(word)) {
+			registrationNo = strings.ToUpper(word)
+			break
 		}
 	}
 
-	//above is for testing, during production need to use below logic only for vit mails
-
-	// regNumPattern := regexp.MustCompile(`^\d{2}[A-Z]{3}\d{4}$`)
-	// parts := strings.Fields(name)
-	// var registrationNo string
-	// for _, word := range parts {
-	// 	if regNumPattern.MatchString(strings.ToUpper(word)) {
-	// 		registrationNo = strings.ToUpper(word)
-	// 		break
-	// 	}
-	// }
 	if registrationNo == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Unable to extract registration number"})
-		return
+		// Fallback registration number for testing / other domains
+		randomPart := rand.Intn(10000)
+		registrationNo = fmt.Sprintf("99GEN%04d", randomPart)
 	}
 
 	var user models.User
 	result := services.DB.Where("uid = ?", uid).First(&user)
 	if result.Error == nil {
+		// Update email if missing
+		if user.Email == "" && email != "" {
+			user.Email = email
+			services.DB.Save(&user)
+		}
 		c.JSON(http.StatusOK, gin.H{"message": "User already exists", "user": user})
 		return
 	}
 
 	newUser := models.User{
 		UID:            uid,
+		Email:          email,
 		Username:       name,
 		RegistrationNo: registrationNo,
 		IsAdmin:        false,
@@ -79,21 +71,19 @@ func CreateOrFetchUser(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "User created", "user": newUser})
+	c.JSON(http.StatusCreated, gin.H{"message": "User created", "user": newUser})
 }
 
 type PhoneUpdateRequest struct {
-	PhoneNumber string `json:"phone_number"`
+	PhoneNumber string `json:"phone_number" binding:"required"`
 }
 
+// GetUserProfile returns the current authenticated user profile
 func GetUserProfile(c *gin.Context) {
-	uid := c.GetString("uid") // assuming middleware has already set UID in context
+	uid := c.GetString("uid")
 
 	var user models.User
-	result := services.DB.Select("username", "phone_number", "registration_no", "is_admin").
-		Where("uid = ?", uid).
-		First(&user)
-
+	result := services.DB.Where("uid = ?", uid).First(&user)
 	if result.Error != nil {
 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 			c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
@@ -103,8 +93,9 @@ func GetUserProfile(c *gin.Context) {
 		return
 	}
 
-	// return only selected fields
 	c.JSON(http.StatusOK, gin.H{
+		"id":              user.ID,
+		"uid":             user.UID,
 		"username":        user.Username,
 		"phone_number":    user.PhoneNumber,
 		"registration_no": user.RegistrationNo,
@@ -113,15 +104,15 @@ func GetUserProfile(c *gin.Context) {
 	})
 }
 
+// UpdatePhoneNumber updates phone number for the user
 func UpdatePhoneNumber(c *gin.Context) {
 	uid := c.GetString("uid")
 	if uid == "" {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "UID not found in context"})
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 		return
 	}
 
 	var req PhoneUpdateRequest
-
 	if err := c.ShouldBindJSON(&req); err != nil || req.PhoneNumber == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid phone number in request"})
 		return
@@ -129,7 +120,7 @@ func UpdatePhoneNumber(c *gin.Context) {
 
 	re := regexp.MustCompile(`^[6-9]\d{9}$`)
 	if !re.MatchString(req.PhoneNumber) {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Phone number format invalid"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Phone number format invalid (expected 10-digit Indian mobile number)"})
 		return
 	}
 

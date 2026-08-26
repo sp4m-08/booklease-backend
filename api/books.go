@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"bookapi/models"
 	"bookapi/services"
@@ -11,66 +12,61 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// GetBooks returns all books, optionally filtered by category or search term
 func GetBooks(c *gin.Context) {
+	query := services.DB.Model(&models.Book{}).Preload("Uploader")
+
+	category := c.Query("category")
+	if category != "" {
+		query = query.Where("LOWER(category) = ?", strings.ToLower(category))
+	}
+
+	search := c.Query("search")
+	if search != "" {
+		query = query.Where("LOWER(title) LIKE ? OR LOWER(author) LIKE ? OR LOWER(subject) LIKE ?",
+			"%"+strings.ToLower(search)+"%", "%"+strings.ToLower(search)+"%", "%"+strings.ToLower(search)+"%")
+	}
+
+	limitStr := c.DefaultQuery("limit", "50")
+	limit, err := strconv.Atoi(limitStr)
+	if err == nil && limit > 0 {
+		query = query.Limit(limit)
+	}
+
+	offsetStr := c.DefaultQuery("offset", "0")
+	offset, err := strconv.Atoi(offsetStr)
+	if err == nil && offset >= 0 {
+		query = query.Offset(offset)
+	}
+
 	var books []models.Book
-	if err := services.DB.Preload("Uploader").Order("ID DESC").Find(&books).Error; err != nil {
+	if err := query.Order("id DESC").Find(&books).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch books"})
 		return
 	}
 	c.JSON(http.StatusOK, books)
 }
 
+// GetBook fetches a single book by ID
 func GetBook(c *gin.Context) {
 	idStr := c.Param("id")
 	id, err := strconv.ParseUint(idStr, 10, 64)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid book ID"})
 		return
 	}
 
 	var book models.Book
-	if err := services.DB.First(&book, id).Error; err != nil {
+	if err := services.DB.Preload("Uploader").First(&book, id).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Book not found"})
 		return
 	}
 	c.JSON(http.StatusOK, book)
 }
 
+// MyBooks returns books uploaded by the authenticated user
 func MyBooks(c *gin.Context) {
 	uid := c.GetString("uid")
-	if uid == "" {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "could not authorize"})
-		return
-	}
-
-	var user models.User
-	if err := services.DB.Where("uid=?", uid).First(&user).Error; err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
-		return
-	}
-	log.Println("uid from context:", uid)
-
-	log.Printf("Fetched user ID: %v\n", user.ID)
-
-	var userBooks []models.Book
-	if err := services.DB.Where("uploaded_by = ?", user.ID).Order("ID DESC").Find(&userBooks).Error; err != nil {
-		c.IndentedJSON(http.StatusNotFound, gin.H{"error": "Books not found for this user" + err.Error()})
-		return
-	}
-
-	c.IndentedJSON(http.StatusOK, userBooks)
-
-}
-
-func CreateBook(c *gin.Context) {
-	var newBook models.Book
-	if err := c.ShouldBindJSON(&newBook); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	uid := c.GetString("uid")
-
 	if uid == "" {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 		return
@@ -82,25 +78,58 @@ func CreateBook(c *gin.Context) {
 		return
 	}
 
+	var userBooks []models.Book
+	if err := services.DB.Where("uploaded_by = ?", user.ID).Order("id DESC").Find(&userBooks).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch user books"})
+		return
+	}
+
+	c.JSON(http.StatusOK, userBooks)
+}
+
+// CreateBook adds a new book listing
+func CreateBook(c *gin.Context) {
+	var newBook models.Book
+	if err := c.ShouldBindJSON(&newBook); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	uid := c.GetString("uid")
+	if uid == "" {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+
+	var user models.User
+	if err := services.DB.Where("uid = ?", uid).First(&user).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "User record not found. Please complete signup first."})
+		return
+	}
+
 	newBook.UploadedBy = user.ID
 	newBook.Available = true
 
-	if err := services.DB.Preload("Uploader").Create(&newBook).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	if err := services.DB.Create(&newBook).Error; err != nil {
+		log.Println("❌ CreateBook error:", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create book"})
 		return
 	}
+
+	// Reload with Uploader relationship
+	services.DB.Preload("Uploader").First(&newBook, newBook.ID)
 	c.JSON(http.StatusCreated, newBook)
 }
 
+// DeleteBook removes a book if caller is the uploader or an admin
 func DeleteBook(c *gin.Context) {
 	idStr := c.Param("id")
 	id, err := strconv.ParseUint(idStr, 10, 64)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid book ID"})
 		return
 	}
 
-	//authorization now
 	uid := c.GetString("uid")
 	if uid == "" {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
@@ -114,26 +143,26 @@ func DeleteBook(c *gin.Context) {
 	}
 
 	var book models.Book
-	if err := services.DB.First(&book, uid).Error; err != nil {
+	if err := services.DB.First(&book, id).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Book not found"})
 		return
 	}
 
-	// Only uploader or admin can delete
+	// Authorization check
 	if book.UploadedBy != user.ID && !user.IsAdmin {
 		c.JSON(http.StatusForbidden, gin.H{"error": "Not authorized to delete this book"})
 		return
 	}
 
-	if err := services.DB.Delete(&models.Book{}, id).Error; err != nil {
+	if err := services.DB.Delete(&book).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete book"})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"message": "Book deleted"})
+	c.JSON(http.StatusOK, gin.H{"message": "Book deleted successfully"})
 }
 
+// AddToWishlist adds a book to the user's wishlist
 func AddToWishlist(c *gin.Context) {
-
 	bookIDStr := c.Param("id")
 	bookID, err := strconv.ParseUint(bookIDStr, 10, 64)
 	if err != nil {
@@ -160,14 +189,11 @@ func AddToWishlist(c *gin.Context) {
 	}
 
 	var existing models.Wishlist
-	if err := services.DB.
-		Where("user_id = ? AND book_id = ?", user.ID, book.ID).
-		First(&existing).Error; err == nil {
+	if err := services.DB.Where("user_id = ? AND book_id = ?", user.ID, book.ID).First(&existing).Error; err == nil {
 		c.JSON(http.StatusConflict, gin.H{"error": "Book already in wishlist"})
 		return
 	}
 
-	// Add to wishlist
 	wish := models.Wishlist{
 		UserID: user.ID,
 		BookID: book.ID,
@@ -180,6 +206,7 @@ func AddToWishlist(c *gin.Context) {
 	c.JSON(http.StatusCreated, gin.H{"message": "Book added to wishlist"})
 }
 
+// Wishlist returns the user's wishlist
 func Wishlist(c *gin.Context) {
 	uid := c.GetString("uid")
 	if uid == "" {
@@ -193,26 +220,11 @@ func Wishlist(c *gin.Context) {
 		return
 	}
 
-	// Get wishlist entries for the user
 	var wishlist []models.Wishlist
-	if err := services.DB.Where("user_id = ?", user.ID).Find(&wishlist).Error; err != nil {
+	if err := services.DB.Where("user_id = ?", user.ID).Preload("Book").Preload("Book.Uploader").Find(&wishlist).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch wishlist"})
 		return
 	}
 
-	// Collect book IDs
-	var bookIDs []uint
-	for _, entry := range wishlist {
-		bookIDs = append(bookIDs, entry.BookID)
-	}
-
-	var books []models.Book
-	if len(bookIDs) > 0 {
-		if err := services.DB.Where("id IN ?", bookIDs).Order("ID DESC").Find(&books).Error; err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch books"})
-			return
-		}
-	}
-
-	c.JSON(http.StatusOK, books)
+	c.JSON(http.StatusOK, wishlist)
 }

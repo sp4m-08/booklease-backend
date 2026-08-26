@@ -1,0 +1,400 @@
+{
+	"info": {
+		"_postman_id": "8f3b4c12-98ab-41c3-bc92-123456789abc",
+		"name": "BookLease Backend API (Complete)",
+		"description": "Comprehensive Postman collection for all BookLease API routes: Auth, User Profiles, Books & Wishlists, Notes, Rentals, Notifications, FAQs, and AWS S3 File Uploads.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:8080",
+			"type": "string"
+		},
+		{
+			"key": "firebaseToken",
+			"value": "PASTE_YOUR_FIREBASE_ID_TOKEN_HERE",
+			"type": "string"
+		},
+		{
+			"key": "bookId",
+			"value": "1",
+			"type": "string"
+		},
+		{
+			"key": "rentalId",
+			"value": "1",
+			"type": "string"
+		},
+		{
+			"key": "noteId",
+			"value": "1",
+			"type": "string"
+		},
+		{
+			"key": "notificationId",
+			"value": "1",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "1. Authentication & User Profile",
+			"item": [
+				{
+					"name": "Verify Token (GET /api/hello)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [{ "key": "token", "value": "{{firebaseToken}}", "type": "string" }]
+						},
+						"method": "GET",
+						"url": { "raw": "{{baseUrl}}/api/hello", "host": ["{{baseUrl}}"], "path": ["api", "hello"] }
+					}
+				},
+				{
+					"name": "User Signup / Sync (POST /user/signup)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [{ "key": "token", "value": "{{firebaseToken}}", "type": "string" }]
+						},
+						"method": "POST",
+						"url": { "raw": "{{baseUrl}}/user/signup", "host": ["{{baseUrl}}"], "path": ["user", "signup"] }
+					}
+				},
+				{
+					"name": "Get User Profile (GET /user/)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [{ "key": "token", "value": "{{firebaseToken}}", "type": "string" }]
+						},
+						"method": "GET",
+						"url": { "raw": "{{baseUrl}}/user/", "host": ["{{baseUrl}}"], "path": ["user", ""] }
+					}
+				},
+				{
+					"name": "Update Phone Number (POST /user/phone)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [{ "key": "token", "value": "{{firebaseToken}}", "type": "string" }]
+						},
+						"method": "POST",
+						"header": [{ "key": "Content-Type", "value": "application/json" }],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"phone_number\": \"9876543210\"\n}"
+						},
+						"url": { "raw": "{{baseUrl}}/user/phone", "host": ["{{baseUrl}}"], "path": ["user", "phone"] }
+					}
+				}
+			]
+		},
+		{
+			"name": "2. Books & Wishlist",
+			"item": [
+				{
+					"name": "List Books (GET /book/)",
+					"request": {
+						"method": "GET",
+						"url": {
+							"raw": "{{baseUrl}}/book/?search=&category=&limit=50&offset=0",
+							"host": ["{{baseUrl}}"],
+							"path": ["book", ""],
+							"query": [
+								{ "key": "search", "value": "" },
+								{ "key": "category", "value": "" },
+								{ "key": "limit", "value": "50" },
+								{ "key": "offset", "value": "0" }
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Book by ID (GET /book/:id)",
+					"request": {
+						"method": "GET",
+						"url": { "raw": "{{baseUrl}}/book/{{bookId}}", "host": ["{{baseUrl}}"], "path": ["book", "{{bookId}}"] }
+					}
+				},
+				{
+					"name": "My Books (GET /book/mybooks)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [{ "key": "token", "value": "{{firebaseToken}}", "type": "string" }]
+						},
+						"method": "GET",
+						"url": { "raw": "{{baseUrl}}/book/mybooks", "host": ["{{baseUrl}}"], "path": ["book", "mybooks"] }
+					}
+				},
+				{
+					"name": "Create Book (POST /book/)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [{ "key": "token", "value": "{{firebaseToken}}", "type": "string" }]
+						},
+						"method": "POST",
+						"header": [{ "key": "Content-Type", "value": "application/json" }],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"Computer Networks\",\n  \"author\": \"Andrew S. Tanenbaum\",\n  \"subject\": \"Computer Science\",\n  \"description\": \"5th Edition textbook\",\n  \"category\": \"Computer Science\",\n  \"cover_image\": \"https://your-bucket.s3.amazonaws.com/covers/networks.jpg\"\n}"
+						},
+						"url": { "raw": "{{baseUrl}}/book/", "host": ["{{baseUrl}}"], "path": ["book", ""] }
+					}
+				},
+				{
+					"name": "Delete Book (DELETE /book/:id)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [{ "key": "token", "value": "{{firebaseToken}}", "type": "string" }]
+						},
+						"method": "DELETE",
+						"url": { "raw": "{{baseUrl}}/book/{{bookId}}", "host": ["{{baseUrl}}"], "path": ["book", "{{bookId}}"] }
+					}
+				},
+				{
+					"name": "Add to Wishlist (POST /book/:id/wishlist)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [{ "key": "token", "value": "{{firebaseToken}}", "type": "string" }]
+						},
+						"method": "POST",
+						"url": { "raw": "{{baseUrl}}/book/{{bookId}}/wishlist", "host": ["{{baseUrl}}"], "path": ["book", "{{bookId}}", "wishlist"] }
+					}
+				},
+				{
+					"name": "Get My Wishlist (GET /book/wishlist)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [{ "key": "token", "value": "{{firebaseToken}}", "type": "string" }]
+						},
+						"method": "GET",
+						"url": { "raw": "{{baseUrl}}/book/wishlist", "host": ["{{baseUrl}}"], "path": ["book", "wishlist"] }
+					}
+				}
+			]
+		},
+		{
+			"name": "3. Study Notes",
+			"item": [
+				{
+					"name": "List Public Notes (GET /notes/)",
+					"request": {
+						"method": "GET",
+						"url": { "raw": "{{baseUrl}}/notes/", "host": ["{{baseUrl}}"], "path": ["notes", ""] }
+					}
+				},
+				{
+					"name": "Get Note by ID (GET /notes/:id)",
+					"request": {
+						"method": "GET",
+						"url": { "raw": "{{baseUrl}}/notes/{{noteId}}", "host": ["{{baseUrl}}"], "path": ["notes", "{{noteId}}"] }
+					}
+				},
+				{
+					"name": "Create Note (POST /notes/)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [{ "key": "token", "value": "{{firebaseToken}}", "type": "string" }]
+						},
+						"method": "POST",
+						"header": [{ "key": "Content-Type", "value": "application/json" }],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"DBMS Complete Revision Notes\",\n  \"subject\": \"DBMS\",\n  \"description\": \"Includes SQL queries, normalization, and B-Trees\",\n  \"file_path\": \"https://your-bucket.s3.amazonaws.com/notes/dbms.pdf\",\n  \"is_public\": true\n}"
+						},
+						"url": { "raw": "{{baseUrl}}/notes/", "host": ["{{baseUrl}}"], "path": ["notes", ""] }
+					}
+				},
+				{
+					"name": "Delete Note (DELETE /notes/:id)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [{ "key": "token", "value": "{{firebaseToken}}", "type": "string" }]
+						},
+						"method": "DELETE",
+						"url": { "raw": "{{baseUrl}}/notes/{{noteId}}", "host": ["{{baseUrl}}"], "path": ["notes", "{{noteId}}"] }
+					}
+				}
+			]
+		},
+		{
+			"name": "4. Rentals & Leasing",
+			"item": [
+				{
+					"name": "Request Rental (POST /rentals/)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [{ "key": "token", "value": "{{firebaseToken}}", "type": "string" }]
+						},
+						"method": "POST",
+						"header": [{ "key": "Content-Type", "value": "application/json" }],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"book_id\": 1,\n  \"description\": \"Need it for CAT-1 exams for 5 days\"\n}"
+						},
+						"url": { "raw": "{{baseUrl}}/rentals/", "host": ["{{baseUrl}}"], "path": ["rentals", ""] }
+					}
+				},
+				{
+					"name": "List Rentals (GET /rentals/)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [{ "key": "token", "value": "{{firebaseToken}}", "type": "string" }]
+						},
+						"method": "GET",
+						"url": { "raw": "{{baseUrl}}/rentals/", "host": ["{{baseUrl}}"], "path": ["rentals", ""] }
+					}
+				},
+				{
+					"name": "Lent Materials (GET /rentals/lent)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [{ "key": "token", "value": "{{firebaseToken}}", "type": "string" }]
+						},
+						"method": "GET",
+						"url": { "raw": "{{baseUrl}}/rentals/lent", "host": ["{{baseUrl}}"], "path": ["rentals", "lent"] }
+					}
+				},
+				{
+					"name": "Borrowed Materials (GET /rentals/borrowed)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [{ "key": "token", "value": "{{firebaseToken}}", "type": "string" }]
+						},
+						"method": "GET",
+						"url": { "raw": "{{baseUrl}}/rentals/borrowed", "host": ["{{baseUrl}}"], "path": ["rentals", "borrowed"] }
+					}
+				},
+				{
+					"name": "Decide Rental Request (POST /rentals/:id/decision)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [{ "key": "token", "value": "{{firebaseToken}}", "type": "string" }]
+						},
+						"method": "POST",
+						"header": [{ "key": "Content-Type", "value": "application/json" }],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"accept\": true\n}"
+						},
+						"url": { "raw": "{{baseUrl}}/rentals/{{rentalId}}/decision", "host": ["{{baseUrl}}"], "path": ["rentals", "{{rentalId}}", "decision"] }
+					}
+				},
+				{
+					"name": "Return Rental (PATCH /rentals/:id/return)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [{ "key": "token", "value": "{{firebaseToken}}", "type": "string" }]
+						},
+						"method": "PATCH",
+						"url": { "raw": "{{baseUrl}}/rentals/{{rentalId}}/return", "host": ["{{baseUrl}}"], "path": ["rentals", "{{rentalId}}", "return"] }
+					}
+				},
+				{
+					"name": "Delete Rental (DELETE /rentals/delete/:id)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [{ "key": "token", "value": "{{firebaseToken}}", "type": "string" }]
+						},
+						"method": "DELETE",
+						"url": { "raw": "{{baseUrl}}/rentals/delete/{{rentalId}}", "host": ["{{baseUrl}}"], "path": ["rentals", "delete", "{{rentalId}}"] }
+					}
+				}
+			]
+		},
+		{
+			"name": "5. Notifications",
+			"item": [
+				{
+					"name": "Get Notifications (GET /notifications/)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [{ "key": "token", "value": "{{firebaseToken}}", "type": "string" }]
+						},
+						"method": "GET",
+						"url": { "raw": "{{baseUrl}}/notifications/", "host": ["{{baseUrl}}"], "path": ["notifications", ""] }
+					}
+				},
+				{
+					"name": "Mark Notification Seen (PATCH /notifications/:id/seen)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [{ "key": "token", "value": "{{firebaseToken}}", "type": "string" }]
+						},
+						"method": "PATCH",
+						"url": { "raw": "{{baseUrl}}/notifications/{{notificationId}}/seen", "host": ["{{baseUrl}}"], "path": ["notifications", "{{notificationId}}", "seen"] }
+					}
+				},
+				{
+					"name": "Delete Notification (DELETE /notifications/:id)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [{ "key": "token", "value": "{{firebaseToken}}", "type": "string" }]
+						},
+						"method": "DELETE",
+						"url": { "raw": "{{baseUrl}}/notifications/{{notificationId}}", "host": ["{{baseUrl}}"], "path": ["notifications", "{{notificationId}}"] }
+					}
+				},
+				{
+					"name": "Delete All Notifications (DELETE /notifications/)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [{ "key": "token", "value": "{{firebaseToken}}", "type": "string" }]
+						},
+						"method": "DELETE",
+						"url": { "raw": "{{baseUrl}}/notifications/", "host": ["{{baseUrl}}"], "path": ["notifications", ""] }
+					}
+				}
+			]
+		},
+		{
+			"name": "6. S3 File Upload & FAQ",
+			"item": [
+				{
+					"name": "Request S3 Upload URL (POST /api/upload/presigned-url)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [{ "key": "token", "value": "{{firebaseToken}}", "type": "string" }]
+						},
+						"method": "POST",
+						"header": [{ "key": "Content-Type", "value": "application/json" }],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"file_name\": \"lecture_notes.pdf\",\n  \"content_type\": \"application/pdf\",\n  \"folder\": \"notes\"\n}"
+						},
+						"url": { "raw": "{{baseUrl}}/api/upload/presigned-url", "host": ["{{baseUrl}}"], "path": ["api", "upload", "presigned-url"] }
+					}
+				},
+				{
+					"name": "Get FAQs (GET /api/FAQ)",
+					"request": {
+						"method": "GET",
+						"url": { "raw": "{{baseUrl}}/api/FAQ", "host": ["{{baseUrl}}"], "path": ["api", "FAQ"] }
+					}
+				}
+			]
+		}
+	]
+}

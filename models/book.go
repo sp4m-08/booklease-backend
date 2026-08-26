@@ -3,55 +3,56 @@ package models
 import "time"
 
 type Book struct {
-	ID          uint   `gorm:"primaryKey" json:"id"`
-	Title       string `json:"title"`
-	Subject     string `json:"subject"`
-	Description string `json:"description"`
-	Category    string `json:"category"`
-	FilePath    string `json:"file_path"`
-	Available   bool   `json:"available"`
-	UploadedBy  uint   `json:"uploaded_by"` // foreign key (user ID)
-
-	// GORM association — joins Book to the uploading user
-	Uploader User `gorm:"foreignKey:UploadedBy" json:"uploader,omitempty"`
-
-	Type      string    `json:"type"`
-	ValidTill time.Time `json:"valid_till"`
-
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+	ID          uint      `gorm:"primaryKey" json:"id"`
+	Title       string    `gorm:"not null" json:"title" binding:"required"`
+	Author      string    `json:"author"`
+	Subject     string    `json:"subject"`
+	Description string    `json:"description"`
+	Category    string    `json:"category"`
+	CoverImage  string    `json:"cover_image"`
+	FilePath    string    `json:"file_path"`
+	Available   bool      `gorm:"default:true" json:"available"`
+	UploadedBy  uint      `gorm:"index" json:"uploaded_by"` // Foreign key (User.ID)
+	Uploader    User      `gorm:"foreignKey:UploadedBy" json:"uploader,omitempty"`
+	Type        string    `json:"type"`
+	ValidTill   time.Time `json:"valid_till"`
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
 }
 
 type Rental struct {
 	ID          uint      `gorm:"primaryKey" json:"id"`
-	UserID      uint      `json:"user_id"`
+	UserID      uint      `gorm:"not null;index" json:"user_id"`
 	User        User      `gorm:"foreignKey:UserID" json:"user,omitempty"`
-	BookID      *uint     `json:"book_id"`
+	BookID      *uint     `gorm:"index" json:"book_id,omitempty"`
 	Book        Book      `gorm:"foreignKey:BookID" json:"book,omitempty"`
-	OwnerID     *uint     `json:"owner_id"`
+	NotesID     *uint     `gorm:"index" json:"notes_id,omitempty"`
+	OwnerID     *uint     `gorm:"index" json:"owner_id,omitempty"`
 	Description string    `json:"description"`
 	RentedFrom  time.Time `json:"rented_from"`
 	DueDate     time.Time `json:"due_date"`
-	IsReturned  bool      `json:"is_returned"`
+	IsReturned  bool      `gorm:"default:false" json:"is_returned"`
 	Status      *bool     `json:"status"` // nil = pending, true = accepted, false = rejected
 }
 
 type Wishlist struct {
-	ID uint `gorm:"primaryKey" json:"id"`
-
-	UserID uint `json:"user_id"`
-	User   User `gorm:"foreignKey:UserID" json:"user,omitempty"`
-
-	BookID uint `json:"book_id"`
-	Book   Book `gorm:"foreignKey:BookID" json:"book,omitempty"`
-
+	ID        uint      `gorm:"primaryKey" json:"id"`
+	UserID    uint      `gorm:"not null;index" json:"user_id"`
+	User      User      `gorm:"foreignKey:UserID" json:"user,omitempty"`
+	BookID    uint      `gorm:"not null;index" json:"book_id"`
+	Book      Book      `gorm:"foreignKey:BookID" json:"book,omitempty"`
 	CreatedAt time.Time `json:"created_at"`
+}
 
-	// ValidTill time.Time `json:"valid_till"`
-	// Available   bool   `json:"available"` //these can be accessed through referencing book foreign key
-
-	// ID      uint `gorm:"primaryKey"`
-	// UserID  uint
-	// BookID  uint
-	// AddedAt time.Time
+type Note struct {
+	ID          uint      `gorm:"primaryKey" json:"id"`
+	Title       string    `gorm:"not null" json:"title" binding:"required"`
+	Subject     string    `json:"subject"`
+	Description string    `json:"description"`
+	FilePath    string    `json:"file_path"`
+	IsPublic    bool      `gorm:"default:true" json:"is_public"`
+	UploadedBy  uint      `gorm:"index" json:"uploaded_by"`
+	Uploader    User      `gorm:"foreignKey:UploadedBy" json:"uploader,omitempty"`
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
 }

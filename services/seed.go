@@ -8,44 +8,52 @@ import (
 )
 
 func SeedData() {
-	// ✅ Users
+	// Users
 	users := []models.User{
-		{Username: "alice", PhoneNumber: "alice123", RegistrationNo: "22BCE1000", IsAdmin: false},
-		{Username: "bob", PhoneNumber: "bob123", RegistrationNo: "22BCE1001", IsAdmin: true},
+		{Username: "alice", PhoneNumber: "9876543210", RegistrationNo: "22BCE1000", IsAdmin: false, Email: "alice@vitstudent.ac.in"},
+		{Username: "bob", PhoneNumber: "9876543211", RegistrationNo: "22BCE1001", IsAdmin: true, Email: "bob@vitstudent.ac.in"},
 	}
 	for _, u := range users {
 		DB.Create(&u)
 	}
 
-	// ✅ Books
+	// Books
 	books := []models.Book{
-		{Title: "Go in Action", Subject: "William Kennedy", Description: "Intro to Go", Category: "Programming", Available: true},
-		{Title: "Clean Code", Subject: "Robert C. Martin", Description: "Coding best practices", Category: "Software Engineering", Available: true},
+		{Title: "Go in Action", Author: "William Kennedy", Subject: "Computer Science", Description: "Intro to Go", Category: "Programming", Available: true, UploadedBy: 1},
+		{Title: "Clean Code", Author: "Robert C. Martin", Subject: "Software Engineering", Description: "Coding best practices", Category: "Software Engineering", Available: true, UploadedBy: 2},
 	}
 	for _, b := range books {
 		DB.Create(&b)
 	}
 
-	// ✅ Rentals
+	// Notes
+	notes := []models.Note{
+		{Title: "DBMS Notes", Subject: "DBMS", Description: "ER Diagrams", FilePath: "notes/dbms.pdf", IsPublic: true, UploadedBy: 1},
+		{Title: "OS Notes", Subject: "Operating Systems", Description: "Process Scheduling", FilePath: "notes/os.pdf", IsPublic: false, UploadedBy: 1},
+	}
+	for _, n := range notes {
+		DB.Create(&n)
+	}
+
+	// Rentals
 	bookID := uint(1)
-	//notesID := uint(1)
+	ownerID := uint(1)
 	rentals := []models.Rental{
-		{UserID: 1, BookID: &bookID, RentedFrom: time.Now().AddDate(0, 0, -2), DueDate: time.Now().AddDate(0, 0, 5), IsReturned: false},
-		{UserID: 1, BookID: nil, RentedFrom: time.Now().AddDate(0, 0, -1), DueDate: time.Now().AddDate(0, 0, 6), IsReturned: false},
+		{UserID: 2, BookID: &bookID, OwnerID: &ownerID, RentedFrom: time.Now().AddDate(0, 0, -2), DueDate: time.Now().AddDate(0, 0, 5), IsReturned: false},
 	}
 	for _, r := range rentals {
 		DB.Create(&r)
 	}
 
-	// ✅ Wishlist
+	// Wishlist
 	wishlists := []models.Wishlist{
-		{UserID: 1, BookID: 2},
+		{UserID: 1, BookID: 2, CreatedAt: time.Now()},
 	}
 	for _, w := range wishlists {
 		DB.Create(&w)
 	}
 
-	// ✅ Admin
+	// Admin
 	admins := []models.Admin{
 		{AdminID: 2},
 	}
@@ -53,7 +61,7 @@ func SeedData() {
 		DB.Create(&a)
 	}
 
-	// ✅ FAQs
+	// FAQs
 	faqs := []models.FAQ{
 		{Question: "How do I rent a book?", Answer: "Click on the 'Rent' button next to any available book."},
 		{Question: "How long can I keep a rental?", Answer: "The default rental period is 7 days."},

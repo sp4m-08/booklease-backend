@@ -25,7 +25,7 @@ func InitDatabase() {
 
 	db, err := gorm.Open(postgres.New(postgres.Config{
 		DSN:                  dsn,
-		PreferSimpleProtocol: true, // ✅ disables prepared statement caching
+		PreferSimpleProtocol: true, // Disables prepared statement caching for Supabase connection pooler / PgBouncer
 	}), &gorm.Config{})
 	if err != nil {
 		log.Fatalf("❌ Failed to connect to database: %v", err)
@@ -34,13 +34,16 @@ func InitDatabase() {
 	log.Println("✅ Connected to Supabase PostgreSQL!")
 	DB = db
 
-	db.AutoMigrate(
+	if err := db.AutoMigrate(
 		&models.User{},
 		&models.Book{},
+		&models.Note{},
 		&models.Rental{},
 		&models.Wishlist{},
 		&models.Admin{},
 		&models.FAQ{},
 		&models.Notification{},
-	)
+	); err != nil {
+		log.Printf("⚠️ AutoMigrate warning: %v\n", err)
+	}
 }

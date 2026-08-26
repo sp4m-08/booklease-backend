@@ -10,12 +10,13 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// Notifications returns all notifications for the authenticated user
 func Notifications(c *gin.Context) {
 	uid := c.GetString("uid")
 
 	var user models.User
 	if err := services.DB.Where("uid = ?", uid).First(&user).Error; err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "User not found " + err.Error()})
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "User not found"})
 		return
 	}
 
@@ -24,53 +25,50 @@ func Notifications(c *gin.Context) {
 		Where("user_id = ?", user.ID).
 		Order("created_at DESC").
 		Find(&notifs).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch notifications " + err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch notifications"})
 		return
 	}
 
 	c.JSON(http.StatusOK, notifs)
 }
 
+// DeleteNotification removes a single notification owned by the user
 func DeleteNotification(c *gin.Context) {
 	uid := c.GetString("uid")
 
-	// Parse notification ID
 	notifIDStr := c.Param("id")
 	notifID, err := strconv.ParseUint(notifIDStr, 10, 64)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid notification ID" + err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid notification ID"})
 		return
 	}
 
-	// Find user
 	var user models.User
 	if err := services.DB.Where("uid = ?", uid).First(&user).Error; err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "User not found" + err.Error()})
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "User not found"})
 		return
 	}
 
-	// Find notification
 	var notif models.Notification
 	if err := services.DB.First(&notif, notifID).Error; err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Notification not found" + err.Error()})
+		c.JSON(http.StatusNotFound, gin.H{"error": "Notification not found"})
 		return
 	}
 
-	// Only allow user to delete their own notifications
 	if notif.UserID != user.ID {
-		c.JSON(http.StatusForbidden, gin.H{"error": "Not authorized to delete this notification" + err.Error()})
+		c.JSON(http.StatusForbidden, gin.H{"error": "Not authorized to delete this notification"})
 		return
 	}
 
-	// Delete it
 	if err := services.DB.Delete(&notif).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete notification" + err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete notification"})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "Notification deleted"})
+	c.JSON(http.StatusOK, gin.H{"message": "Notification deleted successfully"})
 }
 
+// MarkNotificationSeen marks a notification as read
 func MarkNotificationSeen(c *gin.Context) {
 	uid := c.GetString("uid")
 	notificationID := c.Param("id")
@@ -96,6 +94,7 @@ func MarkNotificationSeen(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Notification marked as seen"})
 }
 
+// DeleteAllNotifications clears all notifications for the authenticated user
 func DeleteAllNotifications(c *gin.Context) {
 	uid := c.GetString("uid")
 
@@ -106,9 +105,9 @@ func DeleteAllNotifications(c *gin.Context) {
 	}
 
 	if err := services.DB.Where("user_id = ?", user.ID).Delete(&models.Notification{}).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete notifications" + err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete notifications"})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "All notifications deleted"})
+	c.JSON(http.StatusOK, gin.H{"message": "All notifications deleted successfully"})
 }

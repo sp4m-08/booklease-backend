@@ -9,50 +9,64 @@ import (
 )
 
 func RegisterAPIRoutes(r *gin.Engine, app *firebase.App) {
+	// API Base Group
 	apiGroup := r.Group("/api")
 	{
 		apiGroup.GET("/hello", middleware.RequireAuth(app), api.HelloHandler)
 		apiGroup.GET("/FAQ", api.GetFAQ)
+		apiGroup.POST("/upload/presigned-url", middleware.RequireAuth(app), api.GetPresignedUploadURL)
 	}
 
-	BookRoutes := r.Group("/book")
+	// Book Routes
+	bookRoutes := r.Group("/book")
 	{
-		BookRoutes.GET("/", api.GetBooks)
-		BookRoutes.GET("/:id", api.GetBook)
-		BookRoutes.GET("/mybooks", middleware.RequireAuth(app), api.MyBooks)
-		BookRoutes.DELETE("/:id", middleware.RequireAuth(app), api.DeleteBook)
-		BookRoutes.POST("/", middleware.RequireAuth(app), api.CreateBook)
-		BookRoutes.POST("/:id/wishlist", middleware.RequireAuth(app), api.AddToWishlist)
-		BookRoutes.GET("/wishlist", middleware.RequireAuth(app), api.Wishlist)
+		// Public
+		bookRoutes.GET("/", api.GetBooks)
+		bookRoutes.GET("/:id", api.GetBook)
+
+		// Protected
+		bookRoutes.GET("/mybooks", middleware.RequireAuth(app), api.MyBooks)
+		bookRoutes.DELETE("/:id", middleware.RequireAuth(app), api.DeleteBook)
+		bookRoutes.POST("/", middleware.RequireAuth(app), api.CreateBook)
+		bookRoutes.POST("/:id/wishlist", middleware.RequireAuth(app), api.AddToWishlist)
+		bookRoutes.GET("/wishlist", middleware.RequireAuth(app), api.Wishlist)
 	}
 
-	RentalRoutes := r.Group("/rentals")
+	// Notes Routes
+	noteRoutes := r.Group("/notes")
 	{
-		RentalRoutes.POST("/", middleware.RequireAuth(app), api.PostRental)
-		RentalRoutes.GET("/", middleware.RequireAuth(app), api.GetRentals)
-
-		RentalRoutes.GET("/lent", middleware.RequireAuth(app), api.LentMaterials)         // books listed by user that someone has rented - lent
-		RentalRoutes.GET("/borrowed", middleware.RequireAuth(app), api.BorrowedMaterials) //books that user has borrowed
-		RentalRoutes.POST("/:id/decision", middleware.RequireAuth(app), api.DecideRental)
-		RentalRoutes.DELETE("/delete/:id", middleware.RequireAuth(app), api.DeleteRental)
-
-		RentalRoutes.PATCH("/:id/return", middleware.RequireAuth(app), api.ReturnRental)
+		noteRoutes.GET("/", api.GetNotes)
+		noteRoutes.GET("/:id", api.GetNote)
+		noteRoutes.POST("/", middleware.RequireAuth(app), api.CreateNote)
+		noteRoutes.DELETE("/:id", middleware.RequireAuth(app), api.DeleteNote)
 	}
 
-	UserRoutes := r.Group("/user", middleware.RequireAuth(app))
+	// Rental Routes
+	rentalRoutes := r.Group("/rentals", middleware.RequireAuth(app))
 	{
-		UserRoutes.POST("/signup", api.CreateOrFetchUser)
-		UserRoutes.POST("/phone", api.UpdatePhoneNumber)
-		UserRoutes.GET("/", api.GetUserProfile)
-
+		rentalRoutes.POST("/", api.PostRental)
+		rentalRoutes.GET("/", api.GetRentals)
+		rentalRoutes.GET("/lent", api.LentMaterials)
+		rentalRoutes.GET("/borrowed", api.BorrowedMaterials)
+		rentalRoutes.POST("/:id/decision", api.DecideRental)
+		rentalRoutes.DELETE("/delete/:id", api.DeleteRental)
+		rentalRoutes.PATCH("/:id/return", api.ReturnRental)
 	}
 
-	NotiRoutes := r.Group("/notifications")
+	// User Routes
+	userRoutes := r.Group("/user", middleware.RequireAuth(app))
 	{
-		NotiRoutes.GET("/", middleware.RequireAuth(app), api.Notifications)
-		NotiRoutes.DELETE("/:id", middleware.RequireAuth(app), api.DeleteNotification)
-		NotiRoutes.PATCH("/:id/seen", middleware.RequireAuth(app), api.MarkNotificationSeen)
-		NotiRoutes.DELETE("/", middleware.RequireAuth(app), api.DeleteAllNotifications)
+		userRoutes.POST("/signup", api.CreateOrFetchUser)
+		userRoutes.POST("/phone", api.UpdatePhoneNumber)
+		userRoutes.GET("/", api.GetUserProfile)
 	}
 
+	// Notification Routes
+	notiRoutes := r.Group("/notifications", middleware.RequireAuth(app))
+	{
+		notiRoutes.GET("/", api.Notifications)
+		notiRoutes.DELETE("/:id", api.DeleteNotification)
+		notiRoutes.PATCH("/:id/seen", api.MarkNotificationSeen)
+		notiRoutes.DELETE("/", api.DeleteAllNotifications)
+	}
 }
