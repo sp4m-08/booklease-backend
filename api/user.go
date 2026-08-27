@@ -25,6 +25,11 @@ func CreateOrFetchUser(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Missing user data from token"})
 		return
 	}
+
+	if !strings.HasSuffix(email, "@vitstudent.ac.in") {
+		c.JSON(http.StatusForbidden, gin.H{"error": "Only @vitstudent.ac.in emails are allowed"})
+		return
+	}
 	if name == "" {
 		parts := strings.Split(email, "@")
 		name = parts[0]

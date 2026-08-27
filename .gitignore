@@ -35,3 +35,5 @@ firebase-service-account.json
 # Editor/IDE
 # .idea/
 # .vscode/
+fix_db.go
+test_s3.go
