@@ -13,13 +13,25 @@ import { BookCover } from "@/components/BookCover";
 import Link from "next/link";
 import { toast } from "sonner";
 import { BookOpen, RefreshCw, CheckCircle, XCircle, ArrowUpRight, Clock, Trash2 } from "lucide-react";
+import { useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 
-export default function DashboardPage() {
+function DashboardContent() {
   const { user, loading } = useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const queryClient = useQueryClient();
   const container = useRef<HTMLDivElement>(null);
-  const [activeTab, setActiveTab] = useState<"borrowed" | "lent">("borrowed");
+
+  const initialTab = (searchParams.get("tab") === "lent") ? "lent" : "borrowed";
+  const [activeTab, setActiveTab] = useState<"borrowed" | "lent">(initialTab);
+
+  useEffect(() => {
+    const tab = searchParams.get("tab");
+    if (tab === "lent" || tab === "borrowed") {
+      setActiveTab(tab);
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     if (!loading && !user) router.push("/login");
@@ -284,5 +296,13 @@ export default function DashboardPage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function DashboardPage() {
+  return (
+    <Suspense fallback={<div className="p-16 text-center font-bold text-2xl animate-pulse">Loading dashboard...</div>}>
+      <DashboardContent />
+    </Suspense>
   );
 }
