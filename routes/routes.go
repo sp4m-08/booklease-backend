@@ -15,6 +15,7 @@ func RegisterAPIRoutes(r *gin.Engine, app *firebase.App) {
 		apiGroup.GET("/hello", middleware.RequireAuth(app), api.HelloHandler)
 		apiGroup.GET("/FAQ", api.GetFAQ)
 		apiGroup.POST("/upload/presigned-url", middleware.RequireAuth(app), api.GetPresignedUploadURL)
+		apiGroup.POST("/upload/direct", middleware.RequireAuth(app), api.DirectUpload)
 	}
 
 	// Book Routes
@@ -29,14 +30,19 @@ func RegisterAPIRoutes(r *gin.Engine, app *firebase.App) {
 		bookRoutes.DELETE("/:id", middleware.RequireAuth(app), api.DeleteBook)
 		bookRoutes.POST("/", middleware.RequireAuth(app), api.CreateBook)
 		bookRoutes.POST("/:id/wishlist", middleware.RequireAuth(app), api.AddToWishlist)
+		bookRoutes.DELETE("/:id/wishlist", middleware.RequireAuth(app), api.RemoveFromWishlist)
 		bookRoutes.GET("/wishlist", middleware.RequireAuth(app), api.Wishlist)
 	}
 
 	// Notes Routes
 	noteRoutes := r.Group("/notes")
 	{
+		// Public
 		noteRoutes.GET("/", api.GetNotes)
 		noteRoutes.GET("/:id", api.GetNote)
+
+		// Protected
+		noteRoutes.GET("/mynotes", middleware.RequireAuth(app), api.MyNotes)
 		noteRoutes.POST("/", middleware.RequireAuth(app), api.CreateNote)
 		noteRoutes.DELETE("/:id", middleware.RequireAuth(app), api.DeleteNote)
 	}

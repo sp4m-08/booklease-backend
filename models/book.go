@@ -11,6 +11,7 @@ type Book struct {
 	Category    string    `json:"category"`
 	CoverImage  string    `json:"cover_image"`
 	FilePath    string    `json:"file_path"`
+	Price       float64   `gorm:"default:0" json:"price"`
 	Available   bool      `gorm:"default:true" json:"available"`
 	UploadedBy  uint      `gorm:"index" json:"uploaded_by"` // Foreign key (User.ID)
 	Uploader    User      `gorm:"foreignKey:UploadedBy" json:"uploader,omitempty"`
@@ -50,6 +51,7 @@ type Note struct {
 	Subject     string    `json:"subject"`
 	Description string    `json:"description"`
 	FilePath    string    `json:"file_path"`
+	Price       float64   `gorm:"default:0" json:"price"`
 	IsPublic    bool      `gorm:"default:true" json:"is_public"`
 	UploadedBy  uint      `gorm:"index" json:"uploaded_by"`
 	Uploader    User      `gorm:"foreignKey:UploadedBy" json:"uploader,omitempty"`

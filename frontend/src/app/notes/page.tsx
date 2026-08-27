@@ -17,6 +17,7 @@ interface Note {
   subject: string;
   description: string;
   file_path: string;
+  price?: number;
   uploader: { 
     username: string;
     registration_no?: string;
@@ -25,6 +26,8 @@ interface Note {
   };
   created_at: string;
 }
+
+import { NoteCover } from "@/components/NoteCover";
 
 export default function NotesPage() {
   const container = useRef<HTMLDivElement>(null);
@@ -39,18 +42,15 @@ export default function NotesPage() {
     },
   });
 
-  const subjects = useMemo(() => {
-    if (!notes) return ["All"];
-    const uniqueSubjects = new Set(notes.map(n => n.subject || "General"));
-    return ["All", ...Array.from(uniqueSubjects)];
-  }, [notes]);
+  const branches = ["All", "CSE", "ECE", "EEE", "Mechanical", "Biotech", "Civil", "Common"];
 
   const filteredNotes = useMemo(() => {
     if (!notes) return [];
     return notes.filter((note) => {
       const matchesSearch = note.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
                             (note.subject || "").toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesSubject = selectedSubject === "All" || (note.subject || "General") === selectedSubject;
+      const matchesSubject = selectedSubject === "All" || 
+                            (note.subject || "").toLowerCase() === selectedSubject.toLowerCase();
       return matchesSearch && matchesSubject;
     });
   }, [notes, searchTerm, selectedSubject]);
@@ -71,11 +71,14 @@ export default function NotesPage() {
     <div ref={container} className="max-w-7xl mx-auto w-full px-8 py-12 flex-grow">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 border-b-4 border-black pb-6 gap-6">
         <div>
-          <h1 className="font-serif text-5xl font-black mb-2">Study Notes</h1>
-          <p className="font-medium text-xl text-gray-700">Download notes uploaded by your peers.</p>
+          <div className="inline-block border-2 border-black px-3 py-0.5 bg-neo-purple font-black text-xs uppercase mb-2 shadow-sm">
+            ⚡ Exam Revision Hub
+          </div>
+          <h1 className="font-serif text-5xl font-black mb-2">CAT & FAT Study Notes</h1>
+          <p className="font-medium text-xl text-gray-700">Handwritten class notes, module formula sheets, and solved papers shared by VITians.</p>
         </div>
         <Link href="/notes/upload">
-          <NeoButton variant="primary" size="lg" className="bg-neo-purple">Upload Notes</NeoButton>
+          <NeoButton variant="primary" size="lg" className="bg-neo-purple">Share Study Notes</NeoButton>
         </Link>
       </div>
 
@@ -83,13 +86,13 @@ export default function NotesPage() {
       <div className="flex flex-col lg:flex-row gap-6 mb-12">
         <div className="flex-grow">
           <NeoInput 
-            placeholder="Search notes by title or subject..." 
+            placeholder="Search notes by course code, subject, or exam (e.g. OS CAT-1, DSD Cheatsheet, Calculus FAT)..." 
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
         <div className="flex flex-wrap gap-2 items-center">
-          {subjects.map((sub) => (
+          {branches.map((sub) => (
             <button
               key={sub}
               onClick={() => setSelectedSubject(sub)}
@@ -106,9 +109,9 @@ export default function NotesPage() {
       </div>
 
       {isLoading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
           {[...Array(6)].map((_, i) => (
-            <div key={i} className="animate-pulse border-4 border-black bg-gray-200 h-64 shadow-neo" />
+            <div key={i} className="animate-pulse border-4 border-black bg-gray-200 h-80 shadow-neo" />
           ))}
         </div>
       ) : error ? (
@@ -122,29 +125,43 @@ export default function NotesPage() {
           No notes found matching your search.
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {filteredNotes.map((note, i) => (
-            <Link key={note.id} href={`/notes/${note.id}`} className="block">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+          {filteredNotes.map((note) => (
+            <Link key={note.id} href={`/notes/${note.id}`} className="note-card block group">
               <NeoCard
-                className="note-card w-full h-full cursor-pointer hover:-translate-y-2 hover:translate-x-2 transition-transform duration-300"
-                color={["pink", "yellow", "blue", "green", "purple"][i % 5] as any}
+                className="w-full h-full flex flex-col p-0 overflow-hidden cursor-pointer transition-transform duration-300 group-hover:-translate-y-2 group-hover:shadow-neo-hover"
+                color="white"
               >
-                <div className="flex flex-col h-full justify-between gap-6">
+                {/* Visual Preview Header */}
+                <div className="aspect-[16/10] w-full border-b-4 border-black relative overflow-hidden flex-shrink-0 bg-white">
+                  <NoteCover 
+                    src={note.file_path} 
+                    title={note.title} 
+                    subject={note.subject}
+                    className="transform group-hover:scale-105 transition-transform duration-500" 
+                  />
+                </div>
+
+                <div className="p-5 flex-grow flex flex-col justify-between bg-white">
                   <div>
-                    <span className="inline-block px-3 py-1 bg-white border-2 border-black font-bold text-xs uppercase mb-4 shadow-sm">
-                      {note.subject || "General"}
-                    </span>
-                    <h3 className="font-serif text-3xl font-black mb-2">{note.title}</h3>
-                    <p className="text-gray-700 font-bold mb-4">
-                      By {note.uploader?.username} {note.uploader?.registration_no}
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="inline-block px-2 py-0.5 bg-neo-yellow border-2 border-black font-bold text-xs uppercase shadow-sm">
+                        {note.subject || "General"}
+                      </span>
+                      <span className="inline-block px-2 py-0.5 bg-neo-green border-2 border-black font-black text-xs uppercase shadow-sm">
+                        {note.price && note.price > 0 ? `₹${note.price}` : "FREE"}
+                      </span>
+                    </div>
+                    <h3 className="font-serif text-2xl font-black mb-1 line-clamp-1">{note.title}</h3>
+                    <p className="text-gray-600 text-xs font-bold mb-3">
+                      By {note.uploader?.username || "Student"} {note.uploader?.registration_no ? `(${note.uploader.registration_no})` : ""}
                     </p>
-                    <p className="font-medium">{note.description}</p>
+                    <p className="font-medium text-sm text-gray-700 line-clamp-2">{note.description || "Click to view note details."}</p>
                   </div>
                   
-                  <div className="w-full">
-                    <NeoButton variant="primary" className="w-full bg-white pointer-events-none">
-                      View Details & Contact ➡️
-                    </NeoButton>
+                  <div className="mt-4 pt-3 border-t-2 border-dashed border-gray-300 flex justify-between items-center text-xs font-bold">
+                    <span className="text-gray-500">Shared {new Date(note.created_at).toLocaleDateString()}</span>
+                    <span className="underline group-hover:text-blue-600">View Document ↗</span>
                   </div>
                 </div>
               </NeoCard>

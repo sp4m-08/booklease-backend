@@ -228,3 +228,39 @@ func Wishlist(c *gin.Context) {
 
 	c.JSON(http.StatusOK, wishlist)
 }
+
+// RemoveFromWishlist removes a book from the user's wishlist
+func RemoveFromWishlist(c *gin.Context) {
+	bookIDStr := c.Param("id")
+	bookID, err := strconv.ParseUint(bookIDStr, 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid book ID"})
+		return
+	}
+
+	uid := c.GetString("uid")
+	if uid == "" {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+
+	var user models.User
+	if err := services.DB.Where("uid = ?", uid).First(&user).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
+		return
+	}
+
+	result := services.DB.Where("user_id = ? AND book_id = ?", user.ID, bookID).Delete(&models.Wishlist{})
+	if result.Error != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to remove from wishlist"})
+		return
+	}
+
+	if result.RowsAffected == 0 {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Book not found in wishlist"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Book removed from wishlist"})
+}
+

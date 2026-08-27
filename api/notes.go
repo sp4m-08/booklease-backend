@@ -105,3 +105,27 @@ func DeleteNote(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, gin.H{"message": "Note deleted successfully"})
 }
+
+// MyNotes returns study material notes uploaded by the authenticated user
+func MyNotes(c *gin.Context) {
+	uid := c.GetString("uid")
+	if uid == "" {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+
+	var user models.User
+	if err := services.DB.Where("uid = ?", uid).First(&user).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
+		return
+	}
+
+	var userNotes []models.Note
+	if err := services.DB.Where("uploaded_by = ?", user.ID).Order("id DESC").Find(&userNotes).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch user notes"})
+		return
+	}
+
+	c.JSON(http.StatusOK, userNotes)
+}
+

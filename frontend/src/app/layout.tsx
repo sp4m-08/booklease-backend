@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, Merriweather } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 import Providers from "@/components/Providers";
 import { Toaster } from "sonner";
 
@@ -17,19 +18,20 @@ const merriweather = Merriweather({
 });
 
 export const metadata: Metadata = {
-  title: "BookLease | Campus Textbook & Notes Sharing",
-  description: "A peer-to-peer textbook rental and notes sharing platform for students. Find the exact study materials you need from peers on campus.",
+  title: "Booklease | VIT Vellore Peer Textbook Rental & CAT/FAT Notes Hub",
+  description: "Exclusively for VIT Vellore University students. Rent course textbooks for CAT-1, CAT-2 & FAT exams, share handwritten module notes, and coordinate handovers across campus.",
+  keywords: ["VIT Vellore", "Booklease", "VIT CAT exams", "VIT FAT exams", "Textbook rental VIT", "VIT notes sharing", "FFCS reference books", "SJT", "TT", "VIT Vellore library"],
   openGraph: {
-    title: "BookLease",
-    description: "Discover, rent, and return textbooks. Share study notes with your campus.",
+    title: "Booklease | VIT Vellore Textbook Rental & Exam Notes",
+    description: "Peer-to-peer textbook rentals and handwritten study notes for CAT-1, CAT-2 and FAT exams at VIT Vellore.",
     url: "https://booklease.app",
-    siteName: "BookLease",
+    siteName: "Booklease VIT",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "BookLease",
-    description: "Peer-to-peer textbook and notes sharing platform.",
+    title: "Booklease | VIT Vellore",
+    description: "Rent reference books and share notes for CAT/FAT exams at VIT Vellore.",
   },
 };
 
@@ -45,6 +47,7 @@ export default function RootLayout({
           <div className="flex flex-col min-h-screen">
             <Navbar />
             <main className="flex-grow flex flex-col">{children}</main>
+            <Footer />
           </div>
           <Toaster 
             position="bottom-right"
