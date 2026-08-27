@@ -4,17 +4,21 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
 import { useParams, useRouter } from "next/navigation";
+import { useState } from "react";
 import { NeoCard } from "@/components/ui/NeoCard";
 import { NeoButton } from "@/components/ui/NeoButton";
 import { getImageUrl } from "@/lib/utils";
 import Link from "next/link";
 import { toast } from "sonner";
-import { ArrowLeft, Download, ExternalLink, FileText, Trash2, UserCheck, MessageSquare } from "lucide-react";
+import { ArrowLeft, Download, ExternalLink, FileText, Trash2, UserCheck, MessageSquare, Edit3 } from "lucide-react";
+import { EditListingModal } from "@/components/EditListingModal";
+import { SlotBadges } from "@/components/SlotBadges";
 
 interface NoteDetail {
   id: number;
   title: string;
   subject: string;
+  slot?: string;
   description: string;
   file_path: string;
   price?: number;
@@ -86,6 +90,8 @@ export default function NoteDetailPage() {
   const isOwner = userProfile?.id === note.uploaded_by;
   const canDelete = isOwner || userProfile?.is_admin;
 
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+
   return (
     <div className="max-w-7xl mx-auto w-full px-6 py-12 flex-grow">
       {/* Top Header */}
@@ -97,21 +103,34 @@ export default function NoteDetailPage() {
           </NeoButton>
         </Link>
 
-        {canDelete && (
-          <NeoButton 
-            variant="danger"
-            onClick={() => {
-              if (confirm(`Are you sure you want to delete note "${note.title}"?`)) {
-                deleteNoteMutation.mutate();
-              }
-            }}
-            disabled={deleteNoteMutation.isPending}
-            className="flex items-center gap-2"
-          >
-            <Trash2 size={18} />
-            Delete Note
-          </NeoButton>
-        )}
+        <div className="flex items-center gap-3">
+          {isOwner && (
+            <NeoButton 
+              variant="secondary"
+              onClick={() => setIsEditModalOpen(true)}
+              className="bg-neo-yellow hover:bg-yellow-300 flex items-center gap-2"
+            >
+              <Edit3 size={18} />
+              Edit Note
+            </NeoButton>
+          )}
+
+          {canDelete && (
+            <NeoButton 
+              variant="danger"
+              onClick={() => {
+                if (confirm(`Are you sure you want to delete note "${note.title}"?`)) {
+                  deleteNoteMutation.mutate();
+                }
+              }}
+              disabled={deleteNoteMutation.isPending}
+              className="flex items-center gap-2"
+            >
+              <Trash2 size={18} />
+              Delete Note
+            </NeoButton>
+          )}
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 items-start">
@@ -183,6 +202,7 @@ export default function NoteDetailPage() {
               <span className="inline-block px-3 py-1 bg-white border-2 border-black font-black text-xs uppercase shadow-sm">
                 {note.subject || "General Study Material"}
               </span>
+              <SlotBadges slot={note.slot} variant="purple" />
               <span className="inline-block px-3 py-1 bg-neo-green border-2 border-black font-black text-xs uppercase shadow-sm">
                 {note.price && note.price > 0 ? `₹${note.price}` : "FREE"}
               </span>
@@ -246,6 +266,21 @@ export default function NoteDetailPage() {
         </div>
 
       </div>
+
+      {/* Edit Listing Modal */}
+      {note && (
+        <EditListingModal
+          isOpen={isEditModalOpen}
+          type="note"
+          item={note}
+          onClose={() => setIsEditModalOpen(false)}
+          onSuccess={() => {
+            queryClient.invalidateQueries({ queryKey: ["note", id] });
+            queryClient.invalidateQueries({ queryKey: ["notes"] });
+            queryClient.invalidateQueries({ queryKey: ["mynotes"] });
+          }}
+        />
+      )}
     </div>
   );
 }

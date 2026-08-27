@@ -12,12 +12,14 @@ import { NeoCard } from "@/components/ui/NeoCard";
 import { NeoInput } from "@/components/ui/NeoInput";
 
 import { BookCover } from "@/components/BookCover";
+import { SlotBadges } from "@/components/SlotBadges";
 
 interface Book {
   id: number;
   title: string;
   author: string;
   category: string;
+  slot?: string;
   cover_image: string;
   price?: number;
   available: boolean;
@@ -143,11 +145,14 @@ export default function BooksPage() {
                     <h3 className="font-bold text-xl line-clamp-2 leading-tight mb-1">{book.title}</h3>
                     <p className="text-sm font-medium text-gray-600 mb-2 truncate">{book.author}</p>
                   </div>
-                  <div className="mt-4 flex justify-between items-center">
-                    <span className="border-2 border-black bg-neo-yellow px-2 py-1 text-xs font-bold shadow-sm">
-                      {book.category || "Uncategorized"}
-                    </span>
-                    <span className="border-2 border-black bg-neo-green px-2 py-1 text-xs font-black shadow-sm">
+                  <div className="mt-4 flex flex-wrap gap-1.5 justify-between items-center">
+                    <div className="flex flex-wrap gap-1 items-center">
+                      <span className="border-2 border-black bg-neo-yellow px-2 py-0.5 text-xs font-bold shadow-sm">
+                        {book.category || "General"}
+                      </span>
+                      <SlotBadges slot={book.slot} />
+                    </div>
+                    <span className="border-2 border-black bg-neo-green px-2 py-0.5 text-xs font-black shadow-sm">
                       {book.price && book.price > 0 ? `₹${book.price}` : "FREE"}
                     </span>
                   </div>

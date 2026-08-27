@@ -10,6 +10,10 @@ import api from "@/lib/api";
 import { uploadFile } from "@/lib/upload";
 import { toast } from "sonner";
 import { NeoInput } from "@/components/ui/NeoInput";
+import { VIT_BRANCHES, VIT_SLOTS } from "@/lib/constants";
+import { SlotSelector, VIT_INDIVIDUAL_SLOTS } from "@/components/SlotSelector";
+
+export { VIT_BRANCHES, VIT_SLOTS };
 
 const bookSchema = z.object({
   title: z.string().min(3, "Title must be at least 3 characters").max(100),
@@ -17,20 +21,10 @@ const bookSchema = z.object({
   category: z.string().min(2, "Category is required"),
   price: z.string().optional(),
   description: z.string().max(500, "Description cannot exceed 500 characters").optional(),
-  file: z.any().optional(), // File list
+  file: z.any().optional(),
 });
 
 type BookFormData = z.infer<typeof bookSchema>;
-
-export const VIT_BRANCHES = [
-  "CSE",
-  "ECE",
-  "EEE",
-  "Mechanical",
-  "Biotech",
-  "Civil",
-  "Common",
-] as const;
 
 export default function BookUploadPage() {
   const { register, handleSubmit, formState: { errors } } = useForm<BookFormData>({
@@ -42,6 +36,7 @@ export default function BookUploadPage() {
   });
   const { user, loading } = useAuth();
   const router = useRouter();
+  const [selectedSlots, setSelectedSlots] = useState<string[]>(["A1"]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   if (loading) return <div className="p-8 text-center font-bold">Loading...</div>;
@@ -55,7 +50,6 @@ export default function BookUploadPage() {
       setIsSubmitting(true);
       let finalFileUrl = "";
 
-      // 1. If there's a file, upload it (tries S3 first, fallback to server upload)
       if (data.file && data.file[0]) {
         const file = data.file[0];
         if (file.size > 15 * 1024 * 1024) {
@@ -68,19 +62,22 @@ export default function BookUploadPage() {
       }
 
       const numPrice = data.price ? parseFloat(data.price) : 0;
+      const formattedSlots = selectedSlots.length === VIT_INDIVIDUAL_SLOTS.length 
+        ? "All Slots" 
+        : selectedSlots.join(", ") || "All Slots";
 
-      // 2. Submit the book metadata to our backend
       await api.post("/book/", {
         title: data.title,
         author: data.author,
         category: data.category,
+        slot: formattedSlots,
         price: isNaN(numPrice) ? 0 : numPrice,
         description: data.description,
-        cover_image: finalFileUrl, // Store the uploaded URL
+        cover_image: finalFileUrl,
         available: true,
       });
 
-      toast.success("Book uploaded successfully!");
+      toast.success("Textbook uploaded successfully!");
       router.push("/books");
 
     } catch (err: any) {
@@ -103,6 +100,7 @@ export default function BookUploadPage() {
       
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 border-4 border-black bg-neo-purple p-8 shadow-neo">
         
+        {/* Book Title */}
         <div className="space-y-2">
           <label className="font-bold text-xl block">Book Title / Course *</label>
           <NeoInput 
@@ -112,17 +110,19 @@ export default function BookUploadPage() {
           {errors.title && <span className="text-red-900 font-bold bg-white px-2 border-2 border-black inline-block mt-2 shadow-sm">{errors.title.message}</span>}
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {/* Author, Branch, Price Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div className="space-y-2">
-            <label className="font-bold text-xl block">Author *</label>
+            <label className="font-bold text-lg block">Author *</label>
             <NeoInput 
               {...register("author")}
-              placeholder="e.g. Morris Mano / Cormen"
+              placeholder="e.g. Morris Mano"
             />
             {errors.author && <span className="text-red-900 font-bold bg-white px-2 border-2 border-black inline-block mt-2 shadow-sm">{errors.author.message}</span>}
           </div>
+
           <div className="space-y-2">
-            <label className="font-bold text-xl block">Branch *</label>
+            <label className="font-bold text-lg block">Branch *</label>
             <select
               {...register("category")}
               className="w-full border-4 border-black p-3 font-bold bg-white focus:outline-none focus:ring-4 focus:ring-black shadow-sm"
@@ -131,10 +131,10 @@ export default function BookUploadPage() {
                 <option key={b} value={b}>{b}</option>
               ))}
             </select>
-            {errors.category && <span className="text-red-900 font-bold bg-white px-2 border-2 border-black inline-block mt-2 shadow-sm">{errors.category.message}</span>}
           </div>
+
           <div className="space-y-2">
-            <label className="font-bold text-xl block">Rental Price (₹)</label>
+            <label className="font-bold text-lg block">Price (₹)</label>
             <NeoInput 
               type="number"
               min="0"
@@ -142,38 +142,45 @@ export default function BookUploadPage() {
               {...register("price")}
               placeholder="0 for Free"
             />
-            <span className="text-xs font-bold text-gray-800">Enter 0 for Free rental</span>
           </div>
         </div>
 
+        {/* Multi-Slot Selector */}
+        <SlotSelector 
+          selectedSlots={selectedSlots}
+          onChange={setSelectedSlots}
+          label="Select Applicable VIT Exam Slots"
+        />
+
+        {/* Handover Description */}
         <div className="space-y-2">
           <label className="font-bold text-xl block">Condition & Handover Details</label>
           <textarea 
             {...register("description")}
-            rows={4}
+            rows={3}
             className="w-full border-4 border-black p-3 font-medium focus:outline-none focus:ring-4 focus:ring-black focus:shadow-neo-active transition-all"
-            placeholder="e.g. Good condition with solved CAT problems. Available for handover near SJT, Central Library, or Mens Hostel Block."
+            placeholder="e.g. Available for C1 and C2 slot CAT exams. Can handover near SJT or TT."
           />
-          {errors.description && <span className="text-red-900 font-bold bg-white px-2 border-2 border-black inline-block mt-2 shadow-sm">{errors.description.message}</span>}
         </div>
 
+        {/* File / Cover Upload */}
         <div className="space-y-2">
           <label className="font-bold text-xl block">Book Cover / Document (Word, PDF, JPG, PNG - Optional)</label>
           <input 
             type="file"
             {...register("file")}
             accept=".pdf,.doc,.docx,.png,.jpg,.jpeg,image/*"
-            className="w-full border-4 border-black bg-white p-3 font-medium focus:outline-none focus:ring-4 focus:ring-black"
+            className="w-full border-4 border-black bg-white p-3 font-medium focus:outline-none focus:ring-4 focus:ring-black shadow-sm file:mr-4 file:py-2 file:px-4 file:border-2 file:border-black file:bg-neo-yellow file:font-black"
           />
-          <p className="text-xs font-bold text-gray-800 mt-1">Accepts Word (.doc/.docx), PDF, JPG, PNG (Max size: 15MB)</p>
+          <p className="text-xs font-bold text-gray-800">Supports image covers, lecture slides, and PDF/Word book previews.</p>
         </div>
 
         <button 
           type="submit" 
           disabled={isSubmitting}
-          className="w-full border-4 border-black bg-neo-yellow px-6 py-4 font-bold text-xl shadow-neo hover:shadow-neo-hover active:shadow-neo-active transition-all mt-8 disabled:opacity-50"
+          className="w-full border-4 border-black bg-neo-yellow px-6 py-4 font-bold text-xl shadow-neo hover:shadow-neo-hover active:shadow-neo-active transition-all disabled:opacity-50"
         >
-          {isSubmitting ? "Uploading..." : "List Book for Rent"}
+          {isSubmitting ? "Uploading Book..." : "List Textbook for Rent"}
         </button>
 
       </form>

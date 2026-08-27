@@ -264,3 +264,90 @@ func RemoveFromWishlist(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Book removed from wishlist"})
 }
 
+// UpdateBook allows the owner (or admin) to update their book listing
+func UpdateBook(c *gin.Context) {
+	idStr := c.Param("id")
+	id, err := strconv.ParseUint(idStr, 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid book ID"})
+		return
+	}
+
+	uid := c.GetString("uid")
+	if uid == "" {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+
+	var user models.User
+	if err := services.DB.Where("uid = ?", uid).First(&user).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
+		return
+	}
+
+	var book models.Book
+	if err := services.DB.First(&book, id).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Book not found"})
+		return
+	}
+
+	if book.UploadedBy != user.ID && !user.IsAdmin {
+		c.JSON(http.StatusForbidden, gin.H{"error": "You are not authorized to edit this listing"})
+		return
+	}
+
+	var req struct {
+		Title       string   `json:"title"`
+		Author      string   `json:"author"`
+		Subject     string   `json:"subject"`
+		Description string   `json:"description"`
+		Category    string   `json:"category"`
+		Slot        string   `json:"slot"`
+		Price       *float64 `json:"price"`
+		CoverImage  string   `json:"cover_image"`
+		Available   *bool    `json:"available"`
+	}
+
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid update payload: " + err.Error()})
+		return
+	}
+
+	if req.Title != "" {
+		book.Title = req.Title
+	}
+	if req.Author != "" {
+		book.Author = req.Author
+	}
+	if req.Subject != "" {
+		book.Subject = req.Subject
+	}
+	if req.Description != "" {
+		book.Description = req.Description
+	}
+	if req.Category != "" {
+		book.Category = req.Category
+	}
+	if req.Slot != "" {
+		book.Slot = req.Slot
+	}
+	if req.Price != nil {
+		book.Price = *req.Price
+	}
+	if req.CoverImage != "" {
+		book.CoverImage = req.CoverImage
+	}
+	if req.Available != nil {
+		book.Available = *req.Available
+	}
+
+	if err := services.DB.Save(&book).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update book"})
+		return
+	}
+
+	services.DB.Preload("Uploader").First(&book, book.ID)
+	log.Printf("✏️ Book #%d updated by user %s\n", book.ID, user.Username)
+	c.JSON(http.StatusOK, book)
+}
+

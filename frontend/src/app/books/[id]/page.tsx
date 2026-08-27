@@ -9,8 +9,10 @@ import { toast } from "sonner";
 import { NeoCard } from "@/components/ui/NeoCard";
 import { NeoButton } from "@/components/ui/NeoButton";
 import { BookCover } from "@/components/BookCover";
+import { SlotBadges } from "@/components/SlotBadges";
 import Link from "next/link";
-import { ArrowLeft, Heart, MessageSquare, Trash2, Calendar, UserCheck } from "lucide-react";
+import { ArrowLeft, Heart, MessageSquare, Trash2, Calendar, UserCheck, Edit3 } from "lucide-react";
+import { EditListingModal } from "@/components/EditListingModal";
 
 export default function BookDetailsPage() {
   const { id } = useParams();
@@ -19,6 +21,7 @@ export default function BookDetailsPage() {
   const queryClient = useQueryClient();
 
   const [isRentModalOpen, setIsRentModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [rentalNote, setRentalNote] = useState("");
   const [rentDuration, setRentDuration] = useState("15");
 
@@ -181,8 +184,9 @@ export default function BookDetailsPage() {
           <div>
             <div className="flex flex-wrap gap-2 mb-3 items-center">
               <span className="inline-block border-2 border-black bg-neo-purple px-3 py-1 font-black text-xs uppercase shadow-neo">
-                {book.subject || book.category || "Academic Textbook"}
+                {book.category || "Academic Textbook"}
               </span>
+              <SlotBadges slot={book.slot} variant="yellow" />
               <span className="inline-block border-2 border-black bg-neo-green px-3 py-1 font-black text-sm uppercase shadow-neo">
                 {book.price && book.price > 0 ? `₹${book.price} Rent` : "FREE to Rent"}
               </span>
@@ -239,8 +243,33 @@ export default function BookDetailsPage() {
           {/* Action Buttons */}
           <div className="flex flex-wrap gap-4 pt-4">
             {isOwner ? (
-              <div className="border-4 border-black bg-neo-yellow px-6 py-4 font-bold text-lg shadow-neo w-full text-center">
-                ℹ️ You listed this book for rent.
+              <div className="w-full space-y-3">
+                <div className="border-4 border-black bg-neo-yellow px-6 py-3 font-bold text-base shadow-neo text-center">
+                  ℹ️ You listed this textbook for rent.
+                </div>
+                <div className="flex gap-3">
+                  <NeoButton 
+                    variant="primary" 
+                    size="lg" 
+                    onClick={() => setIsEditModalOpen(true)}
+                    className="flex-1 bg-neo-green text-black flex items-center justify-center gap-2"
+                  >
+                    <Edit3 size={20} /> Edit Listing Details
+                  </NeoButton>
+                  <NeoButton 
+                    variant="danger" 
+                    size="lg" 
+                    onClick={() => {
+                      if (confirm(`Are you sure you want to delete this listing for "${book.title}"?`)) {
+                        deleteBookMutation.mutate();
+                      }
+                    }}
+                    disabled={deleteBookMutation.isPending}
+                    className="flex items-center justify-center gap-2"
+                  >
+                    <Trash2 size={20} /> Delete Listing
+                  </NeoButton>
+                </div>
               </div>
             ) : book.available ? (
               <NeoButton 
@@ -350,6 +379,21 @@ export default function BookDetailsPage() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Edit Listing Modal */}
+      {book && (
+        <EditListingModal
+          isOpen={isEditModalOpen}
+          type="book"
+          item={book}
+          onClose={() => setIsEditModalOpen(false)}
+          onSuccess={() => {
+            queryClient.invalidateQueries({ queryKey: ["book", id] });
+            queryClient.invalidateQueries({ queryKey: ["books"] });
+            queryClient.invalidateQueries({ queryKey: ["mybooks"] });
+          }}
+        />
       )}
     </div>
   );

@@ -9,6 +9,7 @@ type Book struct {
 	Subject     string    `json:"subject"`
 	Description string    `json:"description"`
 	Category    string    `json:"category"`
+	Slot        string    `json:"slot"`
 	CoverImage  string    `json:"cover_image"`
 	FilePath    string    `json:"file_path"`
 	Price       float64   `gorm:"default:0" json:"price"`
@@ -49,6 +50,7 @@ type Note struct {
 	ID          uint      `gorm:"primaryKey" json:"id"`
 	Title       string    `gorm:"not null" json:"title" binding:"required"`
 	Subject     string    `json:"subject"`
+	Slot        string    `json:"slot"`
 	Description string    `json:"description"`
 	FilePath    string    `json:"file_path"`
 	Price       float64   `gorm:"default:0" json:"price"`

@@ -15,6 +15,7 @@ interface Note {
   id: number;
   title: string;
   subject: string;
+  slot?: string;
   description: string;
   file_path: string;
   price?: number;
@@ -28,6 +29,7 @@ interface Note {
 }
 
 import { NoteCover } from "@/components/NoteCover";
+import { SlotBadges } from "@/components/SlotBadges";
 
 export default function NotesPage() {
   const container = useRef<HTMLDivElement>(null);
@@ -145,9 +147,12 @@ export default function NotesPage() {
                 <div className="p-5 flex-grow flex flex-col justify-between bg-white">
                   <div>
                     <div className="flex justify-between items-center mb-2">
-                      <span className="inline-block px-2 py-0.5 bg-neo-yellow border-2 border-black font-bold text-xs uppercase shadow-sm">
-                        {note.subject || "General"}
-                      </span>
+                      <div className="flex flex-wrap gap-1 items-center">
+                        <span className="inline-block px-2 py-0.5 bg-neo-yellow border-2 border-black font-bold text-xs uppercase shadow-sm">
+                          {note.subject || "General"}
+                        </span>
+                        <SlotBadges slot={note.slot} />
+                      </div>
                       <span className="inline-block px-2 py-0.5 bg-neo-green border-2 border-black font-black text-xs uppercase shadow-sm">
                         {note.price && note.price > 0 ? `₹${note.price}` : "FREE"}
                       </span>
