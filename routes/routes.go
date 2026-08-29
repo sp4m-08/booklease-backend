@@ -28,6 +28,8 @@ func RegisterAPIRoutes(r *gin.Engine, app *firebase.App) {
 		// Protected
 		bookRoutes.GET("/mybooks", middleware.RequireAuth(app), api.MyBooks)
 		bookRoutes.DELETE("/:id", middleware.RequireAuth(app), api.DeleteBook)
+		bookRoutes.PUT("/:id", middleware.RequireAuth(app), api.UpdateBook)
+		bookRoutes.PATCH("/:id", middleware.RequireAuth(app), api.UpdateBook)
 		bookRoutes.POST("/", middleware.RequireAuth(app), api.CreateBook)
 		bookRoutes.POST("/:id/wishlist", middleware.RequireAuth(app), api.AddToWishlist)
 		bookRoutes.DELETE("/:id/wishlist", middleware.RequireAuth(app), api.RemoveFromWishlist)
@@ -47,6 +49,8 @@ func RegisterAPIRoutes(r *gin.Engine, app *firebase.App) {
 		// Protected
 		noteRoutes.GET("/mynotes", middleware.RequireAuth(app), api.MyNotes)
 		noteRoutes.POST("/", middleware.RequireAuth(app), api.CreateNote)
+		noteRoutes.PUT("/:id", middleware.RequireAuth(app), api.UpdateNote)
+		noteRoutes.PATCH("/:id", middleware.RequireAuth(app), api.UpdateNote)
 		noteRoutes.DELETE("/:id", middleware.RequireAuth(app), api.DeleteNote)
 		noteRoutes.POST("/:id/upvote", middleware.RequireAuth(app), api.ToggleNoteUpvote)
 		noteRoutes.POST("/:id/waitlist", middleware.RequireAuth(app), api.JoinNoteWaitlist)

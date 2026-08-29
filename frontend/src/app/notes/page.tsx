@@ -15,6 +15,7 @@ interface Note {
   id: number;
   title: string;
   subject: string;
+  slot?: string;
   description: string;
   file_path: string;
   price?: number;

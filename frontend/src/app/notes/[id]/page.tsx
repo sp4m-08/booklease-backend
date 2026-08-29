@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
 import { useParams, useRouter } from "next/navigation";
+import { useState } from "react";
 import { NeoCard } from "@/components/ui/NeoCard";
 import { NeoButton } from "@/components/ui/NeoButton";
 import { getImageUrl } from "@/lib/utils";
@@ -183,6 +184,8 @@ export default function NoteDetailPage() {
   const isOwner = userProfile?.id === note.uploaded_by;
   const canDelete = isOwner || userProfile?.is_admin;
 
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+
   return (
     <div ref={containerRef} className="max-w-7xl mx-auto w-full px-6 py-12 flex-grow">
       {/* Top Header */}
@@ -194,21 +197,34 @@ export default function NoteDetailPage() {
           </NeoButton>
         </Link>
 
-        {canDelete && (
-          <NeoButton 
-            variant="danger"
-            onClick={() => {
-              if (confirm(`Are you sure you want to delete note "${note.title}"?`)) {
-                deleteNoteMutation.mutate();
-              }
-            }}
-            disabled={deleteNoteMutation.isPending}
-            className="flex items-center gap-2"
-          >
-            <Trash2 size={18} />
-            Delete Note
-          </NeoButton>
-        )}
+        <div className="flex items-center gap-3">
+          {isOwner && (
+            <NeoButton 
+              variant="secondary"
+              onClick={() => setIsEditModalOpen(true)}
+              className="bg-neo-yellow hover:bg-yellow-300 flex items-center gap-2"
+            >
+              <Edit3 size={18} />
+              Edit Note
+            </NeoButton>
+          )}
+
+          {canDelete && (
+            <NeoButton 
+              variant="danger"
+              onClick={() => {
+                if (confirm(`Are you sure you want to delete note "${note.title}"?`)) {
+                  deleteNoteMutation.mutate();
+                }
+              }}
+              disabled={deleteNoteMutation.isPending}
+              className="flex items-center gap-2"
+            >
+              <Trash2 size={18} />
+              Delete Note
+            </NeoButton>
+          )}
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 items-start">

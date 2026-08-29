@@ -12,7 +12,9 @@ import { NeoButton } from "@/components/ui/NeoButton";
 import { NeoInput } from "@/components/ui/NeoInput";
 import { BookCover } from "@/components/BookCover";
 import { NoteCover } from "@/components/NoteCover";
-import { BookOpen, FileText, Heart, User as UserIcon, Trash2, ExternalLink } from "lucide-react";
+import { BookOpen, FileText, Heart, User as UserIcon, Trash2, ExternalLink, Edit3 } from "lucide-react";
+import { EditListingModal } from "@/components/EditListingModal";
+import { SlotBadges } from "@/components/SlotBadges";
 
 export default function ProfilePage() {
   const { user, loading } = useAuth();
@@ -20,6 +22,7 @@ export default function ProfilePage() {
   const queryClient = useQueryClient();
   const [phone, setPhone] = useState("");
   const [activeTab, setActiveTab] = useState<"books" | "notes" | "wishlist">("books");
+  const [editingItem, setEditingItem] = useState<{ type: "book" | "note"; item: any } | null>(null);
 
   useEffect(() => {
     if (!loading && !user) router.push("/login");
@@ -293,12 +296,13 @@ export default function ProfilePage() {
                       <div className="overflow-hidden">
                         <h4 className="font-bold text-xl truncate">{book.title}</h4>
                         <p className="text-sm font-medium text-gray-600">{book.author}</p>
-                        <div className="flex gap-2 mt-1 items-center">
+                        <div className="flex flex-wrap gap-2 mt-1 items-center">
                           <span className={`inline-block text-xs font-black px-2 py-0.5 border border-black ${
                             book.available ? "bg-neo-green text-black" : "bg-red-400 text-white"
                           }`}>
                             {book.available ? "Available" : "Rented Out"}
                           </span>
+                          <SlotBadges slot={book.slot} />
                           <span className="inline-block text-xs font-black px-2 py-0.5 border border-black bg-neo-yellow">
                             {book.price && book.price > 0 ? `₹${book.price}` : "FREE"}
                           </span>
@@ -310,6 +314,14 @@ export default function ProfilePage() {
                       <Link href={`/books/${book.id}`} className="flex-1 sm:flex-none">
                         <NeoButton variant="primary" size="sm" className="w-full">View</NeoButton>
                       </Link>
+                      <NeoButton 
+                        variant="secondary"
+                        size="sm"
+                        className="flex-1 sm:flex-none bg-neo-yellow hover:bg-yellow-300 flex items-center gap-1"
+                        onClick={() => setEditingItem({ type: "book", item: book })}
+                      >
+                        <Edit3 size={14} /> Edit
+                      </NeoButton>
                       <NeoButton 
                         variant="danger"
                         size="sm"
@@ -357,10 +369,11 @@ export default function ProfilePage() {
                         <NoteCover src={note.file_path} title={note.title} subject={note.subject} />
                       </div>
                       <div className="overflow-hidden">
-                        <div className="flex gap-2 mb-1 items-center">
+                        <div className="flex flex-wrap gap-2 mb-1 items-center">
                           <span className="text-xs font-black uppercase bg-neo-yellow px-2 py-0.5 border border-black inline-block">
                             {note.subject || "General"}
                           </span>
+                          <SlotBadges slot={note.slot} />
                           <span className="text-xs font-black uppercase bg-neo-green px-2 py-0.5 border border-black inline-block">
                             {note.price && note.price > 0 ? `₹${note.price}` : "FREE"}
                           </span>
@@ -374,6 +387,14 @@ export default function ProfilePage() {
                       <Link href={`/notes/${note.id}`} className="flex-1 sm:flex-none">
                         <NeoButton variant="primary" size="sm" className="w-full">View</NeoButton>
                       </Link>
+                      <NeoButton 
+                        variant="secondary"
+                        size="sm"
+                        className="flex-1 sm:flex-none bg-neo-yellow hover:bg-yellow-300 flex items-center gap-1"
+                        onClick={() => setEditingItem({ type: "note", item: note })}
+                      >
+                        <Edit3 size={14} /> Edit
+                      </NeoButton>
                       <NeoButton 
                         variant="danger"
                         size="sm"
@@ -459,6 +480,22 @@ export default function ProfilePage() {
         </div>
 
       </div>
+
+      {/* Edit Listing Modal */}
+      {editingItem && (
+        <EditListingModal 
+          isOpen={!!editingItem}
+          type={editingItem.type}
+          item={editingItem.item}
+          onClose={() => setEditingItem(null)}
+          onSuccess={() => {
+            queryClient.invalidateQueries({ queryKey: ["mybooks"] });
+            queryClient.invalidateQueries({ queryKey: ["mynotes"] });
+            queryClient.invalidateQueries({ queryKey: ["books"] });
+            queryClient.invalidateQueries({ queryKey: ["notes"] });
+          }}
+        />
+      )}
     </div>
   );
 }

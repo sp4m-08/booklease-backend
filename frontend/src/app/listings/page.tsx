@@ -12,7 +12,9 @@ import { NeoButton } from "@/components/ui/NeoButton";
 import { NeoInput } from "@/components/ui/NeoInput";
 import { BookCover } from "@/components/BookCover";
 import { NoteCover } from "@/components/NoteCover";
-import { BookOpen, FileText, Plus, Trash2, ExternalLink, Search, Sparkles } from "lucide-react";
+import { EditListingModal } from "@/components/EditListingModal";
+import { SlotBadges } from "@/components/SlotBadges";
+import { BookOpen, FileText, Plus, Trash2, ExternalLink, Search, Sparkles, Edit3 } from "lucide-react";
 
 export default function YourListingsPage() {
   const { user, loading } = useAuth();
@@ -20,6 +22,7 @@ export default function YourListingsPage() {
   const queryClient = useQueryClient();
   const [filterTab, setFilterTab] = useState<"all" | "books" | "notes">("all");
   const [searchTerm, setSearchTerm] = useState("");
+  const [editingItem, setEditingItem] = useState<{ type: "book" | "note"; item: any } | null>(null);
 
   // Redirect if not logged in
   if (!loading && !user) {
@@ -245,9 +248,12 @@ export default function YourListingsPage() {
                         </div>
                         <div className="p-5">
                           <div className="flex justify-between items-center mb-2">
-                            <span className="text-xs font-black uppercase bg-neo-yellow px-2 py-0.5 border border-black shadow-sm">
-                              {book.category || "General"}
-                            </span>
+                            <div className="flex flex-wrap gap-1 items-center">
+                              <span className="text-xs font-black uppercase bg-neo-yellow px-2 py-0.5 border border-black shadow-sm">
+                                {book.category || "General"}
+                              </span>
+                              <SlotBadges slot={book.slot} />
+                            </div>
                             <span className="text-xs font-black uppercase bg-neo-green px-2 py-0.5 border border-black shadow-sm">
                               {book.price && book.price > 0 ? `₹${book.price} Rent` : "FREE"}
                             </span>
@@ -263,6 +269,12 @@ export default function YourListingsPage() {
                               {book.available ? "🟢 Available to Rent" : "🔴 Currently Rented Out"}
                             </span>
                           </div>
+
+                          {book.description && (
+                            <p className="text-xs text-gray-600 font-medium line-clamp-2 mt-2 italic bg-gray-50 p-2 border border-black">
+                              "{book.description}"
+                            </p>
+                          )}
                         </div>
                       </div>
 
@@ -272,6 +284,14 @@ export default function YourListingsPage() {
                             <ExternalLink size={14} /> View
                           </NeoButton>
                         </Link>
+                        <NeoButton 
+                          variant="secondary" 
+                          size="sm"
+                          onClick={() => setEditingItem({ type: "book", item: book })}
+                          className="bg-neo-yellow hover:bg-yellow-300 flex items-center gap-1"
+                        >
+                          <Edit3 size={14} /> Edit
+                        </NeoButton>
                         <NeoButton 
                           variant="danger" 
                           size="sm"
@@ -317,16 +337,19 @@ export default function YourListingsPage() {
                         </div>
                         <div className="p-5">
                           <div className="flex justify-between items-center mb-2">
-                            <span className="text-xs font-black uppercase bg-neo-yellow px-2 py-0.5 border border-black shadow-sm">
-                              {note.subject || "General"}
-                            </span>
+                            <div className="flex flex-wrap gap-1 items-center">
+                              <span className="text-xs font-black uppercase bg-neo-yellow px-2 py-0.5 border border-black shadow-sm">
+                                {note.subject || "General"}
+                              </span>
+                              <SlotBadges slot={note.slot} />
+                            </div>
                             <span className="text-xs font-black uppercase bg-neo-green px-2 py-0.5 border border-black shadow-sm">
                               {note.price && note.price > 0 ? `₹${note.price}` : "FREE"}
                             </span>
                           </div>
 
                           <h3 className="font-serif text-2xl font-black mb-1 line-clamp-1">{note.title}</h3>
-                          <p className="text-xs text-gray-500 mb-3">Uploaded on {new Date(note.created_at).toLocaleDateString()}</p>
+                          <p className="text-xs text-gray-500 mb-2">Uploaded on {new Date(note.created_at).toLocaleDateString()}</p>
                           <p className="text-sm font-medium text-gray-700 line-clamp-2">{note.description || "Shared note file."}</p>
                         </div>
                       </div>
@@ -337,6 +360,14 @@ export default function YourListingsPage() {
                             <ExternalLink size={14} /> View
                           </NeoButton>
                         </Link>
+                        <NeoButton 
+                          variant="secondary" 
+                          size="sm"
+                          onClick={() => setEditingItem({ type: "note", item: note })}
+                          className="bg-neo-yellow hover:bg-yellow-300 flex items-center gap-1"
+                        >
+                          <Edit3 size={14} /> Edit
+                        </NeoButton>
                         <NeoButton 
                           variant="danger" 
                           size="sm"
@@ -358,6 +389,22 @@ export default function YourListingsPage() {
             </div>
           )}
         </div>
+      )}
+
+      {/* Edit Listing Modal */}
+      {editingItem && (
+        <EditListingModal 
+          isOpen={!!editingItem}
+          type={editingItem.type}
+          item={editingItem.item}
+          onClose={() => setEditingItem(null)}
+          onSuccess={() => {
+            queryClient.invalidateQueries({ queryKey: ["mybooks"] });
+            queryClient.invalidateQueries({ queryKey: ["mynotes"] });
+            queryClient.invalidateQueries({ queryKey: ["books"] });
+            queryClient.invalidateQueries({ queryKey: ["notes"] });
+          }}
+        />
       )}
     </div>
   );

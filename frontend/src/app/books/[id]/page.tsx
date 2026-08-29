@@ -10,6 +10,7 @@ import { NeoCard } from "@/components/ui/NeoCard";
 import { NeoButton } from "@/components/ui/NeoButton";
 import { NeoSelect } from "@/components/ui/NeoSelect";
 import { BookCover } from "@/components/BookCover";
+import { SlotBadges } from "@/components/SlotBadges";
 import Link from "next/link";
 import { ArrowLeft, Heart, MessageSquare, Trash2, Calendar, UserCheck, BookOpen, Bell } from "lucide-react";
 import gsap from "gsap";
@@ -23,6 +24,7 @@ export default function BookDetailsPage() {
   const queryClient = useQueryClient();
 
   const [isRentModalOpen, setIsRentModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [rentalNote, setRentalNote] = useState("");
   const [rentDuration, setRentDuration] = useState("A1");
 
@@ -242,8 +244,9 @@ export default function BookDetailsPage() {
           <div className="animate-element">
             <div className="flex flex-wrap gap-2 mb-3 items-center">
               <span className="inline-block border-2 border-black bg-neo-purple px-3 py-1 font-black text-xs uppercase shadow-neo">
-                {book.subject || book.category || "Academic Textbook"}
+                {book.category || "Academic Textbook"}
               </span>
+              <SlotBadges slot={book.slot} variant="yellow" />
               <span className="inline-block border-2 border-black bg-neo-green px-3 py-1 font-black text-sm uppercase shadow-neo">
                 {book.price && book.price > 0 ? `₹${book.price} Rent` : "FREE to Rent"}
               </span>
@@ -487,6 +490,21 @@ export default function BookDetailsPage() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Edit Listing Modal */}
+      {book && (
+        <EditListingModal
+          isOpen={isEditModalOpen}
+          type="book"
+          item={book}
+          onClose={() => setIsEditModalOpen(false)}
+          onSuccess={() => {
+            queryClient.invalidateQueries({ queryKey: ["book", id] });
+            queryClient.invalidateQueries({ queryKey: ["books"] });
+            queryClient.invalidateQueries({ queryKey: ["mybooks"] });
+          }}
+        />
       )}
     </div>
   );
