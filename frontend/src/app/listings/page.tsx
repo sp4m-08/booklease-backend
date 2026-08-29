@@ -239,72 +239,78 @@ export default function YourListingsPage() {
                   {searchTerm ? "No books match your search." : "No books listed yet."}
                 </div>
               ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   {filteredBooks.map((book: any) => (
-                    <NeoCard key={book.id} color="white" className="p-0 overflow-hidden flex flex-col justify-between">
-                      <div>
-                        <div className="aspect-[16/10] w-full border-b-4 border-black overflow-hidden bg-white">
-                          <BookCover src={book.cover_image} title={book.title} author={book.author} category={book.category} />
-                        </div>
-                        <div className="p-5">
-                          <div className="flex justify-between items-center mb-2">
-                            <div className="flex flex-wrap gap-1 items-center">
-                              <span className="text-xs font-black uppercase bg-neo-yellow px-2 py-0.5 border border-black shadow-sm">
+                    <NeoCard 
+                      key={book.id} 
+                      color="white" 
+                      className={`flex flex-col md:flex-row gap-5 p-5 transition-all duration-300 hover:-translate-y-1 hover:shadow-neo-hover border-l-[12px] ${
+                        book.available ? "border-l-neo-green" : "border-l-gray-400"
+                      }`}
+                    >
+                      <div className="w-24 h-36 border-4 border-black flex-shrink-0 overflow-hidden shadow-sm self-start">
+                        <BookCover src={book.cover_image} title={book.title} author={book.author} category={book.category} />
+                      </div>
+                      
+                      <div className="flex flex-col flex-grow justify-between">
+                        <div>
+                          <div className="flex flex-wrap justify-between items-start gap-2 mb-2">
+                            <div className="flex flex-wrap gap-1.5 items-center">
+                              <span className="text-[10px] font-black uppercase bg-neo-yellow px-2 py-0.5 border-2 border-black shadow-sm">
                                 {book.category || "General"}
                               </span>
                               <SlotBadges slot={book.slot} rentedSlots={book.rented_slots} />
                             </div>
-                            <span className="text-xs font-black uppercase bg-neo-green px-2 py-0.5 border border-black shadow-sm">
+                            <span className="text-xs font-black uppercase bg-neo-green px-2 py-1 border-2 border-black shadow-sm">
                               {book.price && book.price > 0 ? `₹${book.price} Rent` : "FREE"}
                             </span>
                           </div>
 
-                          <h3 className="font-serif text-2xl font-black mb-1 line-clamp-1">{book.title}</h3>
-                          <p className="text-sm font-bold text-gray-600 mb-3">{book.author || "Unknown Author"}</p>
+                          <h3 className="font-serif text-2xl font-black mb-1 line-clamp-2 leading-tight">{book.title}</h3>
+                          <p className="text-sm font-bold text-gray-700 mb-2">{book.author || "Unknown Author"}</p>
 
                           <div className="flex items-center gap-2 mb-2">
-                            <span className={`inline-block text-xs font-black px-2.5 py-1 border border-black ${
-                              book.available ? "bg-neo-green text-black" : "bg-red-400 text-white"
+                            <span className={`inline-flex items-center gap-1.5 text-[10px] font-black uppercase px-2 py-0.5 border-2 border-black ${
+                              book.available ? "bg-neo-green text-black" : "bg-gray-200 text-gray-500"
                             }`}>
-                              {book.available ? "🟢 Available to Rent" : "🔴 Currently Rented Out"}
+                              {book.available ? <><CheckCircle size={12} /> Available</> : <><XCircle size={12} /> Rented Out</>}
                             </span>
                           </div>
 
                           {book.description && (
-                            <p className="text-xs text-gray-600 font-medium line-clamp-2 mt-2 italic bg-gray-50 p-2 border border-black">
+                            <p className="text-sm font-medium text-gray-700 italic border-l-4 border-black pl-2 mt-2 mb-4 line-clamp-2">
                               "{book.description}"
                             </p>
                           )}
                         </div>
-                      </div>
 
-                      <div className="p-5 pt-0 flex gap-2 border-t-2 border-gray-200 mt-2">
-                        <Link href={`/books/${book.id}`} className="flex-1">
-                          <NeoButton variant="primary" size="sm" className="w-full flex items-center justify-center gap-1">
-                            <ExternalLink size={14} /> View
+                        <div className="flex gap-2 mt-4 pt-4 border-t-2 border-black/10">
+                          <Link href={`/books/${book.id}`} className="flex-1">
+                            <NeoButton variant="primary" size="sm" className="w-full flex justify-center border-4">
+                              View
+                            </NeoButton>
+                          </Link>
+                          <NeoButton 
+                            variant="secondary" 
+                            size="sm"
+                            onClick={() => setEditingItem({ type: "book", item: book })}
+                            className="bg-neo-yellow border-4 px-3"
+                          >
+                            <Edit3 size={16} />
                           </NeoButton>
-                        </Link>
-                        <NeoButton 
-                          variant="secondary" 
-                          size="sm"
-                          onClick={() => setEditingItem({ type: "book", item: book })}
-                          className="bg-neo-yellow hover:bg-yellow-300 flex items-center gap-1"
-                        >
-                          <Edit3 size={14} /> Edit
-                        </NeoButton>
-                        <NeoButton 
-                          variant="danger" 
-                          size="sm"
-                          onClick={() => {
-                            if (confirm(`Are you sure you want to delete listing for "${book.title}"?`)) {
-                              deleteBook.mutate(book.id);
-                            }
-                          }}
-                          disabled={deleteBook.isPending}
-                          className="flex items-center gap-1"
-                        >
-                          <Trash2 size={14} /> Delete
-                        </NeoButton>
+                          <NeoButton 
+                            variant="danger" 
+                            size="sm"
+                            onClick={() => {
+                              if (confirm(`Are you sure you want to delete listing for "${book.title}"?`)) {
+                                deleteBook.mutate(book.id);
+                              }
+                            }}
+                            className="border-4 px-3"
+                          >
+                            <Trash2 size={16} />
+                          </NeoButton>
+                        </div>
                       </div>
                     </NeoCard>
                   ))}
@@ -328,59 +334,78 @@ export default function YourListingsPage() {
                   {searchTerm ? "No study notes match your search." : "No study notes shared yet."}
                 </div>
               ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   {filteredNotes.map((note: any) => (
-                    <NeoCard key={note.id} color="white" className="p-0 overflow-hidden flex flex-col justify-between">
-                      <div>
-                        <div className="aspect-[16/10] w-full border-b-4 border-black overflow-hidden bg-white">
-                          <NoteCover src={note.file_path} title={note.title} subject={note.subject} />
-                        </div>
-                        <div className="p-5">
-                          <div className="flex justify-between items-center mb-2">
-                            <div className="flex flex-wrap gap-1 items-center">
-                              <span className="text-xs font-black uppercase bg-neo-yellow px-2 py-0.5 border border-black shadow-sm">
+                    <NeoCard 
+                      key={note.id} 
+                      color="white" 
+                      className={`flex flex-col md:flex-row gap-5 p-5 transition-all duration-300 hover:-translate-y-1 hover:shadow-neo-hover border-l-[12px] ${
+                        note.available ? "border-l-neo-blue" : "border-l-gray-400"
+                      }`}
+                    >
+                      <div className="w-24 h-36 border-4 border-black flex-shrink-0 overflow-hidden shadow-sm self-start">
+                        <NoteCover src={note.file_path} title={note.title} subject={note.subject} />
+                      </div>
+                      
+                      <div className="flex flex-col flex-grow justify-between">
+                        <div>
+                          <div className="flex flex-wrap justify-between items-start gap-2 mb-2">
+                            <div className="flex flex-wrap gap-1.5 items-center">
+                              <span className="text-[10px] font-black uppercase bg-neo-yellow px-2 py-0.5 border-2 border-black shadow-sm">
                                 {note.subject || "General"}
                               </span>
                               <SlotBadges slot={note.slot} rentedSlots={note.rented_slots} />
                             </div>
-                            <span className="text-xs font-black uppercase bg-neo-green px-2 py-0.5 border border-black shadow-sm">
+                            <span className="text-xs font-black uppercase bg-neo-green px-2 py-1 border-2 border-black shadow-sm">
                               {note.price && note.price > 0 ? `₹${note.price}` : "FREE"}
                             </span>
                           </div>
 
-                          <h3 className="font-serif text-2xl font-black mb-1 line-clamp-1">{note.title}</h3>
-                          <p className="text-xs text-gray-500 mb-2">Uploaded on {new Date(note.created_at).toLocaleDateString()}</p>
-                          <p className="text-sm font-medium text-gray-700 line-clamp-2">{note.description || "Shared note file."}</p>
-                        </div>
-                      </div>
+                          <h3 className="font-serif text-2xl font-black mb-1 line-clamp-2 leading-tight">{note.title}</h3>
+                          <p className="text-xs font-bold text-gray-500 mb-2">Uploaded {new Date(note.created_at).toLocaleDateString()}</p>
 
-                      <div className="p-5 pt-0 flex gap-2 border-t-2 border-gray-200 mt-2">
-                        <Link href={`/notes/${note.id}`} className="flex-1">
-                          <NeoButton variant="primary" size="sm" className="w-full flex items-center justify-center gap-1">
-                            <ExternalLink size={14} /> View
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className={`inline-flex items-center gap-1.5 text-[10px] font-black uppercase px-2 py-0.5 border-2 border-black ${
+                              note.available ? "bg-neo-blue text-white" : "bg-gray-200 text-gray-500"
+                            }`}>
+                              {note.available ? <><CheckCircle size={12} /> Available</> : <><XCircle size={12} /> Rented Out</>}
+                            </span>
+                          </div>
+
+                          {note.description && (
+                            <p className="text-sm font-medium text-gray-700 italic border-l-4 border-black pl-2 mt-2 mb-4 line-clamp-2">
+                              "{note.description}"
+                            </p>
+                          )}
+                        </div>
+
+                        <div className="flex gap-2 mt-4 pt-4 border-t-2 border-black/10">
+                          <Link href={`/notes/${note.id}`} className="flex-1">
+                            <NeoButton variant="primary" size="sm" className="w-full flex justify-center border-4">
+                              View
+                            </NeoButton>
+                          </Link>
+                          <NeoButton 
+                            variant="secondary" 
+                            size="sm"
+                            onClick={() => setEditingItem({ type: "note", item: note })}
+                            className="bg-neo-yellow border-4 px-3"
+                          >
+                            <Edit3 size={16} />
                           </NeoButton>
-                        </Link>
-                        <NeoButton 
-                          variant="secondary" 
-                          size="sm"
-                          onClick={() => setEditingItem({ type: "note", item: note })}
-                          className="bg-neo-yellow hover:bg-yellow-300 flex items-center gap-1"
-                        >
-                          <Edit3 size={14} /> Edit
-                        </NeoButton>
-                        <NeoButton 
-                          variant="danger" 
-                          size="sm"
-                          onClick={() => {
-                            if (confirm(`Are you sure you want to delete note "${note.title}"?`)) {
-                              deleteNote.mutate(note.id);
-                            }
-                          }}
-                          disabled={deleteNote.isPending}
-                          className="flex items-center gap-1"
-                        >
-                          <Trash2 size={14} /> Delete
-                        </NeoButton>
+                          <NeoButton 
+                            variant="danger" 
+                            size="sm"
+                            onClick={() => {
+                              if (confirm(`Are you sure you want to delete note "${note.title}"?`)) {
+                                deleteNote.mutate(note.id);
+                              }
+                            }}
+                            className="border-4 px-3"
+                          >
+                            <Trash2 size={16} />
+                          </NeoButton>
+                        </div>
                       </div>
                     </NeoCard>
                   ))}
