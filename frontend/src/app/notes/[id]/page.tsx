@@ -10,10 +10,10 @@ import { NeoButton } from "@/components/ui/NeoButton";
 import { getImageUrl } from "@/lib/utils";
 import Link from "next/link";
 import { toast } from "sonner";
-import { ArrowLeft, Download, ExternalLink, FileText, Trash2, UserCheck, MessageSquare, ThumbsUp } from "lucide-react";
+import { ArrowLeft, Download, ExternalLink, FileText, Trash2, UserCheck, MessageSquare, ThumbsUp, Edit3, Bell } from "lucide-react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import { NeoSelect } from "@/components/ui/NeoSelect";
 
 interface NoteDetail {

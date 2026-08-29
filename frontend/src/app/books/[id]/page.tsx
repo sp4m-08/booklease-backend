@@ -11,6 +11,7 @@ import { NeoButton } from "@/components/ui/NeoButton";
 import { NeoSelect } from "@/components/ui/NeoSelect";
 import { BookCover } from "@/components/BookCover";
 import { SlotBadges } from "@/components/SlotBadges";
+import { EditListingModal } from "@/components/EditListingModal";
 import Link from "next/link";
 import { ArrowLeft, Heart, MessageSquare, Trash2, Calendar, UserCheck, BookOpen, Bell } from "lucide-react";
 import gsap from "gsap";
