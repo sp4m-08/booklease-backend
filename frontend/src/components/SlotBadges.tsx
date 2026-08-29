@@ -24,10 +24,15 @@ export function SlotBadges({
         return (
           <span
             key={i}
-            className={`border-2 border-black ${isRented ? 'bg-gray-300 text-gray-500 line-through' : bgClass} text-black px-2 py-0.5 text-xs font-black shadow-xs inline-flex items-center`}
+            className={`relative border-2 border-black ${isRented ? 'bg-gray-200 text-gray-500' : bgClass} text-black px-2 py-0.5 text-xs font-black shadow-xs inline-flex items-center overflow-hidden`}
             title={isRented ? "Currently Rented Out" : "Available"}
           >
-            {s}
+            {isRented && (
+              <span className="absolute inset-0 flex items-center justify-center">
+                <span className="w-[120%] h-[3px] bg-red-600 -rotate-12 absolute z-10 border-y border-black"></span>
+              </span>
+            )}
+            <span className={isRented ? "opacity-50" : ""}>{s}</span>
           </span>
         );
       })}
