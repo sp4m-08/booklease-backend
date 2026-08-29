@@ -10,6 +10,7 @@ type Book struct {
 	Description string    `json:"description"`
 	Category    string    `json:"category"`
 	Slot        string    `json:"slot"`
+	RentedSlots string    `json:"rented_slots"`
 	Condition   string    `json:"condition"` // E.g., Brand New, Like New, Highlighted, Torn Pages
 	CoverImage  string    `json:"cover_image"`
 	FilePath    string    `json:"file_path"`
@@ -33,6 +34,7 @@ type Rental struct {
 	Note        Note      `gorm:"foreignKey:NotesID" json:"note,omitempty"`
 	OwnerID     *uint     `gorm:"index" json:"owner_id,omitempty"`
 	Description string    `json:"description"`
+	Slot        string    `json:"slot"`
 	RentedFrom  time.Time `json:"rented_from"`
 	DueDate     time.Time `json:"due_date"`
 	IsReturned  bool      `gorm:"default:false" json:"is_returned"`
@@ -62,6 +64,7 @@ type Note struct {
 	Title       string    `gorm:"not null" json:"title"`
 	Subject     string    `json:"subject"`
 	Slot        string    `json:"slot"`
+	RentedSlots string    `json:"rented_slots"`
 	Condition   string    `json:"condition"`
 	Description string    `json:"description"`
 	FilePath    string    `json:"file_path"`

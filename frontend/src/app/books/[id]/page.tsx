@@ -89,7 +89,8 @@ export default function BookDetailsPage() {
       }
       return api.post("/rentals/", {
         book_id: parseInt(id as string),
-        description: rentalNote || `Requested for ${durationStr} lease.`
+        description: rentalNote || `Requested for ${durationStr} lease.`,
+        slot: rentDuration !== "custom" ? durationStr : ""
       });
     },
     onSuccess: () => {
@@ -249,7 +250,7 @@ export default function BookDetailsPage() {
               <span className="inline-block border-2 border-black bg-neo-purple px-3 py-1 font-black text-xs uppercase shadow-neo">
                 {book.category || "Academic Textbook"}
               </span>
-              <SlotBadges slot={book.slot} variant="yellow" />
+              <SlotBadges slot={book.slot} rentedSlots={book.rented_slots} variant="yellow" />
               <span className="inline-block border-2 border-black bg-neo-green px-3 py-1 font-black text-sm uppercase shadow-neo">
                 {book.price && book.price > 0 ? `₹${book.price} Rent` : "FREE to Rent"}
               </span>
@@ -422,7 +423,10 @@ export default function BookDetailsPage() {
                   options={
                     book.slot
                       ? [
-                        ...book.slot.split(',').map((s: string) => ({ label: s.trim(), value: s.trim() })),
+                        ...book.slot.split(',')
+                          .map((s: string) => s.trim())
+                          .filter((s: string) => !(book.rented_slots || "").split(",").map((rs: string) => rs.trim()).includes(s))
+                          .map((s: string) => ({ label: s, value: s })),
                         { label: "Custom (Select Days)", value: "custom" }
                       ]
                       : [

@@ -16,6 +16,7 @@ import { useGSAP } from "@gsap/react";
 import { useRef } from "react";
 import { NeoSelect } from "@/components/ui/NeoSelect";
 import { EditListingModal } from "@/components/EditListingModal";
+import { SlotBadges } from "@/components/SlotBadges";
 
 interface NoteDetail {
   id: number;
@@ -128,7 +129,8 @@ export default function NoteDetailPage() {
       }
       return api.post("/rentals/", {
         notes_id: parseInt(id as string),
-        description: rentalNote || `Requested for ${durationStr} lease.`
+        description: rentalNote || `Requested for ${durationStr} lease.`,
+        slot: rentDuration !== "custom" ? durationStr : ""
       });
     },
     onSuccess: () => {
@@ -294,11 +296,7 @@ export default function NoteDetailPage() {
                   <span className="inline-block px-3 py-1 bg-white border-2 border-black font-black text-xs uppercase shadow-sm">
                     {note.subject || "General Study Material"}
                   </span>
-                  {note.slot && note.slot.split(',').map((s) => (
-                    <span key={s} className="inline-block px-3 py-1 bg-neo-purple border-2 border-black font-black text-xs uppercase shadow-sm">
-                      {s.trim()}
-                    </span>
-                  ))}
+                  <SlotBadges slot={note.slot} rentedSlots={note.rented_slots} variant="purple" className="inline-flex" />
                   {note.condition && (
                     <span className="inline-block px-3 py-1 bg-white border-2 border-black font-black text-xs uppercase shadow-sm">
                       {note.condition}
@@ -465,7 +463,10 @@ export default function NoteDetailPage() {
                   options={
                     note.slot
                       ? [
-                          ...note.slot.split(',').map((s: string) => ({ label: s.trim(), value: s.trim() })),
+                          ...note.slot.split(',')
+                            .map((s: string) => s.trim())
+                            .filter((s: string) => !(note.rented_slots || "").split(",").map((rs: string) => rs.trim()).includes(s))
+                            .map((s: string) => ({ label: s, value: s })),
                           { label: "Custom (Select Days)", value: "custom" }
                         ]
                       : [

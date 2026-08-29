@@ -150,7 +150,7 @@ export default function BooksPage() {
                       <span className="border-2 border-black bg-neo-yellow px-2 py-0.5 text-xs font-bold shadow-sm">
                         {book.category || "General"}
                       </span>
-                      <SlotBadges slot={book.slot} />
+                      <SlotBadges slot={book.slot} rentedSlots={book.rented_slots} />
                     </div>
                     <span className="border-2 border-black bg-neo-green px-2 py-0.5 text-xs font-black shadow-sm">
                       {book.price && book.price > 0 ? `₹${book.price}` : "FREE"}

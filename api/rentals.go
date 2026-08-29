@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"bookapi/models"
 	"bookapi/services"
@@ -197,6 +198,16 @@ func ReturnRental(c *gin.Context) {
 		if rental.BookID != nil {
 			var book models.Book
 			if err := tx.First(&book, *rental.BookID).Error; err == nil {
+				if rental.Slot != "" {
+					slots := strings.Split(book.RentedSlots, ",")
+					newSlots := []string{}
+					for _, s := range slots {
+						if strings.TrimSpace(s) != "" && strings.TrimSpace(s) != rental.Slot {
+							newSlots = append(newSlots, strings.TrimSpace(s))
+						}
+					}
+					book.RentedSlots = strings.Join(newSlots, ", ")
+				}
 				book.Available = true
 				if err := tx.Save(&book).Error; err != nil {
 					return err
@@ -205,6 +216,16 @@ func ReturnRental(c *gin.Context) {
 		} else if rental.NotesID != nil {
 			var note models.Note
 			if err := tx.First(&note, *rental.NotesID).Error; err == nil {
+				if rental.Slot != "" {
+					slots := strings.Split(note.RentedSlots, ",")
+					newSlots := []string{}
+					for _, s := range slots {
+						if strings.TrimSpace(s) != "" && strings.TrimSpace(s) != rental.Slot {
+							newSlots = append(newSlots, strings.TrimSpace(s))
+						}
+					}
+					note.RentedSlots = strings.Join(newSlots, ", ")
+				}
 				note.Available = true
 				if err := tx.Save(&note).Error; err != nil {
 					return err
@@ -338,7 +359,23 @@ func DecideRental(c *gin.Context) {
 				if err := tx.First(&book, *rental.BookID).Error; err != nil {
 					return err
 				}
-				book.Available = false
+				
+				if rental.Slot != "" && book.Slot != "All Slots" && book.Slot != "" {
+					if book.RentedSlots == "" {
+						book.RentedSlots = rental.Slot
+					} else {
+						book.RentedSlots = book.RentedSlots + ", " + rental.Slot
+					}
+					// Check if all available slots are now rented
+					allSlots := strings.Split(book.Slot, ",")
+					rentedSlots := strings.Split(book.RentedSlots, ",")
+					if len(rentedSlots) >= len(allSlots) {
+						book.Available = false
+					}
+				} else {
+					book.Available = false
+				}
+
 				if err := tx.Save(&book).Error; err != nil {
 					return err
 				}
@@ -347,7 +384,22 @@ func DecideRental(c *gin.Context) {
 				if err := tx.First(&note, *rental.NotesID).Error; err != nil {
 					return err
 				}
-				note.Available = false
+
+				if rental.Slot != "" && note.Slot != "All Slots" && note.Slot != "" {
+					if note.RentedSlots == "" {
+						note.RentedSlots = rental.Slot
+					} else {
+						note.RentedSlots = note.RentedSlots + ", " + rental.Slot
+					}
+					allSlots := strings.Split(note.Slot, ",")
+					rentedSlots := strings.Split(note.RentedSlots, ",")
+					if len(rentedSlots) >= len(allSlots) {
+						note.Available = false
+					}
+				} else {
+					note.Available = false
+				}
+
 				if err := tx.Save(&note).Error; err != nil {
 					return err
 				}

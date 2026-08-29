@@ -252,7 +252,7 @@ export default function YourListingsPage() {
                               <span className="text-xs font-black uppercase bg-neo-yellow px-2 py-0.5 border border-black shadow-sm">
                                 {book.category || "General"}
                               </span>
-                              <SlotBadges slot={book.slot} />
+                              <SlotBadges slot={book.slot} rentedSlots={book.rented_slots} />
                             </div>
                             <span className="text-xs font-black uppercase bg-neo-green px-2 py-0.5 border border-black shadow-sm">
                               {book.price && book.price > 0 ? `₹${book.price} Rent` : "FREE"}
@@ -341,7 +341,7 @@ export default function YourListingsPage() {
                               <span className="text-xs font-black uppercase bg-neo-yellow px-2 py-0.5 border border-black shadow-sm">
                                 {note.subject || "General"}
                               </span>
-                              <SlotBadges slot={note.slot} />
+                              <SlotBadges slot={note.slot} rentedSlots={note.rented_slots} />
                             </div>
                             <span className="text-xs font-black uppercase bg-neo-green px-2 py-0.5 border border-black shadow-sm">
                               {note.price && note.price > 0 ? `₹${note.price}` : "FREE"}
