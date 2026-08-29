@@ -166,7 +166,7 @@ export default function NotesPage() {
                     </div>
                     <h3 className="font-serif text-2xl font-black mb-1 line-clamp-1">{note.title}</h3>
                     <p className="text-gray-600 text-xs font-bold mb-3">
-                      By {note.uploader?.username || "Student"} {note.uploader?.registration_no ? `(${note.uploader.registration_no})` : ""}
+                      By {note.uploader?.username ? note.uploader.username.replace(/\b\d{2}[A-Z]{3}\d{4}\b/gi, '').trim() : "Student"}
                     </p>
                     <p className="font-medium text-sm text-gray-700 line-clamp-2">{note.description || "Click to view note details."}</p>
                   </div>

@@ -198,7 +198,9 @@ function DashboardContent() {
                           </span>
                         </div>
                         <h3 className="font-serif text-2xl font-black truncate">{title}</h3>
-                        <p className="text-sm font-bold text-gray-600">Owner: {ownerName}</p>
+                        <p className="text-sm font-bold text-gray-600">
+                          Owner: {ownerName.replace(/\b\d{2}[A-Z]{3}\d{4}\b/gi, '').trim()}
+                        </p>
                         {rental.description && (
                           <p className="text-xs text-gray-700 italic mt-1 truncate">"{rental.description}"</p>
                         )}

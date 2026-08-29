@@ -110,7 +110,7 @@ export default function AdminDashboardPage() {
                 <tr key={book.id} className="border-b-2 border-gray-300 font-medium">
                   <td className="p-4">#{book.id}</td>
                   <td className="p-4">{book.title}</td>
-                  <td className="p-4">{book.uploader?.username || `User #${book.uploaded_by}`}</td>
+                  <td className="p-4">{book.uploader?.username ? book.uploader.username.replace(/\b\d{2}[A-Z]{3}\d{4}\b/gi, '').trim() : `User #${book.uploaded_by}`}</td>
                   <td className="p-4 text-right">
                     <button 
                       onClick={() => {
@@ -148,7 +148,7 @@ export default function AdminDashboardPage() {
                 <tr key={note.id} className="border-b-2 border-gray-300 font-medium">
                   <td className="p-4">#{note.id}</td>
                   <td className="p-4">{note.title}</td>
-                  <td className="p-4">{note.uploader?.username || `User #${note.uploaded_by}`}</td>
+                  <td className="p-4">{note.uploader?.username ? note.uploader.username.replace(/\b\d{2}[A-Z]{3}\d{4}\b/gi, '').trim() : `User #${note.uploaded_by}`}</td>
                   <td className="p-4 text-right">
                     <button 
                       onClick={() => {
