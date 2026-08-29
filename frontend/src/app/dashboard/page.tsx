@@ -38,16 +38,6 @@ function DashboardContent() {
     if (!loading && !user) router.push("/login");
   }, [user, loading, router]);
 
-  useGSAP(() => {
-    gsap.from(".dash-card", {
-      y: 30,
-      opacity: 0,
-      stagger: 0.1,
-      duration: 0.5,
-      ease: "power2.out"
-    });
-  }, { scope: container, dependencies: [activeTab] });
-
   // Fetch Borrowed Books
   const { data: borrowed, isLoading: loadingBorrowed } = useQuery({
     queryKey: ["rentals", "borrowed"],
@@ -67,6 +57,22 @@ function DashboardContent() {
     },
     enabled: !!user,
   });
+
+  const isDataReady = !loading && !loadingBorrowed && !loadingLent && !!user;
+  const currentItems = activeTab === "borrowed" ? borrowed : lent;
+
+  useGSAP(() => {
+    if (!isDataReady || !container.current) return;
+    if (currentItems && currentItems.length > 0) {
+      gsap.from(".dash-card", {
+        y: 30,
+        opacity: 0,
+        stagger: 0.1,
+        duration: 0.5,
+        ease: "power2.out"
+      });
+    }
+  }, { scope: container, dependencies: [activeTab, isDataReady, currentItems] });
 
   // Decide on Rental (Accept / Reject)
   const decideMutation = useMutation({
@@ -104,9 +110,9 @@ function DashboardContent() {
     onError: () => toast.error("Failed to cancel rental request.")
   });
 
-  if (loading || loadingBorrowed || loadingLent) {
+  if (!isDataReady) {
     return (
-      <div className="flex-grow flex flex-col items-center justify-center p-12 gap-4">
+      <div ref={container} className="max-w-6xl mx-auto w-full px-6 py-12 flex-grow flex flex-col items-center justify-center p-12 gap-4">
         <div className="w-16 h-16 border-8 border-black border-t-neo-blue rounded-full animate-spin" />
         <p className="font-serif text-2xl font-black">Loading your rentals...</p>
       </div>

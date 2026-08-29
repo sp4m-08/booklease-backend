@@ -17,7 +17,7 @@ import { ArrowLeft, Heart, MessageSquare, Trash2, Calendar, UserCheck, BookOpen,
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { useRef } from "react";
-import { EditListingModal } from "@/components/EditListingModal";
+
 
 export default function BookDetailsPage() {
   const { id } = useParams();
@@ -161,7 +161,7 @@ export default function BookDetailsPage() {
         ease: "power2.out"
       });
     }
-  }, [isLoading, book]);
+  }, { dependencies: [isLoading, book], scope: containerRef });
 
   if (isLoading) {
     return (
