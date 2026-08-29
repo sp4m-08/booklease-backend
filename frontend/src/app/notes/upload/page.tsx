@@ -12,7 +12,7 @@ import { toast } from "sonner";
 import { NeoInput } from "@/components/ui/NeoInput";
 import { NeoSelect } from "@/components/ui/NeoSelect";
 import { NeoMultiSelect } from "@/components/ui/NeoMultiSelect";
-import { SlotSelector } from "@/components/SlotSelector";
+import { SlotSelector, VIT_INDIVIDUAL_SLOTS } from "@/components/SlotSelector";
 
 const noteSchema = z.object({
   title: z.string().min(3, "Title must be at least 3 characters").max(100),
@@ -86,14 +86,14 @@ export default function NoteUploadPage() {
       }
 
       const numPrice = data.price ? parseFloat(data.price) : 0;
-      const formattedSlots = selectedSlots.length === 12
+      const formattedSlots = selectedSlots.length === VIT_INDIVIDUAL_SLOTS.length 
         ? "All Slots" 
         : selectedSlots.join(", ") || "All Slots";
 
       await api.post("/notes/", {
         title: data.title,
         subject: data.subject,
-        slot: data.slot || "",
+        slot: formattedSlots,
         condition: data.condition,
         price: isNaN(numPrice) ? 0 : numPrice,
         description: data.description,

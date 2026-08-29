@@ -17,6 +17,7 @@ import { ArrowLeft, Heart, MessageSquare, Trash2, Calendar, UserCheck, BookOpen,
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { useRef } from "react";
+import { EditListingModal } from "@/components/EditListingModal";
 
 export default function BookDetailsPage() {
   const { id } = useParams();
@@ -28,6 +29,7 @@ export default function BookDetailsPage() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [rentalNote, setRentalNote] = useState("");
   const [rentDuration, setRentDuration] = useState("A1");
+  const [customDays, setCustomDays] = useState(7);
 
   // Fetch Book Data
   const { data: book, isLoading, error } = useQuery({
@@ -79,8 +81,8 @@ export default function BookDetailsPage() {
     mutationFn: async () => {
       let durationStr = rentDuration;
       if (rentDuration === "custom") {
-        const customVal = (document.getElementById("customDaysInput") as HTMLInputElement)?.value;
-        if (!customVal || parseInt(customVal) < 1) {
+        const customVal = parseInt(customDays as any);
+        if (isNaN(customVal) || customVal < 1) {
           throw new Error("Please enter a valid number of days for the custom duration.");
         }
         durationStr = `${customVal} days`;
@@ -197,7 +199,7 @@ export default function BookDetailsPage() {
         </Link>
 
         {canDelete && (
-          <NeoButton 
+          <NeoButton
             variant="danger"
             onClick={() => {
               if (confirm(`Are you sure you want to delete "${book.title}"?`)) {
@@ -214,18 +216,18 @@ export default function BookDetailsPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
-        
+
         {/* Left Column: Book Cover */}
         <div className="lg:col-span-5 animate-element">
           <div className="border-4 border-black shadow-neo-lg aspect-[3/4] overflow-hidden bg-white">
-            <BookCover 
-              src={book.cover_image} 
-              title={book.title} 
-              author={book.author} 
-              category={book.category} 
+            <BookCover
+              src={book.cover_image}
+              title={book.title}
+              author={book.author}
+              category={book.category}
             />
           </div>
-          
+
           <div className="mt-4 flex justify-between items-center p-4 border-4 border-black bg-white shadow-neo">
             <div>
               <span className="text-xs font-black uppercase text-gray-600 block">Status</span>
@@ -281,7 +283,7 @@ export default function BookDetailsPage() {
               <UserCheck size={24} />
               <h3 className="font-serif text-xl font-black">Listed By Campus Student</h3>
             </div>
-            
+
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm font-medium">
               <div>
                 <span className="text-xs font-black uppercase text-gray-700 block">Student Name</span>
@@ -294,7 +296,7 @@ export default function BookDetailsPage() {
             {book.uploader?.phone_number && (
               <div className="mt-4 pt-3 border-t-2 border-dashed border-black">
                 {user ? (
-                  <a 
+                  <a
                     href={`https://wa.me/91${book.uploader.phone_number}?text=Hi, I saw your book "${book.title}" on BookLease and I'm interested in renting it!`}
                     target="_blank"
                     rel="noreferrer"
@@ -305,9 +307,9 @@ export default function BookDetailsPage() {
                     </NeoButton>
                   </a>
                 ) : (
-                  <NeoButton 
-                    variant="primary" 
-                    size="sm" 
+                  <NeoButton
+                    variant="primary"
+                    size="sm"
                     className="w-full bg-[#25D366] text-white border-black group hover:scale-105 transition-transform"
                     onClick={() => {
                       toast.error("Please sign in to contact the owner.");
@@ -329,9 +331,9 @@ export default function BookDetailsPage() {
                 <span className="w-5 h-5 bg-black text-neo-yellow rounded-full flex items-center justify-center text-xs">i</span> You listed this book for rent.
               </div>
             ) : book.available ? (
-              <NeoButton 
-                variant="primary" 
-                size="lg" 
+              <NeoButton
+                variant="primary"
+                size="lg"
                 onClick={() => {
                   if (!user) {
                     router.push("/login");
@@ -347,13 +349,13 @@ export default function BookDetailsPage() {
                 }}
                 className="flex-1 min-w-[200px] text-xl bg-neo-green flex items-center justify-center gap-2 group hover:scale-105 transition-transform"
               >
-                Request to Rent 
+                Request to Rent
                 <BookOpen size={24} className="group-hover:rotate-12 group-hover:scale-110 transition-transform duration-300" />
               </NeoButton>
             ) : (
-              <NeoButton 
-                variant="primary" 
-                size="lg" 
+              <NeoButton
+                variant="primary"
+                size="lg"
                 onClick={() => {
                   if (!user) {
                     router.push("/login");
@@ -384,9 +386,8 @@ export default function BookDetailsPage() {
                   addToWishlistMutation.mutate();
                 }
               }}
-              className={`border-4 border-black px-6 py-4 font-black text-lg shadow-neo hover:shadow-neo-hover active:shadow-neo-active transition-all flex items-center gap-2 group hover:scale-105 ${
-                isWishlisted ? "bg-neo-yellow" : "bg-white"
-              }`}
+              className={`border-4 border-black px-6 py-4 font-black text-lg shadow-neo hover:shadow-neo-hover active:shadow-neo-active transition-all flex items-center gap-2 group hover:scale-105 ${isWishlisted ? "bg-neo-yellow" : "bg-white"
+                }`}
             >
               <Heart size={20} className={`group-hover:scale-110 transition-transform ${isWishlisted ? "fill-red-500 text-red-500" : ""}`} />
               {isWishlisted ? "Saved in Wishlist" : "Add to Wishlist"}
@@ -404,7 +405,7 @@ export default function BookDetailsPage() {
                 <h3 className="font-serif text-3xl font-black">Request to Rent</h3>
                 <p className="text-sm font-bold text-gray-600 mt-1">{book.title}</p>
               </div>
-              <button 
+              <button
                 onClick={() => setIsRentModalOpen(false)}
                 className="border-2 border-black px-3 py-1 font-black text-lg bg-gray-200 hover:bg-gray-300"
               >
@@ -421,39 +422,39 @@ export default function BookDetailsPage() {
                   options={
                     book.slot
                       ? [
-                          ...book.slot.split(',').map((s: string) => ({ label: s.trim(), value: s.trim() })),
-                          { label: "Custom (Select Days)", value: "custom" }
-                        ]
+                        ...book.slot.split(',').map((s: string) => ({ label: s.trim(), value: s.trim() })),
+                        { label: "Custom (Select Days)", value: "custom" }
+                      ]
                       : [
-                          { label: "A1", value: "A1" },
-                          { label: "A2", value: "A2" },
-                          { label: "B1", value: "B1" },
-                          { label: "B2", value: "B2" },
-                          { label: "C1", value: "C1" },
-                          { label: "C2", value: "C2" },
-                          { label: "D1", value: "D1" },
-                          { label: "D2", value: "D2" },
-                          { label: "E1", value: "E1" },
-                          { label: "E2", value: "E2" },
-                          { label: "F1", value: "F1" },
-                          { label: "F2", value: "F2" },
-                          { label: "G1", value: "G1" },
-                          { label: "G2", value: "G2" },
-                          { label: "Custom (Select Days)", value: "custom" }
-                        ]
+                        { label: "A1", value: "A1" },
+                        { label: "A2", value: "A2" },
+                        { label: "B1", value: "B1" },
+                        { label: "B2", value: "B2" },
+                        { label: "C1", value: "C1" },
+                        { label: "C2", value: "C2" },
+                        { label: "D1", value: "D1" },
+                        { label: "D2", value: "D2" },
+                        { label: "E1", value: "E1" },
+                        { label: "E2", value: "E2" },
+                        { label: "F1", value: "F1" },
+                        { label: "F2", value: "F2" },
+                        { label: "G1", value: "G1" },
+                        { label: "G2", value: "G2" },
+                        { label: "Custom (Select Days)", value: "custom" }
+                      ]
                   }
                   className="mb-3"
                 />
 
                 {rentDuration === "custom" && (
                   <div className="flex items-center gap-3 mt-3">
-                    <input 
+                    <input
                       type="number"
                       min="1"
                       max="365"
-                      id="customDaysInput"
-                      placeholder="e.g. 10"
-                      className="w-full border-4 border-black p-3 font-bold bg-white focus:outline-none"
+                      value={customDays}
+                      onChange={(e) => setCustomDays(parseInt(e.target.value) || 1)}
+                      className="border-4 border-black p-2 font-bold w-24 text-center focus:outline-none"
                     />
                     <span className="font-bold whitespace-nowrap">Days</span>
                   </div>
@@ -473,15 +474,15 @@ export default function BookDetailsPage() {
             </div>
 
             <div className="flex gap-4 pt-4 border-t-4 border-black">
-              <NeoButton 
-                variant="secondary" 
+              <NeoButton
+                variant="secondary"
                 className="w-1/2 bg-white"
                 onClick={() => setIsRentModalOpen(false)}
               >
                 Cancel
               </NeoButton>
-              <NeoButton 
-                variant="primary" 
+              <NeoButton
+                variant="primary"
                 className="w-1/2 bg-neo-green text-black"
                 onClick={() => rentMutation.mutate()}
                 disabled={rentMutation.isPending}

@@ -15,6 +15,7 @@ import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { useRef } from "react";
 import { NeoSelect } from "@/components/ui/NeoSelect";
+import { EditListingModal } from "@/components/EditListingModal";
 
 interface NoteDetail {
   id: number;
@@ -46,6 +47,7 @@ export default function NoteDetailPage() {
   const queryClient = useQueryClient();
 
   const [isRentModalOpen, setIsRentModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [rentDuration, setRentDuration] = useState("A1");
   const [customDays, setCustomDays] = useState(7);
   const [rentalNote, setRentalNote] = useState("");
@@ -130,10 +132,12 @@ export default function NoteDetailPage() {
       });
     },
     onSuccess: () => {
-      toast.success("Rental request submitted!");
+      toast.success("Rental request submitted! The owner has been notified.");
       setIsRentModalOpen(false);
       setRentalNote("");
-      router.push("/rentals");
+      queryClient.invalidateQueries({ queryKey: ["note", id] });
+      queryClient.invalidateQueries({ queryKey: ["rentals"] });
+      router.push("/dashboard?tab=borrowed");
     },
     onError: (err: any) => {
       toast.error(err.response?.data?.error || err.message || "Failed to submit request.");
@@ -183,8 +187,6 @@ export default function NoteDetailPage() {
 
   const isOwner = userProfile?.id === note.uploaded_by;
   const canDelete = isOwner || userProfile?.is_admin;
-
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   return (
     <div ref={containerRef} className="max-w-7xl mx-auto w-full px-6 py-12 flex-grow">
@@ -531,6 +533,21 @@ export default function NoteDetailPage() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Edit Listing Modal */}
+      {note && (
+        <EditListingModal
+          isOpen={isEditModalOpen}
+          type="note"
+          item={note}
+          onClose={() => setIsEditModalOpen(false)}
+          onSuccess={() => {
+            queryClient.invalidateQueries({ queryKey: ["note", id] });
+            queryClient.invalidateQueries({ queryKey: ["notes"] });
+            queryClient.invalidateQueries({ queryKey: ["mynotes"] });
+          }}
+        />
       )}
     </div>
   );

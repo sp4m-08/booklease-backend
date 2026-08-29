@@ -10,6 +10,7 @@ import { useGSAP } from "@gsap/react";
 import { NeoCard } from "@/components/ui/NeoCard";
 import { NeoButton } from "@/components/ui/NeoButton";
 import { BookCover } from "@/components/BookCover";
+import { NoteCover } from "@/components/NoteCover";
 import Link from "next/link";
 import { toast } from "sonner";
 import { BookOpen, RefreshCw, CheckCircle, XCircle, ArrowUpRight, Clock, Trash2, GraduationCap } from "lucide-react";
@@ -141,7 +142,7 @@ function DashboardContent() {
           }`}
         >
           <BookOpen size={22} />
-          Books You Requested ({borrowed?.length || 0})
+          Materials You Requested ({borrowed?.length || 0})
         </button>
         <button
           onClick={() => setActiveTab("lent")}
@@ -150,7 +151,7 @@ function DashboardContent() {
           }`}
         >
           <RefreshCw size={22} />
-          Incoming Requests for Your Books ({lent?.length || 0})
+          Incoming Requests for Your Listings ({lent?.length || 0})
         </button>
       </div>
 
@@ -166,69 +167,86 @@ function DashboardContent() {
               </Link>
             </div>
           ) : (
-            borrowed.map((rental: any) => (
-              <div key={rental.id} className="dash-card">
-                <NeoCard color="white" className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-                  <div className="flex gap-4 items-center overflow-hidden w-full md:w-auto">
-                    <div className="w-20 h-24 border-2 border-black flex-shrink-0 overflow-hidden">
-                      <BookCover src={rental.book?.cover_image} title={rental.book?.title || "Book"} />
+            borrowed.map((rental: any) => {
+              const isNote = !!rental.notes_id;
+              const item = isNote ? rental.note : rental.book;
+              const title = item?.title || (isNote ? "Study Note" : "Textbook");
+              const ownerName = item?.uploader?.username || "Student";
+              const coverSrc = isNote ? item?.file_path : item?.cover_image;
+
+              return (
+                <div key={rental.id} className="dash-card">
+                  <NeoCard color="white" className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                    <div className="flex gap-4 items-center overflow-hidden w-full md:w-auto">
+                      <div className="w-20 h-24 border-2 border-black flex-shrink-0 overflow-hidden">
+                        {isNote ? (
+                          <NoteCover src={coverSrc} title={title} subject={item?.subject} />
+                        ) : (
+                          <BookCover src={coverSrc} title={title} />
+                        )}
+                      </div>
+                      <div className="overflow-hidden">
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className={`border border-black px-1.5 py-0.2 text-[10px] font-black uppercase ${isNote ? 'bg-neo-peach' : 'bg-neo-yellow'}`}>
+                            {isNote ? 'Study Note' : 'Book'}
+                          </span>
+                        </div>
+                        <h3 className="font-serif text-2xl font-black truncate">{title}</h3>
+                        <p className="text-sm font-bold text-gray-600">Owner: {ownerName}</p>
+                        {rental.description && (
+                          <p className="text-xs text-gray-700 italic mt-1 truncate">"{rental.description}"</p>
+                        )}
+                      </div>
                     </div>
-                    <div className="overflow-hidden">
-                      <h3 className="font-serif text-2xl font-black truncate">{rental.book?.title}</h3>
-                      <p className="text-sm font-bold text-gray-600">Owner: {rental.book?.uploader?.username || "Student"}</p>
-                      {rental.description && (
-                        <p className="text-xs text-gray-700 italic mt-1 truncate">"{rental.description}"</p>
+
+                    <div className="flex flex-wrap items-center gap-4 w-full md:w-auto justify-between md:justify-end">
+                      {/* Status Badge */}
+                      <div className={`border-2 border-black px-4 py-2 font-black text-sm shadow-sm flex items-center gap-2 ${
+                        rental.is_returned ? "bg-gray-200 text-gray-600" :
+                        rental.status === null ? "bg-neo-yellow text-black" : 
+                        rental.status === true ? "bg-neo-green text-black" : "bg-red-400 text-white"
+                      }`}>
+                        {rental.is_returned ? <><CheckCircle size={16} /> Returned</> :
+                         rental.status === null ? <><Clock size={16} /> Pending Approval</> : 
+                         rental.status === true ? <><CheckCircle size={16} /> Active Lease</> : <><XCircle size={16} /> Rejected by Owner</>}
+                      </div>
+
+                      {/* Actions */}
+                      {rental.status === true && !rental.is_returned && (
+                        <NeoButton 
+                          variant="primary" 
+                          className="bg-neo-purple flex items-center gap-2 group hover:scale-105 transition-transform"
+                          onClick={() => returnMutation.mutate(rental.id)}
+                          disabled={returnMutation.isPending}
+                        >
+                          {returnMutation.isPending ? "Returning..." : (
+                            <>
+                              Return Item <RefreshCw size={16} className="group-hover:rotate-180 transition-transform duration-500" />
+                            </>
+                          )}
+                        </NeoButton>
+                      )}
+
+                      {rental.status === null && (
+                        <NeoButton 
+                          variant="secondary" 
+                          size="sm"
+                          className="bg-white text-red-600"
+                          onClick={() => {
+                            if (confirm("Are you sure you want to cancel this rental request?")) {
+                              cancelRentalMutation.mutate(rental.id);
+                            }
+                          }}
+                          disabled={cancelRentalMutation.isPending}
+                        >
+                          Cancel Request
+                        </NeoButton>
                       )}
                     </div>
-                  </div>
-
-                  <div className="flex flex-wrap items-center gap-4 w-full md:w-auto justify-between md:justify-end">
-                    {/* Status Badge */}
-                    <div className={`border-2 border-black px-4 py-2 font-black text-sm shadow-sm flex items-center gap-2 ${
-                      rental.is_returned ? "bg-gray-200 text-gray-600" :
-                      rental.status === null ? "bg-neo-yellow text-black" : 
-                      rental.status === true ? "bg-neo-green text-black" : "bg-red-400 text-white"
-                    }`}>
-                      {rental.is_returned ? <><CheckCircle size={16} /> Returned</> :
-                       rental.status === null ? <><Clock size={16} /> Pending Approval</> : 
-                       rental.status === true ? <><CheckCircle size={16} /> Active Lease</> : <><XCircle size={16} /> Rejected by Owner</>}
-                    </div>
-
-                    {/* Actions */}
-                    {rental.status === true && !rental.is_returned && (
-                      <NeoButton 
-                        variant="primary" 
-                        className="bg-neo-purple flex items-center gap-2 group hover:scale-105 transition-transform"
-                        onClick={() => returnMutation.mutate(rental.id)}
-                        disabled={returnMutation.isPending}
-                      >
-                        {returnMutation.isPending ? "Returning..." : (
-                          <>
-                            Return Book <RefreshCw size={16} className="group-hover:rotate-180 transition-transform duration-500" />
-                          </>
-                        )}
-                      </NeoButton>
-                    )}
-
-                    {rental.status === null && (
-                      <NeoButton 
-                        variant="secondary" 
-                        size="sm"
-                        className="bg-white text-red-600"
-                        onClick={() => {
-                          if (confirm("Are you sure you want to cancel this rental request?")) {
-                            cancelRentalMutation.mutate(rental.id);
-                          }
-                        }}
-                        disabled={cancelRentalMutation.isPending}
-                      >
-                        Cancel Request
-                      </NeoButton>
-                    )}
-                  </div>
-                </NeoCard>
-              </div>
-            ))
+                  </NeoCard>
+                </div>
+              );
+            })
           )}
         </div>
       ) : (
@@ -242,23 +260,38 @@ function DashboardContent() {
               </Link>
             </div>
           ) : (
-            lent.map((rental: any) => (
-              <div key={rental.id} className="dash-card">
-                <NeoCard color="white" className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-                  <div className="flex gap-4 items-center overflow-hidden w-full md:w-auto">
-                    <div className="w-20 h-24 border-2 border-black flex-shrink-0 overflow-hidden">
-                      <BookCover src={rental.book?.cover_image} title={rental.book?.title || "Book"} />
+            lent.map((rental: any) => {
+              const isNote = !!rental.notes_id;
+              const item = isNote ? rental.note : rental.book;
+              const title = item?.title || (isNote ? "Study Note" : "Textbook");
+              const coverSrc = isNote ? item?.file_path : item?.cover_image;
+
+              return (
+                <div key={rental.id} className="dash-card">
+                  <NeoCard color="white" className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                    <div className="flex gap-4 items-center overflow-hidden w-full md:w-auto">
+                      <div className="w-20 h-24 border-2 border-black flex-shrink-0 overflow-hidden">
+                        {isNote ? (
+                          <NoteCover src={coverSrc} title={title} subject={item?.subject} />
+                        ) : (
+                          <BookCover src={coverSrc} title={title} />
+                        )}
+                      </div>
+                      <div className="overflow-hidden">
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className={`border border-black px-1.5 py-0.2 text-[10px] font-black uppercase ${isNote ? 'bg-neo-peach' : 'bg-neo-yellow'}`}>
+                            {isNote ? 'Study Note' : 'Book'}
+                          </span>
+                        </div>
+                        <h3 className="font-serif text-2xl font-black truncate">{title}</h3>
+                        <p className="text-sm font-bold text-gray-800">
+                          Requested by: <span className="underline">{rental.user?.username || `User #${rental.user_id}`}</span> ({rental.user?.email || "Campus Student"})
+                        </p>
+                        {rental.description && (
+                          <p className="text-xs text-gray-700 italic mt-1">"{rental.description}"</p>
+                        )}
+                      </div>
                     </div>
-                    <div className="overflow-hidden">
-                      <h3 className="font-serif text-2xl font-black truncate">{rental.book?.title}</h3>
-                      <p className="text-sm font-bold text-gray-800">
-                        Requested by: <span className="underline">{rental.user?.username || `User #${rental.user_id}`}</span> ({rental.user?.email || "Campus Student"})
-                      </p>
-                      {rental.description && (
-                        <p className="text-xs text-gray-700 italic mt-1">"{rental.description}"</p>
-                      )}
-                    </div>
-                  </div>
 
                   <div className="flex items-center gap-4 w-full md:w-auto justify-between md:justify-end">
                     {rental.status === null ? (
@@ -297,7 +330,8 @@ function DashboardContent() {
                   </div>
                 </NeoCard>
               </div>
-            ))
+            );
+          })
           )}
         </div>
       )}
