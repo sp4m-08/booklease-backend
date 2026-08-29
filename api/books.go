@@ -109,6 +109,7 @@ func CreateBook(c *gin.Context) {
 
 	newBook.UploadedBy = user.ID
 	newBook.Available = true
+	newBook.Slot = newBook.Slot
 
 	if err := services.DB.Create(&newBook).Error; err != nil {
 		log.Println("❌ CreateBook error:", err)
@@ -264,3 +265,109 @@ func RemoveFromWishlist(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Book removed from wishlist"})
 }
 
+// JoinWaitlist adds a user to a book's waitlist
+func JoinWaitlist(c *gin.Context) {
+	bookIDStr := c.Param("id")
+	bookID, err := strconv.ParseUint(bookIDStr, 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid book ID"})
+		return
+	}
+
+	uid := c.GetString("uid")
+	if uid == "" {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+
+	var user models.User
+	if err := services.DB.Where("uid = ?", uid).First(&user).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
+		return
+	}
+
+	var book models.Book
+	if err := services.DB.First(&book, bookID).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Book not found"})
+		return
+	}
+
+	if book.Available {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Book is currently available. You can just rent it."})
+		return
+	}
+
+	var existing models.BookWaitlist
+	if err := services.DB.Where("user_id = ? AND book_id = ?", user.ID, book.ID).First(&existing).Error; err == nil {
+		c.JSON(http.StatusConflict, gin.H{"error": "Already in waitlist"})
+		return
+	}
+
+	waitlist := models.BookWaitlist{
+		UserID: user.ID,
+		BookID: book.ID,
+	}
+	if err := services.DB.Create(&waitlist).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to join waitlist"})
+		return
+	}
+
+	c.JSON(http.StatusCreated, gin.H{"message": "Joined waitlist"})
+}
+
+// LeaveWaitlist removes a user from a book's waitlist
+func LeaveWaitlist(c *gin.Context) {
+	bookIDStr := c.Param("id")
+	bookID, err := strconv.ParseUint(bookIDStr, 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid book ID"})
+		return
+	}
+
+	uid := c.GetString("uid")
+	if uid == "" {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+
+	var user models.User
+	if err := services.DB.Where("uid = ?", uid).First(&user).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
+		return
+	}
+
+	result := services.DB.Where("user_id = ? AND book_id = ?", user.ID, bookID).Delete(&models.BookWaitlist{})
+	if result.Error != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to leave waitlist"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Left waitlist"})
+}
+
+// GetWaitlistStatus returns whether the user is on the waitlist
+func GetWaitlistStatus(c *gin.Context) {
+	bookIDStr := c.Param("id")
+	bookID, err := strconv.ParseUint(bookIDStr, 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid book ID"})
+		return
+	}
+
+	uid := c.GetString("uid")
+	if uid == "" {
+		c.JSON(http.StatusOK, gin.H{"waitlisted": false})
+		return
+	}
+
+	var user models.User
+	if err := services.DB.Where("uid = ?", uid).First(&user).Error; err != nil {
+		c.JSON(http.StatusOK, gin.H{"waitlisted": false})
+		return
+	}
+
+	var count int64
+	services.DB.Model(&models.BookWaitlist{}).Where("user_id = ? AND book_id = ?", user.ID, bookID).Count(&count)
+
+	c.JSON(http.StatusOK, gin.H{"waitlisted": count > 0})
+}

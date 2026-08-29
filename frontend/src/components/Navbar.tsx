@@ -112,7 +112,7 @@ export default function Navbar() {
       {/* Brand Logo */}
       <Link href="/" onClick={() => setMobileOpen(false)}>
         <div ref={logoRef} className="text-3xl font-serif font-black tracking-tight border-4 border-black px-4 py-2 bg-neo-yellow shadow-neo cursor-pointer select-none flex items-center gap-2">
-          <span>📚</span> Booklease
+          Booklease
         </div>
       </Link>
       
@@ -227,7 +227,9 @@ export default function Navbar() {
               onClick={() => setMobileOpen(false)}
               className="w-full border-4 border-black px-5 py-3 bg-red-500 text-white font-black shadow-neo"
             >
-              🛡️ Admin Moderation Panel
+              <div className="flex items-center gap-2">
+                <Shield size={20} /> Admin Moderation Panel
+              </div>
             </Link>
           )}
           

@@ -76,3 +76,37 @@ func RequireAuth(app *firebase.App) gin.HandlerFunc {
 		c.Next()
 	}
 }
+
+func OptionalAuth(app *firebase.App) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		authHeader := c.GetHeader("Authorization")
+		if !strings.HasPrefix(authHeader, "Bearer ") {
+			c.Next()
+			return
+		}
+		idToken := strings.TrimPrefix(authHeader, "Bearer ")
+
+		authClient, err := app.Auth(context.Background())
+		if err != nil {
+			c.Next()
+			return
+		}
+
+		token, err := authClient.VerifyIDToken(context.Background(), idToken)
+		if err != nil {
+			c.Next()
+			return
+		}
+
+		email, ok := token.Claims["email"].(string)
+		if !ok || !isEmailAllowed(email) {
+			c.Next()
+			return
+		}
+
+		uid := token.UID
+		c.Set("email", email)
+		c.Set("uid", uid)
+		c.Next()
+	}
+}

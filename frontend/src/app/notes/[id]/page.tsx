@@ -9,15 +9,24 @@ import { NeoButton } from "@/components/ui/NeoButton";
 import { getImageUrl } from "@/lib/utils";
 import Link from "next/link";
 import { toast } from "sonner";
-import { ArrowLeft, Download, ExternalLink, FileText, Trash2, UserCheck, MessageSquare } from "lucide-react";
+import { ArrowLeft, Download, ExternalLink, FileText, Trash2, UserCheck, MessageSquare, ThumbsUp } from "lucide-react";
+import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
+import { useRef, useState } from "react";
+import { NeoSelect } from "@/components/ui/NeoSelect";
 
 interface NoteDetail {
   id: number;
   title: string;
   subject: string;
+  slot?: string;
+  condition?: string;
+  available: boolean;
   description: string;
   file_path: string;
   price?: number;
+  upvotes: number;
+  is_upvoted?: boolean;
   uploaded_by: number;
   uploader: {
     id: number;
@@ -34,6 +43,11 @@ export default function NoteDetailPage() {
   const { user, userProfile } = useAuth();
   const router = useRouter();
   const queryClient = useQueryClient();
+
+  const [isRentModalOpen, setIsRentModalOpen] = useState(false);
+  const [rentDuration, setRentDuration] = useState("A1");
+  const [customDays, setCustomDays] = useState(7);
+  const [rentalNote, setRentalNote] = useState("");
 
   const { data: note, isLoading, error } = useQuery<NoteDetail>({
     queryKey: ["note", id],
@@ -56,6 +70,89 @@ export default function NoteDetailPage() {
     }
   });
 
+  const upvoteMutation = useMutation({
+    mutationFn: async () => api.post(`/notes/${id}/upvote`),
+    onSuccess: (res: any) => {
+      queryClient.invalidateQueries({ queryKey: ["note", id] });
+      queryClient.invalidateQueries({ queryKey: ["notes"] });
+      if (res.data?.is_upvoted) {
+        toast.success("Upvoted! Thanks for rating this note.");
+      }
+    },
+    onError: (err: any) => {
+      toast.error("Failed to upvote.");
+    }
+  });
+
+  const { data: waitlistStatus } = useQuery({
+    queryKey: ["noteWaitlist", id],
+    queryFn: async () => {
+      if (!user) return { waitlisted: false };
+      const response = await api.get(`/notes/${id}/waitlist`);
+      return response.data;
+    },
+    enabled: !!id && !!user,
+  });
+  const isWaitlisted = waitlistStatus?.waitlisted || false;
+
+  const joinWaitlistMutation = useMutation({
+    mutationFn: async () => api.post(`/notes/${id}/waitlist`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["noteWaitlist", id] });
+      toast.success("Joined waitlist! We'll notify you when it's returned.");
+    },
+    onError: (err: any) => toast.error(err.response?.data?.error || "Failed to join waitlist")
+  });
+
+  const leaveWaitlistMutation = useMutation({
+    mutationFn: async () => api.delete(`/notes/${id}/waitlist`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["noteWaitlist", id] });
+      toast.success("Left the waitlist.");
+    },
+    onError: (err: any) => toast.error(err.response?.data?.error || "Failed to leave waitlist")
+  });
+
+  const requestRentalMutation = useMutation({
+    mutationFn: async () => {
+      let durationStr = rentDuration;
+      if (rentDuration === "custom") {
+        const customVal = parseInt(customDays as any);
+        if (isNaN(customVal) || customVal < 1) {
+          throw new Error("Please enter a valid number of days for the custom duration.");
+        }
+        durationStr = `${customVal} days`;
+      }
+      return api.post("/rentals/", {
+        notes_id: parseInt(id as string),
+        description: rentalNote || `Requested for ${durationStr} lease.`
+      });
+    },
+    onSuccess: () => {
+      toast.success("Rental request submitted!");
+      setIsRentModalOpen(false);
+      setRentalNote("");
+      router.push("/rentals");
+    },
+    onError: (err: any) => {
+      toast.error(err.response?.data?.error || err.message || "Failed to submit request.");
+    }
+  });
+
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useGSAP(() => {
+    if (!isLoading && note && containerRef.current) {
+      gsap.from(".animate-element", {
+        y: 40,
+        opacity: 0,
+        duration: 0.6,
+        stagger: 0.1,
+        ease: "power2.out"
+      });
+    }
+  }, [isLoading, note]);
+
   if (isLoading) {
     return (
       <div className="flex-grow flex items-center justify-center min-h-[calc(100vh-84px)]">
@@ -71,7 +168,7 @@ export default function NoteDetailPage() {
           Failed to load study note details.
         </div>
         <Link href="/notes">
-          <NeoButton variant="primary">⬅️ Back to Notes</NeoButton>
+          <NeoButton variant="primary" className="flex items-center gap-2"><ArrowLeft size={18} /> Back to Notes</NeoButton>
         </Link>
       </div>
     );
@@ -87,9 +184,9 @@ export default function NoteDetailPage() {
   const canDelete = isOwner || userProfile?.is_admin;
 
   return (
-    <div className="max-w-7xl mx-auto w-full px-6 py-12 flex-grow">
+    <div ref={containerRef} className="max-w-7xl mx-auto w-full px-6 py-12 flex-grow">
       {/* Top Header */}
-      <div className="mb-8 flex justify-between items-center">
+      <div className="mb-8 flex justify-between items-center animate-element">
         <Link href="/notes">
           <NeoButton variant="secondary" className="bg-white flex items-center gap-2">
             <ArrowLeft size={18} />
@@ -117,7 +214,7 @@ export default function NoteDetailPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 items-start">
         
         {/* Left Column: Document / File Preview */}
-        <div className="lg:col-span-2 space-y-4">
+        <div className="lg:col-span-2 space-y-4 animate-element">
           <NeoCard className="flex flex-col p-0 overflow-hidden shadow-neo-lg" color="white">
             <div className="bg-black text-white p-4 font-bold border-b-4 border-black flex justify-between items-center">
               <span className="flex items-center gap-2 text-sm uppercase">
@@ -126,14 +223,9 @@ export default function NoteDetailPage() {
               </span>
               {fileUrl && (
                 <div className="flex gap-2">
-                  <a href={fileUrl} target="_blank" rel="noreferrer" download>
-                    <NeoButton variant="primary" size="sm" className="bg-neo-green text-black flex items-center gap-1">
-                      <Download size={14} /> Download
-                    </NeoButton>
-                  </a>
                   <a href={fileUrl} target="_blank" rel="noreferrer">
                     <NeoButton variant="primary" size="sm" className="bg-neo-blue text-black flex items-center gap-1">
-                      <ExternalLink size={14} /> Fullscreen
+                      <ExternalLink size={14} /> View Document
                     </NeoButton>
                   </a>
                 </div>
@@ -162,12 +254,12 @@ export default function NoteDetailPage() {
                 <FileText className="w-20 h-20 text-black mb-4 stroke-1" />
                 <h3 className="font-serif text-3xl font-black mb-2">{note.title}</h3>
                 <p className="font-bold text-gray-700 mb-6 max-w-md">
-                  This document format ({fileExt?.toUpperCase() || "DOC"}) is ready for download.
+                  This document format ({fileExt?.toUpperCase() || "DOC"}) is ready to be viewed.
                 </p>
                 {fileUrl && (
-                  <a href={fileUrl} target="_blank" rel="noreferrer" download>
-                    <NeoButton variant="primary" size="lg" className="bg-neo-green text-black flex items-center gap-2">
-                      <Download size={20} /> Download Document File
+                  <a href={fileUrl} target="_blank" rel="noreferrer">
+                    <NeoButton variant="primary" size="lg" className="bg-neo-blue text-black flex items-center gap-2">
+                      <ExternalLink size={20} /> View Document File
                     </NeoButton>
                   </a>
                 )}
@@ -178,14 +270,46 @@ export default function NoteDetailPage() {
 
         {/* Right Column: Note Metadata & Contact */}
         <div className="flex flex-col gap-8">
-          <NeoCard color="yellow" className="p-6">
-            <div className="flex flex-wrap gap-2 mb-4 items-center">
-              <span className="inline-block px-3 py-1 bg-white border-2 border-black font-black text-xs uppercase shadow-sm">
-                {note.subject || "General Study Material"}
-              </span>
-              <span className="inline-block px-3 py-1 bg-neo-green border-2 border-black font-black text-xs uppercase shadow-sm">
-                {note.price && note.price > 0 ? `₹${note.price}` : "FREE"}
-              </span>
+          <NeoCard color="yellow" className="p-6 animate-element">
+              <div className="flex flex-wrap gap-2 mb-4 items-center justify-between w-full">
+                <div className="flex flex-wrap gap-2">
+                  <span className="inline-block px-3 py-1 bg-white border-2 border-black font-black text-xs uppercase shadow-sm">
+                    {note.subject || "General Study Material"}
+                  </span>
+                  {note.slot && note.slot.split(',').map((s) => (
+                    <span key={s} className="inline-block px-3 py-1 bg-neo-purple border-2 border-black font-black text-xs uppercase shadow-sm">
+                      {s.trim()}
+                    </span>
+                  ))}
+                  {note.condition && (
+                    <span className="inline-block px-3 py-1 bg-white border-2 border-black font-black text-xs uppercase shadow-sm">
+                      {note.condition}
+                    </span>
+                  )}
+                  <span className="inline-block px-3 py-1 bg-neo-green border-2 border-black font-black text-xs uppercase shadow-sm">
+                    {note.price && note.price > 0 ? `₹${note.price}` : "FREE"}
+                  </span>
+                  {!note.available && (
+                    <span className="inline-block px-3 py-1 bg-black text-white border-2 border-black font-black text-xs uppercase shadow-sm">
+                      🔴 Rented Out
+                    </span>
+                  )}
+                </div>
+              <button 
+                onClick={() => {
+                  if (!user) {
+                    toast.error("Please sign in to upvote notes.");
+                    router.push("/login");
+                    return;
+                  }
+                  upvoteMutation.mutate();
+                }}
+                disabled={upvoteMutation.isPending}
+                className={`flex items-center gap-2 px-3 py-1 border-2 border-black font-black text-sm transition-all shadow-sm ${note.is_upvoted ? "bg-neo-blue text-white" : "bg-white hover:bg-gray-100"}`}
+              >
+                <ThumbsUp size={16} className={note.is_upvoted ? "fill-white" : ""} />
+                {note.upvotes || 0} Upvotes
+              </button>
             </div>
             <h1 className="font-serif text-3xl md:text-4xl font-black mb-4 leading-tight">{note.title}</h1>
             <p className="font-medium text-base text-gray-800 leading-relaxed whitespace-pre-wrap">
@@ -196,7 +320,7 @@ export default function NoteDetailPage() {
             </p>
           </NeoCard>
 
-          <NeoCard color="blue" className="p-6">
+          <NeoCard color="blue" className="p-6 animate-element">
             <div className="flex items-center gap-3 mb-6 border-b-4 border-black pb-3">
               <UserCheck size={24} />
               <h2 className="font-serif text-2xl font-black">Author & Contact</h2>
@@ -205,36 +329,35 @@ export default function NoteDetailPage() {
             <div className="space-y-4 font-medium text-sm">
               <div>
                 <span className="text-xs font-black uppercase text-gray-700 block">Uploaded By</span>
-                <span className="font-bold text-lg">{note.uploader?.username || "Campus Student"}</span>
+                <span className="font-bold text-lg">
+                  {note.uploader?.username ? note.uploader.username.replace(/\b\d{2}[A-Z]{3}\d{4}\b/gi, '').trim() : "Campus Student"}
+                </span>
               </div>
-              
-              {note.uploader?.registration_no && (
-                <div>
-                  <span className="text-xs font-black uppercase text-gray-700 block">Registration No.</span>
-                  <span className="font-bold">{note.uploader.registration_no}</span>
-                </div>
-              )}
-
-              {note.uploader?.email && (
-                <div>
-                  <span className="text-xs font-black uppercase text-gray-700 block">Email Address</span>
-                  <a href={`mailto:${note.uploader.email}`} className="font-bold underline hover:text-blue-900 break-all">
-                    {note.uploader.email}
-                  </a>
-                </div>
-              )}
 
               {note.uploader?.phone_number ? (
                 <div className="pt-4 border-t-2 border-dashed border-black">
-                  <a 
-                    href={`https://wa.me/91${note.uploader.phone_number}?text=Hi, I found your notes "${note.title}" on BookLease and wanted to thank you / ask a doubt!`} 
-                    target="_blank" 
-                    rel="noreferrer"
-                  >
-                    <NeoButton variant="primary" className="w-full bg-[#25D366] text-white flex items-center justify-center gap-2">
-                      <MessageSquare size={18} /> Message on WhatsApp
+                  {user ? (
+                    <a 
+                      href={`https://wa.me/91${note.uploader.phone_number}?text=Hi, I found your notes "${note.title}" on BookLease and wanted to thank you / ask a doubt!`} 
+                      target="_blank" 
+                      rel="noreferrer"
+                    >
+                      <NeoButton variant="primary" className="w-full bg-[#25D366] text-white flex items-center justify-center gap-2 border-black group hover:scale-105 transition-transform">
+                        <MessageSquare size={18} className="group-hover:animate-bounce" /> Message on WhatsApp
+                      </NeoButton>
+                    </a>
+                  ) : (
+                    <NeoButton 
+                      variant="primary" 
+                      className="w-full bg-[#25D366] text-white flex items-center justify-center gap-2 border-black group hover:scale-105 transition-transform"
+                      onClick={() => {
+                        toast.error("Please sign in to contact the uploader.");
+                        router.push("/login");
+                      }}
+                    >
+                      <MessageSquare size={18} className="group-hover:animate-bounce" /> Sign In to WhatsApp Author
                     </NeoButton>
-                  </a>
+                  )}
                 </div>
               ) : (
                 <div className="bg-white border-2 border-black p-3 text-xs font-bold text-gray-600">
@@ -243,9 +366,156 @@ export default function NoteDetailPage() {
               )}
             </div>
           </NeoCard>
+
+          {/* Action Buttons */}
+          <div className="flex flex-col gap-4 animate-element">
+            {isOwner ? (
+              <div className="border-4 border-black bg-neo-yellow px-6 py-4 font-bold text-lg shadow-neo w-full text-center flex justify-center items-center gap-2">
+                <span className="w-5 h-5 bg-black text-neo-yellow rounded-full flex items-center justify-center text-xs">i</span> You shared this note.
+              </div>
+            ) : note.available ? (
+              <NeoButton 
+                variant="primary" 
+                size="lg" 
+                onClick={() => {
+                  if (!user) {
+                    router.push("/login");
+                    return;
+                  }
+                  if (note.slot) {
+                    const firstSlot = note.slot.split(',')[0].trim();
+                    setRentDuration(firstSlot);
+                  } else {
+                    setRentDuration("A1");
+                  }
+                  setIsRentModalOpen(true);
+                }}
+                className="w-full text-xl bg-neo-green flex items-center justify-center gap-2 group hover:scale-105 transition-transform"
+              >
+                Request to Rent 
+                <FileText size={24} className="group-hover:rotate-12 group-hover:scale-110 transition-transform duration-300" />
+              </NeoButton>
+            ) : (
+              <NeoButton 
+                variant="primary" 
+                size="lg" 
+                onClick={() => {
+                  if (!user) {
+                    router.push("/login");
+                    return;
+                  }
+                  if (isWaitlisted) {
+                    leaveWaitlistMutation.mutate();
+                  } else {
+                    joinWaitlistMutation.mutate();
+                  }
+                }}
+                className={`w-full text-xl flex items-center justify-center gap-2 group hover:scale-105 transition-transform ${isWaitlisted ? 'bg-neo-blue text-white' : 'bg-gray-200'}`}
+              >
+                {isWaitlisted ? "On Waitlist" : "Join Waitlist"}
+                <Bell size={20} className={isWaitlisted ? "fill-white" : ""} />
+              </NeoButton>
+            )}
+          </div>
         </div>
 
       </div>
+
+      {/* Rental Request Modal Dialog */}
+      {isRentModalOpen && (
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
+          <div className="bg-white border-4 border-black p-8 max-w-lg w-full shadow-neo-lg space-y-6 animate-in fade-in zoom-in duration-200">
+            <div className="flex justify-between items-start border-b-4 border-black pb-4">
+              <div>
+                <h3 className="font-serif text-3xl font-black">Request to Rent Note</h3>
+                <p className="text-sm font-bold text-gray-600 mt-1">{note.title}</p>
+              </div>
+              <button 
+                onClick={() => setIsRentModalOpen(false)}
+                className="border-2 border-black px-3 py-1 font-black text-lg bg-gray-200 hover:bg-gray-300"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <label className="block font-bold mb-2 text-base">Desired Exam Slot / Duration</label>
+                <NeoSelect
+                  value={rentDuration}
+                  onChange={(val) => setRentDuration(val)}
+                  options={
+                    note.slot
+                      ? [
+                          ...note.slot.split(',').map((s: string) => ({ label: s.trim(), value: s.trim() })),
+                          { label: "Custom (Select Days)", value: "custom" }
+                        ]
+                      : [
+                          { label: "A1", value: "A1" },
+                          { label: "A2", value: "A2" },
+                          { label: "B1", value: "B1" },
+                          { label: "B2", value: "B2" },
+                          { label: "C1", value: "C1" },
+                          { label: "C2", value: "C2" },
+                          { label: "D1", value: "D1" },
+                          { label: "D2", value: "D2" },
+                          { label: "E1", value: "E1" },
+                          { label: "E2", value: "E2" },
+                          { label: "F1", value: "F1" },
+                          { label: "F2", value: "F2" },
+                          { label: "G1", value: "G1" },
+                          { label: "G2", value: "G2" },
+                          { label: "Custom (Select Days)", value: "custom" }
+                        ]
+                  }
+                  className="mb-3"
+                />
+
+                {rentDuration === "custom" && (
+                  <div className="flex items-center gap-3 mt-3">
+                    <input 
+                      type="number"
+                      min="1"
+                      value={customDays}
+                      onChange={(e) => setCustomDays(parseInt(e.target.value) || 1)}
+                      className="border-4 border-black p-2 font-bold w-24 text-center focus:outline-none"
+                    />
+                    <span className="font-bold">Days</span>
+                  </div>
+                )}
+              </div>
+
+              <div>
+                <label className="block font-bold mb-2 text-base">Message to Owner (Optional)</label>
+                <textarea 
+                  value={rentalNote}
+                  onChange={(e) => setRentalNote(e.target.value)}
+                  placeholder="e.g. Hi! Need this note for CAT-2 revision. Can meet near SJT or Block L for handover."
+                  className="w-full border-4 border-black p-3 font-medium focus:outline-none h-24 resize-none"
+                />
+              </div>
+            </div>
+
+            <div className="flex gap-4 pt-4 border-t-4 border-black">
+              <NeoButton 
+                variant="secondary" 
+                className="flex-1 bg-white"
+                onClick={() => setIsRentModalOpen(false)}
+              >
+                Cancel
+              </NeoButton>
+              <NeoButton 
+                variant="primary" 
+                className="flex-1 bg-neo-green"
+                onClick={() => requestRentalMutation.mutate()}
+                disabled={requestRentalMutation.isPending}
+              >
+                Submit Request
+              </NeoButton>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

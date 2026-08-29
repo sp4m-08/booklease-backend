@@ -7,7 +7,18 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import { NeoButton } from "@/components/ui/NeoButton";
 import { NeoCard } from "@/components/ui/NeoCard";
-import { GraduationCap, Clock, MapPin, Sparkles, BookOpen, FileText, Heart, ShieldCheck } from "lucide-react";
+import { 
+  GraduationCap, 
+  Clock, 
+  MapPin, 
+  Sparkles, 
+  BookOpen, 
+  FileText, 
+  Check, 
+  Zap,
+  Rocket,
+  Star
+} from "lucide-react";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
@@ -58,6 +69,39 @@ export default function Home() {
       repeat: -1,
       ease: "sine.inOut",
       stagger: 0.5
+    });
+
+    // Icon subtle animations
+    gsap.to(".jiggle-icon", {
+      rotate: 10,
+      duration: 2,
+      yoyo: true,
+      repeat: -1,
+      ease: "sine.inOut",
+      stagger: 0.3
+    });
+
+    gsap.to(".pulse-icon", {
+      scale: 1.1,
+      duration: 1.5,
+      yoyo: true,
+      repeat: -1,
+      ease: "sine.inOut",
+      stagger: 0.2
+    });
+
+    // Button hover icon animations
+    const buttons = gsap.utils.toArray<HTMLElement>(".hover-animate-btn");
+    buttons.forEach(btn => {
+      const icon = btn.querySelector(".btn-icon");
+      if (icon) {
+        btn.addEventListener("mouseenter", () => {
+          gsap.to(icon, { x: 5, scale: 1.1, duration: 0.3, ease: "back.out(2)" });
+        });
+        btn.addEventListener("mouseleave", () => {
+          gsap.to(icon, { x: 0, scale: 1, duration: 0.3, ease: "back.out(2)" });
+        });
+      }
     });
 
     // 2. Infinite Marquee
@@ -149,11 +193,11 @@ export default function Home() {
 
         <div className="flex flex-col items-center text-center w-full max-w-5xl mx-auto space-y-6 z-10">
           <div className="hero-text flex flex-wrap gap-2 justify-center items-center">
-            <span className="border-2 border-black rounded-full px-4 py-1 font-black bg-neo-yellow shadow-neo text-xs uppercase">
-              🎓 Exclusively for VIT Vellore Students
+            <span className="flex items-center gap-1 border-2 border-black rounded-full px-4 py-1 font-black bg-neo-yellow shadow-neo text-xs uppercase">
+              <GraduationCap size={14} className="jiggle-icon" /> Exclusively for VIT Vellore Students
             </span>
-            <span className="border-2 border-black rounded-full px-4 py-1 font-black bg-neo-green shadow-neo text-xs uppercase">
-              ⚡ CAT-1 • CAT-2 • FAT Prep
+            <span className="flex items-center gap-1 border-2 border-black rounded-full px-4 py-1 font-black bg-neo-green shadow-neo text-xs uppercase">
+              <Zap size={14} className="pulse-icon" /> CAT-1 • CAT-2 • FAT Prep
             </span>
           </div>
           
@@ -176,26 +220,26 @@ export default function Home() {
           <div className="flex flex-col sm:flex-row gap-5 pt-6 pb-8">
             <div className="hero-btn">
               <Link href="/books">
-                <NeoButton variant="primary" size="lg" className="w-full sm:w-auto bg-neo-green text-black text-xl px-8">
-                  Find Books for Rent 📖
+                <NeoButton variant="primary" size="lg" className="hover-animate-btn flex items-center justify-center gap-2 w-full sm:w-auto bg-neo-green text-black text-xl px-8">
+                  Find Books for Rent <BookOpen size={24} className="btn-icon" />
                 </NeoButton>
               </Link>
             </div>
             <div className="hero-btn">
               <Link href="/notes">
-                <NeoButton variant="secondary" size="lg" className="w-full sm:w-auto bg-white text-black text-xl px-8">
-                  Browse Exam Notes 📝
+                <NeoButton variant="secondary" size="lg" className="hover-animate-btn flex items-center justify-center gap-2 w-full sm:w-auto bg-white text-black text-xl px-8">
+                  Browse Exam Notes <FileText size={24} className="btn-icon" />
                 </NeoButton>
               </Link>
             </div>
           </div>
 
           <div className="hero-text flex flex-wrap gap-4 justify-center text-xs font-black uppercase text-gray-700 pt-2">
-            <span>✓ Verified @vitstudent.ac.in Only</span>
+            <span className="flex items-center gap-1"><Check size={14} className="text-neo-green drop-shadow-[1px_1px_0px_rgba(0,0,0,1)]" /> Verified @vitstudent.ac.in Only</span>
             <span>•</span>
-            <span>✓ Central Library & Hostel Handover</span>
+            <span className="flex items-center gap-1"><Check size={14} className="text-neo-green drop-shadow-[1px_1px_0px_rgba(0,0,0,1)]" /> Central Library & Hostel Handover</span>
             <span>•</span>
-            <span>✓ Zero Late Fees</span>
+            <span className="flex items-center gap-1"><Check size={14} className="text-neo-green drop-shadow-[1px_1px_0px_rgba(0,0,0,1)]" /> Zero Late Fees</span>
           </div>
         </div>
       </main>
@@ -205,12 +249,12 @@ export default function Home() {
         <div className="marquee-content flex gap-8 font-black text-2xl md:text-3xl font-serif">
           {[...Array(3)].map((_, i) => (
             <div key={i} className="flex gap-8 items-center">
-              <span>★ CAT-1 & CAT-2 SPRINTS</span>
-              <span>★ FAT EXAM REVISION</span>
-              <span>★ CORMEN • MORRIS MANO • SEDRA SMITH</span>
-              <span>★ SJT, TT & HOSTEL HANDOVERS</span>
-              <span>★ HANDWRITTEN CHEATSHEETS</span>
-              <span>★ VIT VELLORE VERIFIED</span>
+              <span className="flex items-center gap-2"><Star size={24} className="fill-black" /> CAT-1 & CAT-2 SPRINTS</span>
+              <span className="flex items-center gap-2"><Star size={24} className="fill-black" /> FAT EXAM REVISION</span>
+              <span className="flex items-center gap-2"><Star size={24} className="fill-black" /> CORMEN • MORRIS MANO • SEDRA SMITH</span>
+              <span className="flex items-center gap-2"><Star size={24} className="fill-black" /> SJT, TT & HOSTEL HANDOVERS</span>
+              <span className="flex items-center gap-2"><Star size={24} className="fill-black" /> HANDWRITTEN CHEATSHEETS</span>
+              <span className="flex items-center gap-2"><Star size={24} className="fill-black" /> VIT VELLORE VERIFIED</span>
             </div>
           ))}
         </div>
@@ -293,24 +337,30 @@ export default function Home() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <NeoCard color="purple" className="feature-card">
-              <div className="h-16 w-16 bg-white border-4 border-black rounded-full flex items-center justify-center mb-6 shadow-neo text-3xl">⏱️</div>
+            <NeoCard color="purple" className="feature-card hover:-translate-y-2 transition-transform duration-300">
+              <div className="h-16 w-16 bg-white border-4 border-black rounded-full flex items-center justify-center mb-6 shadow-neo text-3xl text-neo-purple drop-shadow-[1px_1px_0px_rgba(0,0,0,1)]">
+                <Clock size={32} className="jiggle-icon" />
+              </div>
               <h3 className="font-serif text-3xl font-black mb-3">CAT & FAT Sprints</h3>
               <p className="font-medium text-base text-gray-900 leading-relaxed">
                 Rent standard syllabus reference books for 7 or 15 days. Save money and pass the book along to the next student once your exams wrap up.
               </p>
             </NeoCard>
 
-            <NeoCard color="blue" className="feature-card mt-0 md:mt-8">
-              <div className="h-16 w-16 bg-white border-4 border-black rounded-full flex items-center justify-center mb-6 shadow-neo text-3xl">📝</div>
+            <NeoCard color="blue" className="feature-card mt-0 md:mt-8 hover:-translate-y-2 transition-transform duration-300">
+              <div className="h-16 w-16 bg-white border-4 border-black rounded-full flex items-center justify-center mb-6 shadow-neo text-3xl text-blue-300 drop-shadow-[1px_1px_0px_rgba(0,0,0,1)]">
+                <FileText size={32} className="jiggle-icon" />
+              </div>
               <h3 className="font-serif text-3xl font-black mb-3">Module Notes & Solved Papers</h3>
               <p className="font-medium text-base text-gray-900 leading-relaxed">
                 Download handwritten class notes, module formula sheets, and solved CAT question papers uploaded by high-GPA peers.
               </p>
             </NeoCard>
 
-            <NeoCard color="peach" className="feature-card mt-0 md:mt-16">
-              <div className="h-16 w-16 bg-white border-4 border-black rounded-full flex items-center justify-center mb-6 shadow-neo text-3xl">📍</div>
+            <NeoCard color="peach" className="feature-card mt-0 md:mt-16 hover:-translate-y-2 transition-transform duration-300">
+              <div className="h-16 w-16 bg-white border-4 border-black rounded-full flex items-center justify-center mb-6 shadow-neo text-3xl text-neo-peach drop-shadow-[1px_1px_0px_rgba(0,0,0,1)]">
+                <MapPin size={32} className="jiggle-icon" />
+              </div>
               <h3 className="font-serif text-3xl font-black mb-3">Hostel & Block Handover</h3>
               <p className="font-medium text-base text-gray-900 leading-relaxed">
                 Coordinate handovers right inside VIT campus. Meet at the Central Library, SJT, TT, MB, PRB, Foodys, or your hostel gate.
@@ -324,7 +374,7 @@ export default function Home() {
       <section className="final-cta-wrapper w-full py-28 px-4 md:px-8 bg-white overflow-hidden">
         <div className="final-cta max-w-5xl mx-auto border-4 border-black bg-neo-yellow p-12 md:p-24 text-center shadow-neo-lg">
           <div className="inline-block border-2 border-black bg-white px-4 py-1 text-sm font-black uppercase mb-6 shadow-neo">
-            ✨ Free & Instant for All VIT Students
+            <span className="flex items-center gap-1 justify-center"><Sparkles size={16} className="text-yellow-400 drop-shadow-[1px_1px_0px_rgba(0,0,0,1)] pulse-icon" /> Free & Instant for All VIT Students</span>
           </div>
           <h2 className="font-serif text-4xl sm:text-6xl md:text-7xl font-black mb-6 leading-tight">
             Ready to ace your next CAT or FAT exam?
@@ -334,13 +384,13 @@ export default function Home() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/login">
-              <NeoButton variant="primary" size="lg" className="bg-neo-purple text-2xl px-10 py-5">
-                Sign In with VIT Email 🚀
+              <NeoButton variant="primary" size="lg" className="hover-animate-btn flex items-center justify-center gap-2 bg-neo-purple text-2xl px-10 py-5">
+                Sign In with VIT Email <Rocket size={24} className="btn-icon" />
               </NeoButton>
             </Link>
             <Link href="/books">
-              <NeoButton variant="secondary" size="lg" className="bg-white text-2xl px-10 py-5">
-                Browse Campus Books 📚
+              <NeoButton variant="secondary" size="lg" className="hover-animate-btn flex items-center justify-center gap-2 bg-white text-2xl px-10 py-5">
+                Browse Campus Books <BookOpen size={24} className="btn-icon" />
               </NeoButton>
             </Link>
           </div>

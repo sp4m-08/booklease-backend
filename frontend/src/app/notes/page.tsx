@@ -18,6 +18,8 @@ interface Note {
   description: string;
   file_path: string;
   price?: number;
+  upvotes: number;
+  is_upvoted?: boolean;
   uploader: { 
     username: string;
     registration_no?: string;
@@ -28,6 +30,7 @@ interface Note {
 }
 
 import { NoteCover } from "@/components/NoteCover";
+import { ThumbsUp } from "lucide-react";
 
 export default function NotesPage() {
   const container = useRef<HTMLDivElement>(null);
@@ -46,13 +49,16 @@ export default function NotesPage() {
 
   const filteredNotes = useMemo(() => {
     if (!notes) return [];
-    return notes.filter((note) => {
+    let filtered = notes.filter((note) => {
       const matchesSearch = note.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
                             (note.subject || "").toLowerCase().includes(searchTerm.toLowerCase());
       const matchesSubject = selectedSubject === "All" || 
                             (note.subject || "").toLowerCase() === selectedSubject.toLowerCase();
       return matchesSearch && matchesSubject;
     });
+
+    // Sort by upvotes descending
+    return filtered.sort((a, b) => b.upvotes - a.upvotes);
   }, [notes, searchTerm, selectedSubject]);
 
   useGSAP(() => {
@@ -145,11 +151,16 @@ export default function NotesPage() {
                 <div className="p-5 flex-grow flex flex-col justify-between bg-white">
                   <div>
                     <div className="flex justify-between items-center mb-2">
-                      <span className="inline-block px-2 py-0.5 bg-neo-yellow border-2 border-black font-bold text-xs uppercase shadow-sm">
-                        {note.subject || "General"}
-                      </span>
-                      <span className="inline-block px-2 py-0.5 bg-neo-green border-2 border-black font-black text-xs uppercase shadow-sm">
-                        {note.price && note.price > 0 ? `₹${note.price}` : "FREE"}
+                      <div className="flex gap-2">
+                        <span className="inline-block px-2 py-0.5 bg-neo-yellow border-2 border-black font-bold text-xs uppercase shadow-sm">
+                          {note.subject || "General"}
+                        </span>
+                        <span className="inline-block px-2 py-0.5 bg-neo-green border-2 border-black font-black text-xs uppercase shadow-sm">
+                          {note.price && note.price > 0 ? `₹${note.price}` : "FREE"}
+                        </span>
+                      </div>
+                      <span className={`inline-flex items-center gap-1 text-xs font-black px-2 py-0.5 border-2 border-black shadow-sm ${note.is_upvoted ? "bg-neo-blue text-white" : "bg-white"}`}>
+                        <ThumbsUp size={12} className={note.is_upvoted ? "fill-white" : ""} /> {note.upvotes || 0}
                       </span>
                     </div>
                     <h3 className="font-serif text-2xl font-black mb-1 line-clamp-1">{note.title}</h3>

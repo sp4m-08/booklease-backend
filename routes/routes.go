@@ -32,19 +32,26 @@ func RegisterAPIRoutes(r *gin.Engine, app *firebase.App) {
 		bookRoutes.POST("/:id/wishlist", middleware.RequireAuth(app), api.AddToWishlist)
 		bookRoutes.DELETE("/:id/wishlist", middleware.RequireAuth(app), api.RemoveFromWishlist)
 		bookRoutes.GET("/wishlist", middleware.RequireAuth(app), api.Wishlist)
+		bookRoutes.POST("/:id/waitlist", middleware.RequireAuth(app), api.JoinWaitlist)
+		bookRoutes.DELETE("/:id/waitlist", middleware.RequireAuth(app), api.LeaveWaitlist)
+		bookRoutes.GET("/:id/waitlist", middleware.OptionalAuth(app), api.GetWaitlistStatus) // Needs optional auth middleware
 	}
 
 	// Notes Routes
 	noteRoutes := r.Group("/notes")
 	{
 		// Public
-		noteRoutes.GET("/", api.GetNotes)
-		noteRoutes.GET("/:id", api.GetNote)
+		noteRoutes.GET("/", middleware.OptionalAuth(app), api.GetNotes)
+		noteRoutes.GET("/:id", middleware.OptionalAuth(app), api.GetNote)
 
 		// Protected
 		noteRoutes.GET("/mynotes", middleware.RequireAuth(app), api.MyNotes)
 		noteRoutes.POST("/", middleware.RequireAuth(app), api.CreateNote)
 		noteRoutes.DELETE("/:id", middleware.RequireAuth(app), api.DeleteNote)
+		noteRoutes.POST("/:id/upvote", middleware.RequireAuth(app), api.ToggleNoteUpvote)
+		noteRoutes.POST("/:id/waitlist", middleware.RequireAuth(app), api.JoinNoteWaitlist)
+		noteRoutes.DELETE("/:id/waitlist", middleware.RequireAuth(app), api.LeaveNoteWaitlist)
+		noteRoutes.GET("/:id/waitlist", middleware.OptionalAuth(app), api.GetNoteWaitlistStatus)
 	}
 
 	// Rental Routes

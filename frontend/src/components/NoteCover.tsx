@@ -63,8 +63,8 @@ export function NoteCover({ src, title, subject, className = "" }: NoteCoverProp
         </div>
       </div>
 
-      <div className="text-center text-xs font-bold text-gray-700">
-        📄 Click to view & download
+      <div className="text-center text-xs font-bold text-gray-700 flex items-center justify-center gap-1">
+        <FileText size={14} /> Click to view & download
       </div>
     </div>
   );

@@ -12,7 +12,7 @@ import { NeoButton } from "@/components/ui/NeoButton";
 import { BookCover } from "@/components/BookCover";
 import Link from "next/link";
 import { toast } from "sonner";
-import { BookOpen, RefreshCw, CheckCircle, XCircle, ArrowUpRight, Clock, Trash2 } from "lucide-react";
+import { BookOpen, RefreshCw, CheckCircle, XCircle, ArrowUpRight, Clock, Trash2, GraduationCap } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 
@@ -119,14 +119,16 @@ function DashboardContent() {
       {/* Header */}
       <div className="mb-10 border-b-4 border-black pb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <div className="inline-block border-2 border-black px-3 py-0.5 bg-neo-yellow font-black text-xs uppercase mb-2 shadow-sm">
-            🎓 VIT Vellore Campus
+          <div className="inline-flex items-center gap-1 border-2 border-black px-3 py-0.5 bg-neo-yellow font-black text-xs uppercase mb-2 shadow-sm">
+            <GraduationCap size={14} /> VIT Vellore Campus
           </div>
           <h1 className="font-serif text-5xl font-black mb-1">Rental Hub</h1>
           <p className="font-medium text-lg text-gray-700">Track and manage textbook requests for your CAT and FAT exam cycles.</p>
         </div>
         <Link href="/books">
-          <NeoButton variant="primary" className="bg-neo-green">Browse Textbooks 📚</NeoButton>
+          <NeoButton variant="primary" className="bg-neo-green flex items-center gap-2 group hover:scale-105 transition-transform">
+            Browse Textbooks <BookOpen size={20} className="group-hover:rotate-12 transition-transform duration-300" />
+          </NeoButton>
         </Link>
       </div>
 
@@ -182,25 +184,29 @@ function DashboardContent() {
 
                   <div className="flex flex-wrap items-center gap-4 w-full md:w-auto justify-between md:justify-end">
                     {/* Status Badge */}
-                    <div className={`border-2 border-black px-4 py-2 font-black text-sm shadow-sm ${
+                    <div className={`border-2 border-black px-4 py-2 font-black text-sm shadow-sm flex items-center gap-2 ${
                       rental.is_returned ? "bg-gray-200 text-gray-600" :
                       rental.status === null ? "bg-neo-yellow text-black" : 
                       rental.status === true ? "bg-neo-green text-black" : "bg-red-400 text-white"
                     }`}>
-                      {rental.is_returned ? "✓ Returned" :
-                       rental.status === null ? "⏳ Pending Approval" : 
-                       rental.status === true ? "✅ Active Lease" : "❌ Rejected by Owner"}
+                      {rental.is_returned ? <><CheckCircle size={16} /> Returned</> :
+                       rental.status === null ? <><Clock size={16} /> Pending Approval</> : 
+                       rental.status === true ? <><CheckCircle size={16} /> Active Lease</> : <><XCircle size={16} /> Rejected by Owner</>}
                     </div>
 
                     {/* Actions */}
                     {rental.status === true && !rental.is_returned && (
                       <NeoButton 
                         variant="primary" 
-                        className="bg-neo-purple"
+                        className="bg-neo-purple flex items-center gap-2 group hover:scale-105 transition-transform"
                         onClick={() => returnMutation.mutate(rental.id)}
                         disabled={returnMutation.isPending}
                       >
-                        {returnMutation.isPending ? "Returning..." : "Return Book 🔄"}
+                        {returnMutation.isPending ? "Returning..." : (
+                          <>
+                            Return Book <RefreshCw size={16} className="group-hover:rotate-180 transition-transform duration-500" />
+                          </>
+                        )}
                       </NeoButton>
                     )}
 
@@ -276,14 +282,14 @@ function DashboardContent() {
                       </div>
                     ) : (
                       <div className="flex items-center gap-3">
-                        <span className={`border-2 border-black px-4 py-2 font-black text-sm ${
+                        <span className={`border-2 border-black px-4 py-2 font-black text-sm flex items-center gap-2 ${
                           rental.status === true ? "bg-neo-green text-black" : "bg-red-400 text-white"
                         }`}>
-                          {rental.status === true ? "✅ You Approved" : "❌ You Rejected"}
+                          {rental.status === true ? <><CheckCircle size={16} /> You Approved</> : <><XCircle size={16} /> You Rejected</>}
                         </span>
                         {rental.is_returned && (
-                          <span className="font-black text-gray-500 italic bg-gray-100 px-3 py-1 border border-black text-xs">
-                            Returned by Student
+                          <span className="font-black text-gray-500 italic bg-gray-100 px-3 py-1 border border-black text-xs flex items-center gap-1">
+                            <CheckCircle size={12} /> Returned by Student
                           </span>
                         )}
                       </div>

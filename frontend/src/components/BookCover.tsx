@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { getImageUrl } from "@/lib/utils";
-import { FileText } from "lucide-react";
+import { FileText, Book } from "lucide-react";
 
 interface BookCoverProps {
   src?: string;
@@ -51,8 +51,8 @@ export function BookCover({ src, title, author, category, className = "" }: Book
           )}
         </div>
 
-        <div className="text-center text-xs font-bold text-red-800 bg-red-100 py-1 border border-red-300">
-          📕 PDF Document
+        <div className="text-center text-xs font-bold text-red-800 bg-red-100 py-1 border border-red-300 flex items-center justify-center gap-1">
+          <FileText size={14} /> PDF Document
         </div>
       </div>
     );
@@ -80,8 +80,8 @@ export function BookCover({ src, title, author, category, className = "" }: Book
           </div>
         </div>
 
-        <div className="text-center text-xs font-bold text-blue-800 bg-blue-100 py-1 border border-blue-300">
-          📘 Word Document
+        <div className="text-center text-xs font-bold text-blue-800 bg-blue-100 py-1 border border-blue-300 flex items-center justify-center gap-1">
+          <FileText size={14} /> Word Document
         </div>
       </div>
     );
@@ -104,7 +104,9 @@ export function BookCover({ src, title, author, category, className = "" }: Book
             </div>
           )}
         </div>
-        <div className="text-3xl">📚</div>
+        <div className="flex justify-center mb-2">
+          <Book size={32} />
+        </div>
       </div>
     );
   }

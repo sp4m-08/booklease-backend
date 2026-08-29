@@ -1,6 +1,6 @@
 "use client";
 
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useState } from "react";
@@ -10,10 +10,14 @@ import api from "@/lib/api";
 import { uploadFile } from "@/lib/upload";
 import { toast } from "sonner";
 import { NeoInput } from "@/components/ui/NeoInput";
+import { NeoSelect } from "@/components/ui/NeoSelect";
+import { NeoMultiSelect } from "@/components/ui/NeoMultiSelect";
 
 const noteSchema = z.object({
   title: z.string().min(3, "Title must be at least 3 characters").max(100),
   subject: z.string().min(2, "Subject is required"),
+  slot: z.string().optional(),
+  condition: z.string().min(2, "Condition is required"),
   price: z.string().optional(),
   description: z.string().max(500, "Description cannot exceed 500 characters").optional(),
   file: z.any()
@@ -32,12 +36,25 @@ export const VIT_BRANCHES = [
   "Common",
 ] as const;
 
+export const BOOK_CONDITIONS = [
+  "Brand New",
+  "Like New",
+  "Good",
+  "Highlighted / Notated",
+  "Acceptable (Torn Pages)",
+] as const;
+
+export const VIT_SLOTS = [
+  "A1", "A2", "B1", "B2", "C1", "C2", "D1", "D2", "E1", "E2", "F1", "F2", "G1", "G2"
+] as const;
+
 export default function NoteUploadPage() {
-  const { register, handleSubmit, formState: { errors } } = useForm<NoteFormData>({
+  const { register, handleSubmit, control, formState: { errors } } = useForm<NoteFormData>({
     resolver: zodResolver(noteSchema),
     defaultValues: {
       price: "0",
       subject: "CSE",
+      condition: "Good",
     }
   });
   const { user, loading } = useAuth();
@@ -72,6 +89,8 @@ export default function NoteUploadPage() {
       await api.post("/notes/", {
         title: data.title,
         subject: data.subject,
+        slot: data.slot || "",
+        condition: data.condition,
         price: isNaN(numPrice) ? 0 : numPrice,
         description: data.description,
         file_path: finalFileUrl,
@@ -112,15 +131,51 @@ export default function NoteUploadPage() {
           </div>
           <div className="space-y-2">
             <label className="font-bold text-xl block">Branch *</label>
-            <select
-              {...register("subject")}
-              className="w-full border-4 border-black p-3 font-bold bg-white focus:outline-none focus:ring-4 focus:ring-black shadow-sm"
-            >
-              {VIT_BRANCHES.map((b) => (
-                <option key={b} value={b}>{b}</option>
-              ))}
-            </select>
+            <Controller
+              name="subject"
+              control={control}
+              render={({ field }) => (
+                <NeoSelect
+                  value={field.value}
+                  onChange={field.onChange}
+                  options={VIT_BRANCHES.map(b => ({ label: b, value: b }))}
+                />
+              )}
+            />
             {errors.subject && <span className="text-red-900 font-bold bg-white px-2 border-2 border-black inline-block mt-2 shadow-sm">{errors.subject.message}</span>}
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="space-y-2">
+            <label className="font-bold text-xl block">Slot (Optional)</label>
+            <Controller
+              name="slot"
+              control={control}
+              render={({ field }) => (
+                <NeoMultiSelect
+                  value={field.value ? field.value.split(',').map(s => s.trim()).filter(Boolean) : []}
+                  onChange={(arr) => field.onChange(arr.join(', '))}
+                  options={VIT_SLOTS.map(s => ({ label: s, value: s }))}
+                  placeholder="Select Slots (Multiple)"
+                />
+              )}
+            />
+          </div>
+          <div className="space-y-2">
+            <label className="font-bold text-xl block">Condition *</label>
+            <Controller
+              name="condition"
+              control={control}
+              render={({ field }) => (
+                <NeoSelect
+                  value={field.value}
+                  onChange={field.onChange}
+                  options={BOOK_CONDITIONS.map(c => ({ label: c, value: c }))}
+                />
+              )}
+            />
+            {errors.condition && <span className="text-red-900 font-bold bg-white px-2 border-2 border-black inline-block mt-2 shadow-sm">{errors.condition.message}</span>}
           </div>
           <div className="space-y-2">
             <label className="font-bold text-xl block">Price (₹)</label>

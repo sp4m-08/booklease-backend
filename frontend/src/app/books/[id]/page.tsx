@@ -8,9 +8,13 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { NeoCard } from "@/components/ui/NeoCard";
 import { NeoButton } from "@/components/ui/NeoButton";
+import { NeoSelect } from "@/components/ui/NeoSelect";
 import { BookCover } from "@/components/BookCover";
 import Link from "next/link";
-import { ArrowLeft, Heart, MessageSquare, Trash2, Calendar, UserCheck } from "lucide-react";
+import { ArrowLeft, Heart, MessageSquare, Trash2, Calendar, UserCheck, BookOpen, Bell } from "lucide-react";
+import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
+import { useRef } from "react";
 
 export default function BookDetailsPage() {
   const { id } = useParams();
@@ -20,7 +24,7 @@ export default function BookDetailsPage() {
 
   const [isRentModalOpen, setIsRentModalOpen] = useState(false);
   const [rentalNote, setRentalNote] = useState("");
-  const [rentDuration, setRentDuration] = useState("15");
+  const [rentDuration, setRentDuration] = useState("A1");
 
   // Fetch Book Data
   const { data: book, isLoading, error } = useQuery({
@@ -70,9 +74,17 @@ export default function BookDetailsPage() {
   // Rental Request Mutation
   const rentMutation = useMutation({
     mutationFn: async () => {
+      let durationStr = rentDuration;
+      if (rentDuration === "custom") {
+        const customVal = (document.getElementById("customDaysInput") as HTMLInputElement)?.value;
+        if (!customVal || parseInt(customVal) < 1) {
+          throw new Error("Please enter a valid number of days for the custom duration.");
+        }
+        durationStr = `${customVal} days`;
+      }
       return api.post("/rentals/", {
         book_id: parseInt(id as string),
-        description: rentalNote || `Requested for ${rentDuration} days lease.`
+        description: rentalNote || `Requested for ${durationStr} lease.`
       });
     },
     onSuccess: () => {
@@ -83,6 +95,40 @@ export default function BookDetailsPage() {
     },
     onError: (err: any) => {
       toast.error(err.response?.data?.error || "Failed to send rental request.");
+    }
+  });
+
+  // Waitlist Status
+  const { data: waitlistData } = useQuery({
+    queryKey: ["waitlist", id],
+    queryFn: async () => {
+      const res = await api.get(`/book/${id}/waitlist`);
+      return res.data;
+    },
+    enabled: !!user,
+  });
+
+  const isWaitlisted = waitlistData?.waitlisted || false;
+
+  const joinWaitlistMutation = useMutation({
+    mutationFn: async () => api.post(`/book/${id}/waitlist`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["waitlist", id] });
+      toast.success("Joined waitlist! You'll be notified when it's returned.");
+    },
+    onError: (err: any) => {
+      toast.error(err.response?.data?.error || "Failed to join waitlist.");
+    }
+  });
+
+  const leaveWaitlistMutation = useMutation({
+    mutationFn: async () => api.delete(`/book/${id}/waitlist`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["waitlist", id] });
+      toast.success("Left waitlist.");
+    },
+    onError: (err: any) => {
+      toast.error(err.response?.data?.error || "Failed to leave waitlist.");
     }
   });
 
@@ -97,6 +143,20 @@ export default function BookDetailsPage() {
       toast.error(err.response?.data?.error || "Failed to delete book.");
     }
   });
+
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useGSAP(() => {
+    if (!isLoading && book && containerRef.current) {
+      gsap.from(".animate-element", {
+        y: 40,
+        opacity: 0,
+        duration: 0.6,
+        stagger: 0.1,
+        ease: "power2.out"
+      });
+    }
+  }, [isLoading, book]);
 
   if (isLoading) {
     return (
@@ -113,7 +173,7 @@ export default function BookDetailsPage() {
           Book not found or unavailable.
         </div>
         <Link href="/books">
-          <NeoButton variant="primary">⬅️ Back to Library</NeoButton>
+          <NeoButton variant="primary" className="flex items-center gap-2"><ArrowLeft size={18} /> Back to Library</NeoButton>
         </Link>
       </div>
     );
@@ -123,9 +183,9 @@ export default function BookDetailsPage() {
   const canDelete = isOwner || userProfile?.is_admin;
 
   return (
-    <div className="max-w-6xl mx-auto w-full px-6 py-12 flex-grow">
+    <div ref={containerRef} className="max-w-6xl mx-auto w-full px-6 py-12 flex-grow">
       {/* Back Link */}
-      <div className="mb-8 flex justify-between items-center">
+      <div className="mb-8 flex justify-between items-center animate-element">
         <Link href="/books">
           <NeoButton variant="secondary" className="bg-white flex items-center gap-2">
             <ArrowLeft size={18} />
@@ -153,7 +213,7 @@ export default function BookDetailsPage() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
         
         {/* Left Column: Book Cover */}
-        <div className="lg:col-span-5">
+        <div className="lg:col-span-5 animate-element">
           <div className="border-4 border-black shadow-neo-lg aspect-[3/4] overflow-hidden bg-white">
             <BookCover 
               src={book.cover_image} 
@@ -166,8 +226,9 @@ export default function BookDetailsPage() {
           <div className="mt-4 flex justify-between items-center p-4 border-4 border-black bg-white shadow-neo">
             <div>
               <span className="text-xs font-black uppercase text-gray-600 block">Status</span>
-              <span className={`font-black text-lg ${book.available ? "text-green-600" : "text-red-500"}`}>
-                {book.available ? "🟢 Available for Rent" : "🔴 Currently Rented Out"}
+              <span className={`font-black text-lg flex items-center gap-2 ${book.available ? "text-green-600" : "text-red-500"}`}>
+                <span className={`w-3 h-3 rounded-full border-2 border-black ${book.available ? "bg-green-500" : "bg-red-500"}`}></span>
+                {book.available ? "Available for Rent" : "Currently Rented Out"}
               </span>
             </div>
             <span className="border-2 border-black px-3 py-1 bg-neo-yellow font-black text-xs uppercase shadow-sm">
@@ -178,7 +239,7 @@ export default function BookDetailsPage() {
 
         {/* Right Column: Book Details & Actions */}
         <div className="lg:col-span-7 space-y-8">
-          <div>
+          <div className="animate-element">
             <div className="flex flex-wrap gap-2 mb-3 items-center">
               <span className="inline-block border-2 border-black bg-neo-purple px-3 py-1 font-black text-xs uppercase shadow-neo">
                 {book.subject || book.category || "Academic Textbook"}
@@ -194,17 +255,24 @@ export default function BookDetailsPage() {
           </div>
 
           {/* Description */}
-          <NeoCard color="white" className="p-6">
-            <h3 className="font-serif text-xl font-black mb-3 border-b-2 border-black pb-2">
-              Book Condition & Description
-            </h3>
+          <NeoCard color="white" className="p-6 animate-element">
+            <div className="flex justify-between items-center mb-3 border-b-2 border-black pb-2">
+              <h3 className="font-serif text-xl font-black">
+                Book Condition & Description
+              </h3>
+              {book.condition && (
+                <span className="bg-neo-yellow border-2 border-black px-2 py-0.5 text-xs font-black uppercase">
+                  {book.condition}
+                </span>
+              )}
+            </div>
             <p className="text-base text-gray-800 leading-relaxed whitespace-pre-wrap">
               {book.description || "The uploader has not provided a specific description for this book. Inquire with the owner for edition or condition details."}
             </p>
           </NeoCard>
 
           {/* Owner Info Card */}
-          <NeoCard color="peach" className="p-6">
+          <NeoCard color="peach" className="p-6 animate-element">
             <div className="flex items-center gap-3 mb-4 border-b-2 border-black pb-3">
               <UserCheck size={24} />
               <h3 className="font-serif text-xl font-black">Listed By Campus Student</h3>
@@ -213,34 +281,48 @@ export default function BookDetailsPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm font-medium">
               <div>
                 <span className="text-xs font-black uppercase text-gray-700 block">Student Name</span>
-                <span className="font-bold text-base">{book.uploader?.username || "Verified Student"}</span>
-              </div>
-              <div>
-                <span className="text-xs font-black uppercase text-gray-700 block">Registration No.</span>
-                <span className="font-bold text-base">{book.uploader?.registration_no || "Campus Verified"}</span>
+                <span className="font-bold text-base">
+                  {book.uploader?.username ? book.uploader.username.replace(/\b\d{2}[A-Z]{3}\d{4}\b/gi, '').trim() : "Verified Student"}
+                </span>
               </div>
             </div>
 
             {book.uploader?.phone_number && (
               <div className="mt-4 pt-3 border-t-2 border-dashed border-black">
-                <a 
-                  href={`https://wa.me/91${book.uploader.phone_number}?text=Hi, I saw your book "${book.title}" on BookLease and I'm interested in renting it!`}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  <NeoButton variant="primary" size="sm" className="w-full bg-[#25D366] text-white">
-                    💬 Chat with Owner on WhatsApp
+                {user ? (
+                  <a 
+                    href={`https://wa.me/91${book.uploader.phone_number}?text=Hi, I saw your book "${book.title}" on BookLease and I'm interested in renting it!`}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    <NeoButton variant="primary" size="sm" className="w-full bg-[#25D366] text-white border-black group hover:scale-105 transition-transform">
+                      <MessageSquare size={16} className="inline mr-2 group-hover:animate-bounce" />
+                      Chat with Owner on WhatsApp
+                    </NeoButton>
+                  </a>
+                ) : (
+                  <NeoButton 
+                    variant="primary" 
+                    size="sm" 
+                    className="w-full bg-[#25D366] text-white border-black group hover:scale-105 transition-transform"
+                    onClick={() => {
+                      toast.error("Please sign in to contact the owner.");
+                      router.push("/login");
+                    }}
+                  >
+                    <MessageSquare size={16} className="inline mr-2 group-hover:animate-bounce" />
+                    Sign In to WhatsApp Owner
                   </NeoButton>
-                </a>
+                )}
               </div>
             )}
           </NeoCard>
 
           {/* Action Buttons */}
-          <div className="flex flex-wrap gap-4 pt-4">
+          <div className="flex flex-wrap gap-4 pt-4 animate-element">
             {isOwner ? (
-              <div className="border-4 border-black bg-neo-yellow px-6 py-4 font-bold text-lg shadow-neo w-full text-center">
-                ℹ️ You listed this book for rent.
+              <div className="border-4 border-black bg-neo-yellow px-6 py-4 font-bold text-lg shadow-neo w-full text-center flex justify-center items-center gap-2">
+                <span className="w-5 h-5 bg-black text-neo-yellow rounded-full flex items-center justify-center text-xs">i</span> You listed this book for rent.
               </div>
             ) : book.available ? (
               <NeoButton 
@@ -251,16 +333,39 @@ export default function BookDetailsPage() {
                     router.push("/login");
                     return;
                   }
+                  if (book.slot) {
+                    const firstSlot = book.slot.split(',')[0].trim();
+                    setRentDuration(firstSlot);
+                  } else {
+                    setRentDuration("A1");
+                  }
                   setIsRentModalOpen(true);
                 }}
-                className="flex-1 min-w-[200px] text-xl bg-neo-green"
+                className="flex-1 min-w-[200px] text-xl bg-neo-green flex items-center justify-center gap-2 group hover:scale-105 transition-transform"
               >
-                Request to Rent 📖
+                Request to Rent 
+                <BookOpen size={24} className="group-hover:rotate-12 group-hover:scale-110 transition-transform duration-300" />
               </NeoButton>
             ) : (
-              <div className="border-4 border-black bg-gray-300 px-6 py-4 font-bold text-lg shadow-neo text-gray-600 flex-1 text-center">
-                Currently Rented Out
-              </div>
+              <NeoButton 
+                variant="primary" 
+                size="lg" 
+                onClick={() => {
+                  if (!user) {
+                    router.push("/login");
+                    return;
+                  }
+                  if (isWaitlisted) {
+                    leaveWaitlistMutation.mutate();
+                  } else {
+                    joinWaitlistMutation.mutate();
+                  }
+                }}
+                className={`flex-1 min-w-[200px] text-xl flex items-center justify-center gap-2 group hover:scale-105 transition-transform ${isWaitlisted ? 'bg-neo-blue text-white' : 'bg-gray-200'}`}
+              >
+                {isWaitlisted ? "On Waitlist" : "Join Waitlist"}
+                <Bell size={20} className={isWaitlisted ? "fill-white" : ""} />
+              </NeoButton>
             )}
 
             <button
@@ -275,11 +380,11 @@ export default function BookDetailsPage() {
                   addToWishlistMutation.mutate();
                 }
               }}
-              className={`border-4 border-black px-6 py-4 font-black text-lg shadow-neo hover:shadow-neo-hover active:shadow-neo-active transition-all flex items-center gap-2 ${
+              className={`border-4 border-black px-6 py-4 font-black text-lg shadow-neo hover:shadow-neo-hover active:shadow-neo-active transition-all flex items-center gap-2 group hover:scale-105 ${
                 isWishlisted ? "bg-neo-yellow" : "bg-white"
               }`}
             >
-              <Heart size={20} className={isWishlisted ? "fill-red-500 text-red-500" : ""} />
+              <Heart size={20} className={`group-hover:scale-110 transition-transform ${isWishlisted ? "fill-red-500 text-red-500" : ""}`} />
               {isWishlisted ? "Saved in Wishlist" : "Add to Wishlist"}
             </button>
           </div>
@@ -305,18 +410,50 @@ export default function BookDetailsPage() {
 
             <div className="space-y-4">
               <div>
-                <label className="block font-bold mb-2 text-base">Desired Rental Duration</label>
-                <select
+                <label className="block font-bold mb-2 text-base">Desired Exam Slot / Duration</label>
+                <NeoSelect
                   value={rentDuration}
-                  onChange={(e) => setRentDuration(e.target.value)}
-                  className="w-full border-4 border-black p-3 font-bold bg-white focus:outline-none"
-                >
-                  <option value="7">7 Days (CAT-1 / CAT-2 Sprint)</option>
-                  <option value="15">15 Days (Lab FAT & Revision)</option>
-                  <option value="30">30 Days (Mid-Term Study)</option>
-                  <option value="60">60 Days (Pre-FAT Exam Prep)</option>
-                  <option value="90">Full Semester (FAT Exam Lease)</option>
-                </select>
+                  onChange={(val) => setRentDuration(val)}
+                  options={
+                    book.slot
+                      ? [
+                          ...book.slot.split(',').map((s: string) => ({ label: s.trim(), value: s.trim() })),
+                          { label: "Custom (Select Days)", value: "custom" }
+                        ]
+                      : [
+                          { label: "A1", value: "A1" },
+                          { label: "A2", value: "A2" },
+                          { label: "B1", value: "B1" },
+                          { label: "B2", value: "B2" },
+                          { label: "C1", value: "C1" },
+                          { label: "C2", value: "C2" },
+                          { label: "D1", value: "D1" },
+                          { label: "D2", value: "D2" },
+                          { label: "E1", value: "E1" },
+                          { label: "E2", value: "E2" },
+                          { label: "F1", value: "F1" },
+                          { label: "F2", value: "F2" },
+                          { label: "G1", value: "G1" },
+                          { label: "G2", value: "G2" },
+                          { label: "Custom (Select Days)", value: "custom" }
+                        ]
+                  }
+                  className="mb-3"
+                />
+
+                {rentDuration === "custom" && (
+                  <div className="flex items-center gap-3 mt-3">
+                    <input 
+                      type="number"
+                      min="1"
+                      max="365"
+                      id="customDaysInput"
+                      placeholder="e.g. 10"
+                      className="w-full border-4 border-black p-3 font-bold bg-white focus:outline-none"
+                    />
+                    <span className="font-bold whitespace-nowrap">Days</span>
+                  </div>
+                )}
               </div>
 
               <div>

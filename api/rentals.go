@@ -26,8 +26,8 @@ func PostRental(c *gin.Context) {
 		return
 	}
 
-	if newRental.BookID == nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Missing book_id"})
+	if newRental.BookID == nil && newRental.NotesID == nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Missing book_id or notes_id"})
 		return
 	}
 
@@ -37,25 +37,41 @@ func PostRental(c *gin.Context) {
 		return
 	}
 
-	var book models.Book
-	if err := services.DB.First(&book, *newRental.BookID).Error; err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Book not found"})
-		return
-	}
-
-	// Prevent user from renting their own book
-	if book.UploadedBy == user.ID {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "You cannot rent your own book"})
-		return
-	}
-
-	if !book.Available {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "This book is currently unavailable for rent"})
-		return
+	var ownerID uint
+	if newRental.BookID != nil {
+		var book models.Book
+		if err := services.DB.First(&book, *newRental.BookID).Error; err != nil {
+			c.JSON(http.StatusNotFound, gin.H{"error": "Book not found"})
+			return
+		}
+		if book.UploadedBy == user.ID {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "You cannot rent your own book"})
+			return
+		}
+		if !book.Available {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "This book is currently unavailable for rent"})
+			return
+		}
+		ownerID = book.UploadedBy
+	} else if newRental.NotesID != nil {
+		var note models.Note
+		if err := services.DB.First(&note, *newRental.NotesID).Error; err != nil {
+			c.JSON(http.StatusNotFound, gin.H{"error": "Note not found"})
+			return
+		}
+		if note.UploadedBy == user.ID {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "You cannot rent your own note"})
+			return
+		}
+		if !note.Available {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "This note is currently unavailable for rent"})
+			return
+		}
+		ownerID = note.UploadedBy
 	}
 
 	newRental.UserID = user.ID
-	newRental.OwnerID = &book.UploadedBy
+	newRental.OwnerID = &ownerID
 	newRental.IsReturned = false
 
 	if err := services.DB.Create(&newRental).Error; err != nil {
@@ -183,6 +199,14 @@ func ReturnRental(c *gin.Context) {
 					return err
 				}
 			}
+		} else if rental.NotesID != nil {
+			var note models.Note
+			if err := tx.First(&note, *rental.NotesID).Error; err == nil {
+				note.Available = true
+				if err := tx.Save(&note).Error; err != nil {
+					return err
+				}
+			}
 		}
 		return nil
 	})
@@ -193,10 +217,32 @@ func ReturnRental(c *gin.Context) {
 	}
 
 	if rental.OwnerID != nil {
-		services.CreateNotification(*rental.OwnerID, "book_returned", fmt.Sprintf("Book \"%s\" was returned!", rental.Book.Title))
+		if rental.BookID != nil {
+			services.CreateNotification(*rental.OwnerID, "book_returned", fmt.Sprintf("Item \"%s\" was returned!", rental.Book.Title))
+		} else {
+			services.CreateNotification(*rental.OwnerID, "note_returned", "A rented study note was returned!")
+		}
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "Book returned successfully"})
+	if rental.BookID != nil {
+		var waitlistUsers []models.BookWaitlist
+		if err := services.DB.Where("book_id = ?", *rental.BookID).Find(&waitlistUsers).Error; err == nil {
+			for _, wu := range waitlistUsers {
+				services.CreateNotification(wu.UserID, "book_available", fmt.Sprintf("The book \"%s\" on your waitlist is now available!", rental.Book.Title))
+			}
+			services.DB.Where("book_id = ?", *rental.BookID).Delete(&models.BookWaitlist{})
+		}
+	} else if rental.NotesID != nil {
+		var waitlistUsers []models.NoteWaitlist
+		if err := services.DB.Where("note_id = ?", *rental.NotesID).Find(&waitlistUsers).Error; err == nil {
+			for _, wu := range waitlistUsers {
+				services.CreateNotification(wu.UserID, "note_available", "A note on your waitlist is now available!")
+			}
+			services.DB.Where("note_id = ?", *rental.NotesID).Delete(&models.NoteWaitlist{})
+		}
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Item returned successfully"})
 }
 
 // BorrowedMaterials returns books currently borrowed by the user
@@ -281,14 +327,25 @@ func DecideRental(c *gin.Context) {
 			return err
 		}
 
-		if body.Accept && rental.BookID != nil {
-			var book models.Book
-			if err := tx.First(&book, *rental.BookID).Error; err != nil {
-				return err
-			}
-			book.Available = false
-			if err := tx.Save(&book).Error; err != nil {
-				return err
+		if body.Accept {
+			if rental.BookID != nil {
+				var book models.Book
+				if err := tx.First(&book, *rental.BookID).Error; err != nil {
+					return err
+				}
+				book.Available = false
+				if err := tx.Save(&book).Error; err != nil {
+					return err
+				}
+			} else if rental.NotesID != nil {
+				var note models.Note
+				if err := tx.First(&note, *rental.NotesID).Error; err != nil {
+					return err
+				}
+				note.Available = false
+				if err := tx.Save(&note).Error; err != nil {
+					return err
+				}
 			}
 		}
 		return nil
@@ -304,6 +361,14 @@ func DecideRental(c *gin.Context) {
 		statusText = "accepted"
 	}
 
-	services.CreateNotification(rental.UserID, "rental_status", fmt.Sprintf("Your request to rent \"%s\" was %s", rental.Book.Title, statusText))
-	c.JSON(http.StatusOK, gin.H{"message": "Rental request " + statusText})
+	var itemName string
+	if rental.BookID != nil {
+		itemName = rental.Book.Title
+	} else {
+		itemName = "a study note" // or load Note.Title if we preload it
+	}
+
+	services.CreateNotification(rental.UserID, "rental_decision", fmt.Sprintf("Your request to rent \"%s\" was %s.", itemName, statusText))
+
+	c.JSON(http.StatusOK, gin.H{"message": fmt.Sprintf("Rental %s successfully", statusText)})
 }
