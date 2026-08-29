@@ -14,7 +14,7 @@ import { BookCover } from "@/components/BookCover";
 import { NoteCover } from "@/components/NoteCover";
 import { EditListingModal } from "@/components/EditListingModal";
 import { SlotBadges } from "@/components/SlotBadges";
-import { BookOpen, FileText, Plus, Trash2, ExternalLink, Search, Sparkles, Edit3 } from "lucide-react";
+import { BookOpen, FileText, Plus, Trash2, ExternalLink, Search, Sparkles, Edit3, CheckCircle, XCircle } from "lucide-react";
 
 export default function YourListingsPage() {
   const { user, loading } = useAuth();
@@ -244,9 +244,7 @@ export default function YourListingsPage() {
                     <NeoCard 
                       key={book.id} 
                       color="white" 
-                      className={`flex flex-col md:flex-row gap-5 p-5 transition-all duration-300 hover:-translate-y-1 hover:shadow-neo-hover border-l-[12px] ${
-                        book.available ? "border-l-neo-green" : "border-l-gray-400"
-                      }`}
+                      className="flex flex-col md:flex-row gap-5 p-5 transition-all duration-300 hover:-translate-y-1 hover:shadow-neo-hover"
                     >
                       <div className="w-24 h-36 border-4 border-black flex-shrink-0 overflow-hidden shadow-sm self-start">
                         <BookCover src={book.cover_image} title={book.title} author={book.author} category={book.category} />
@@ -339,9 +337,7 @@ export default function YourListingsPage() {
                     <NeoCard 
                       key={note.id} 
                       color="white" 
-                      className={`flex flex-col md:flex-row gap-5 p-5 transition-all duration-300 hover:-translate-y-1 hover:shadow-neo-hover border-l-[12px] ${
-                        note.available ? "border-l-neo-blue" : "border-l-gray-400"
-                      }`}
+                      className="flex flex-col md:flex-row gap-5 p-5 transition-all duration-300 hover:-translate-y-1 hover:shadow-neo-hover"
                     >
                       <div className="w-24 h-36 border-4 border-black flex-shrink-0 overflow-hidden shadow-sm self-start">
                         <NoteCover src={note.file_path} title={note.title} subject={note.subject} />

@@ -184,11 +184,7 @@ function DashboardContent() {
                 <div key={rental.id} className="dash-card">
                   <NeoCard 
                     color="white" 
-                    className={`flex flex-col md:flex-row justify-between items-start md:items-center gap-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-neo-hover border-l-[12px] ${
-                      rental.is_returned ? "border-l-gray-400" :
-                      rental.status === null ? "border-l-neo-yellow" : 
-                      rental.status === true ? "border-l-neo-green" : "border-l-red-500"
-                    }`}
+                    className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-neo-hover"
                   >
                     <div className="flex gap-5 items-center overflow-hidden w-full md:w-auto">
                       <div className="w-24 h-32 border-4 border-black flex-shrink-0 overflow-hidden shadow-sm">
@@ -285,11 +281,7 @@ function DashboardContent() {
                 <div key={rental.id} className="dash-card">
                   <NeoCard 
                     color="white" 
-                    className={`flex flex-col md:flex-row justify-between items-start md:items-center gap-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-neo-hover border-l-[12px] ${
-                      rental.is_returned ? "border-l-gray-400" :
-                      rental.status === null ? "border-l-neo-yellow" : 
-                      rental.status === true ? "border-l-neo-green" : "border-l-red-500"
-                    }`}
+                    className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-neo-hover"
                   >
                     <div className="flex gap-5 items-center overflow-hidden w-full md:w-auto">
                       <div className="w-24 h-32 border-4 border-black flex-shrink-0 overflow-hidden shadow-sm">
