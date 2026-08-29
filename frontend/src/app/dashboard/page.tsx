@@ -182,41 +182,48 @@ function DashboardContent() {
 
               return (
                 <div key={rental.id} className="dash-card">
-                  <NeoCard color="white" className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-                    <div className="flex gap-4 items-center overflow-hidden w-full md:w-auto">
-                      <div className="w-20 h-24 border-2 border-black flex-shrink-0 overflow-hidden">
+                  <NeoCard 
+                    color="white" 
+                    className={`flex flex-col md:flex-row justify-between items-start md:items-center gap-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-neo-hover border-l-[12px] ${
+                      rental.is_returned ? "border-l-gray-400" :
+                      rental.status === null ? "border-l-neo-yellow" : 
+                      rental.status === true ? "border-l-neo-green" : "border-l-red-500"
+                    }`}
+                  >
+                    <div className="flex gap-5 items-center overflow-hidden w-full md:w-auto">
+                      <div className="w-24 h-32 border-4 border-black flex-shrink-0 overflow-hidden shadow-sm">
                         {isNote ? (
                           <NoteCover src={coverSrc} title={title} subject={item?.subject} />
                         ) : (
                           <BookCover src={coverSrc} title={title} />
                         )}
                       </div>
-                      <div className="overflow-hidden">
-                        <div className="flex items-center gap-2 mb-1">
-                          <span className={`border border-black px-1.5 py-0.2 text-[10px] font-black uppercase ${isNote ? 'bg-neo-peach' : 'bg-neo-yellow'}`}>
+                      <div className="overflow-hidden flex flex-col justify-center">
+                        <div className="flex items-center gap-2 mb-2">
+                          <span className={`border-2 border-black px-2 py-0.5 text-xs font-black uppercase shadow-sm ${isNote ? 'bg-neo-peach' : 'bg-neo-yellow'}`}>
                             {isNote ? 'Study Note' : 'Book'}
                           </span>
                         </div>
-                        <h3 className="font-serif text-2xl font-black truncate">{title}</h3>
-                        <p className="text-sm font-bold text-gray-600">
+                        <h3 className="font-serif text-3xl font-black truncate mb-1">{title}</h3>
+                        <p className="text-sm font-bold text-gray-800 bg-gray-100 border border-black inline-block px-2 py-1 shadow-sm mb-2">
                           Owner: {ownerName.replace(/\b\d{2}[A-Z]{3}\d{4}\b/gi, '').trim()}
                         </p>
                         {rental.description && (
-                          <p className="text-xs text-gray-700 italic mt-1 truncate">"{rental.description}"</p>
+                          <p className="text-sm font-medium text-gray-700 italic truncate border-l-4 border-black pl-2">"{rental.description}"</p>
                         )}
                       </div>
                     </div>
 
-                    <div className="flex flex-wrap items-center gap-4 w-full md:w-auto justify-between md:justify-end">
+                    <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto justify-between md:justify-end">
                       {/* Status Badge */}
-                      <div className={`border-2 border-black px-4 py-2 font-black text-sm shadow-sm flex items-center gap-2 ${
-                        rental.is_returned ? "bg-gray-200 text-gray-600" :
+                      <div className={`border-4 border-black px-5 py-3 font-black text-base shadow-neo flex items-center gap-2 ${
+                        rental.is_returned ? "bg-gray-200 text-gray-800" :
                         rental.status === null ? "bg-neo-yellow text-black" : 
-                        rental.status === true ? "bg-neo-green text-black" : "bg-red-400 text-white"
+                        rental.status === true ? "bg-neo-green text-black" : "bg-red-500 text-white"
                       }`}>
-                        {rental.is_returned ? <><CheckCircle size={16} /> Returned</> :
-                         rental.status === null ? <><Clock size={16} /> Pending Approval</> : 
-                         rental.status === true ? <><CheckCircle size={16} /> Active Lease</> : <><XCircle size={16} /> Rejected by Owner</>}
+                        {rental.is_returned ? <><CheckCircle size={20} /> Returned</> :
+                         rental.status === null ? <><Clock size={20} /> Pending Approval</> : 
+                         rental.status === true ? <><CheckCircle size={20} /> Active Lease</> : <><XCircle size={20} /> Rejected</>}
                       </div>
 
                       {/* Actions */}
@@ -276,39 +283,46 @@ function DashboardContent() {
 
               return (
                 <div key={rental.id} className="dash-card">
-                  <NeoCard color="white" className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-                    <div className="flex gap-4 items-center overflow-hidden w-full md:w-auto">
-                      <div className="w-20 h-24 border-2 border-black flex-shrink-0 overflow-hidden">
+                  <NeoCard 
+                    color="white" 
+                    className={`flex flex-col md:flex-row justify-between items-start md:items-center gap-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-neo-hover border-l-[12px] ${
+                      rental.is_returned ? "border-l-gray-400" :
+                      rental.status === null ? "border-l-neo-yellow" : 
+                      rental.status === true ? "border-l-neo-green" : "border-l-red-500"
+                    }`}
+                  >
+                    <div className="flex gap-5 items-center overflow-hidden w-full md:w-auto">
+                      <div className="w-24 h-32 border-4 border-black flex-shrink-0 overflow-hidden shadow-sm">
                         {isNote ? (
                           <NoteCover src={coverSrc} title={title} subject={item?.subject} />
                         ) : (
                           <BookCover src={coverSrc} title={title} />
                         )}
                       </div>
-                      <div className="overflow-hidden">
-                        <div className="flex items-center gap-2 mb-1">
-                          <span className={`border border-black px-1.5 py-0.2 text-[10px] font-black uppercase ${isNote ? 'bg-neo-peach' : 'bg-neo-yellow'}`}>
+                      <div className="overflow-hidden flex flex-col justify-center">
+                        <div className="flex items-center gap-2 mb-2">
+                          <span className={`border-2 border-black px-2 py-0.5 text-xs font-black uppercase shadow-sm ${isNote ? 'bg-neo-peach' : 'bg-neo-yellow'}`}>
                             {isNote ? 'Study Note' : 'Book'}
                           </span>
                         </div>
-                        <h3 className="font-serif text-2xl font-black truncate">{title}</h3>
-                        <p className="text-sm font-bold text-gray-800">
+                        <h3 className="font-serif text-3xl font-black truncate mb-1">{title}</h3>
+                        <p className="text-sm font-bold text-gray-800 bg-gray-100 border border-black inline-block px-2 py-1 shadow-sm mb-2">
                           Requested by: <span className="underline">
                             {rental.user?.username ? rental.user.username.replace(/\b\d{2}[A-Z]{3}\d{4}\b/gi, '').trim() : `User #${rental.user_id}`}
                           </span>
                         </p>
                         {rental.description && (
-                          <p className="text-xs text-gray-700 italic mt-1">"{rental.description}"</p>
+                          <p className="text-sm font-medium text-gray-700 italic truncate border-l-4 border-black pl-2">"{rental.description}"</p>
                         )}
                       </div>
                     </div>
 
-                  <div className="flex items-center gap-4 w-full md:w-auto justify-between md:justify-end">
+                  <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto justify-between md:justify-end">
                     {rental.status === null ? (
                       <div className="flex gap-3 w-full md:w-auto">
                         <NeoButton 
                           variant="primary"
-                          className="bg-neo-green flex-1 md:flex-none"
+                          className="bg-neo-green flex-1 md:flex-none border-4"
                           onClick={() => decideMutation.mutate({ id: rental.id, accept: true })}
                           disabled={decideMutation.isPending}
                         >
@@ -316,7 +330,7 @@ function DashboardContent() {
                         </NeoButton>
                         <NeoButton 
                           variant="danger"
-                          className="flex-1 md:flex-none"
+                          className="flex-1 md:flex-none border-4"
                           onClick={() => decideMutation.mutate({ id: rental.id, accept: false })}
                           disabled={decideMutation.isPending}
                         >
@@ -324,17 +338,12 @@ function DashboardContent() {
                         </NeoButton>
                       </div>
                     ) : (
-                      <div className="flex items-center gap-3">
-                        <span className={`border-2 border-black px-4 py-2 font-black text-sm flex items-center gap-2 ${
-                          rental.status === true ? "bg-neo-green text-black" : "bg-red-400 text-white"
-                        }`}>
-                          {rental.status === true ? <><CheckCircle size={16} /> You Approved</> : <><XCircle size={16} /> You Rejected</>}
-                        </span>
-                        {rental.is_returned && (
-                          <span className="font-black text-gray-500 italic bg-gray-100 px-3 py-1 border border-black text-xs flex items-center gap-1">
-                            <CheckCircle size={12} /> Returned by Student
-                          </span>
-                        )}
+                      <div className={`border-4 border-black px-5 py-3 font-black text-base shadow-neo flex items-center gap-2 ${
+                        rental.is_returned ? "bg-gray-200 text-gray-800" :
+                        rental.status === true ? "bg-neo-green text-black" : "bg-red-500 text-white"
+                      }`}>
+                        {rental.is_returned ? <><CheckCircle size={20} /> Returned by Student</> :
+                         rental.status === true ? <><CheckCircle size={20} /> You Approved</> : <><XCircle size={20} /> You Rejected</>}
                       </div>
                     )}
                   </div>
