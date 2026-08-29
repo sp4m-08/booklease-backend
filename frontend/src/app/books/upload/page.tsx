@@ -12,6 +12,7 @@ import { toast } from "sonner";
 import { NeoInput } from "@/components/ui/NeoInput";
 import { NeoSelect } from "@/components/ui/NeoSelect";
 import { NeoMultiSelect } from "@/components/ui/NeoMultiSelect";
+import { SlotSelector, VIT_INDIVIDUAL_SLOTS } from "@/components/SlotSelector";
 
 const bookSchema = z.object({
   title: z.string().min(3, "Title must be at least 3 characters").max(100),
@@ -85,15 +86,15 @@ export default function BookUploadPage() {
       }
 
       const numPrice = data.price ? parseFloat(data.price) : 0;
-      const formattedSlots = selectedSlots.length === VIT_INDIVIDUAL_SLOTS.length 
-        ? "All Slots" 
+      const formattedSlots = selectedSlots.length === VIT_INDIVIDUAL_SLOTS.length
+        ? "All Slots"
         : selectedSlots.join(", ") || "All Slots";
 
       await api.post("/book/", {
         title: data.title,
         author: data.author,
         category: data.category,
-        slot: data.slot || "",
+        slot: formattedSlots,
         condition: data.condition,
         price: isNaN(numPrice) ? 0 : numPrice,
         description: data.description,
@@ -121,13 +122,13 @@ export default function BookUploadPage() {
         <h1 className="font-serif text-5xl font-black mb-1">List a Textbook for Rent</h1>
         <p className="font-medium text-lg text-gray-700">Help fellow VITians ace their CAT & FAT exams by listing your course reference books.</p>
       </div>
-      
+
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 border-4 border-black bg-neo-purple p-8 shadow-neo">
-        
+
         {/* Book Title */}
         <div className="space-y-2">
           <label className="font-bold text-xl block">Book Title / Course *</label>
-          <NeoInput 
+          <NeoInput
             {...register("title")}
             placeholder="e.g. Digital Design (DSD) or Introduction to Algorithms"
           />
@@ -137,7 +138,7 @@ export default function BookUploadPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-2">
             <label className="font-bold text-lg block">Author *</label>
-            <NeoInput 
+            <NeoInput
               {...register("author")}
               placeholder="e.g. Morris Mano"
             />
@@ -194,7 +195,7 @@ export default function BookUploadPage() {
           </div>
           <div className="space-y-2">
             <label className="font-bold text-lg block">Price (₹)</label>
-            <NeoInput 
+            <NeoInput
               type="number"
               min="0"
               step="1"
@@ -205,7 +206,7 @@ export default function BookUploadPage() {
         </div>
 
         {/* Multi-Slot Selector */}
-        <SlotSelector 
+        <SlotSelector
           selectedSlots={selectedSlots}
           onChange={setSelectedSlots}
           label="Select Applicable VIT Exam Slots"
@@ -214,7 +215,7 @@ export default function BookUploadPage() {
         {/* Handover Description */}
         <div className="space-y-2">
           <label className="font-bold text-xl block">Condition & Handover Details</label>
-          <textarea 
+          <textarea
             {...register("description")}
             rows={3}
             className="w-full border-4 border-black p-3 font-medium focus:outline-none focus:ring-4 focus:ring-black focus:shadow-neo-active transition-all"
@@ -225,7 +226,7 @@ export default function BookUploadPage() {
         {/* File / Cover Upload */}
         <div className="space-y-2">
           <label className="font-bold text-xl block">Book Cover / Document (Word, PDF, JPG, PNG - Optional)</label>
-          <input 
+          <input
             type="file"
             {...register("file")}
             accept=".pdf,.doc,.docx,.png,.jpg,.jpeg,image/*"
@@ -234,8 +235,8 @@ export default function BookUploadPage() {
           <p className="text-xs font-bold text-gray-800">Supports image covers, lecture slides, and PDF/Word book previews.</p>
         </div>
 
-        <button 
-          type="submit" 
+        <button
+          type="submit"
           disabled={isSubmitting}
           className="w-full border-4 border-black bg-neo-yellow px-6 py-4 font-bold text-xl shadow-neo hover:shadow-neo-hover active:shadow-neo-active transition-all disabled:opacity-50"
         >

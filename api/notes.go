@@ -311,3 +311,90 @@ func GetNoteWaitlistStatus(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"waitlisted": count > 0})
 }
+
+// UpdateNote updates a study note listing if caller is the uploader or an admin
+func UpdateNote(c *gin.Context) {
+	idStr := c.Param("id")
+	id, err := strconv.ParseUint(idStr, 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid note ID"})
+		return
+	}
+
+	uid := c.GetString("uid")
+	if uid == "" {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+
+	var user models.User
+	if err := services.DB.Where("uid = ?", uid).First(&user).Error; err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "User not found"})
+		return
+	}
+
+	var note models.Note
+	if err := services.DB.First(&note, id).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Note not found"})
+		return
+	}
+
+	if note.UploadedBy != user.ID && !user.IsAdmin {
+		c.JSON(http.StatusForbidden, gin.H{"error": "Not authorized to edit this note"})
+		return
+	}
+
+	var input struct {
+		Title       *string  `json:"title"`
+		Subject     *string  `json:"subject"`
+		Slot        *string  `json:"slot"`
+		Condition   *string  `json:"condition"`
+		Description *string  `json:"description"`
+		FilePath    *string  `json:"file_path"`
+		Price       *float64 `json:"price"`
+		Available   *bool    `json:"available"`
+		IsPublic    *bool    `json:"is_public"`
+	}
+
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if input.Title != nil {
+		note.Title = *input.Title
+	}
+	if input.Subject != nil {
+		note.Subject = *input.Subject
+	}
+	if input.Slot != nil {
+		note.Slot = *input.Slot
+	}
+	if input.Condition != nil {
+		note.Condition = *input.Condition
+	}
+	if input.Description != nil {
+		note.Description = *input.Description
+	}
+	if input.FilePath != nil && *input.FilePath != "" {
+		note.FilePath = *input.FilePath
+	}
+	if input.Price != nil {
+		note.Price = *input.Price
+	}
+	if input.Available != nil {
+		note.Available = *input.Available
+	}
+	if input.IsPublic != nil {
+		note.IsPublic = *input.IsPublic
+	}
+
+	if err := services.DB.Save(&note).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update note"})
+		return
+	}
+
+	services.DB.Preload("Uploader").First(&note, note.ID)
+	c.JSON(http.StatusOK, note)
+}
+

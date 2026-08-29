@@ -30,6 +30,7 @@ type Rental struct {
 	BookID      *uint     `gorm:"index" json:"book_id,omitempty"`
 	Book        Book      `gorm:"foreignKey:BookID" json:"book,omitempty"`
 	NotesID     *uint     `gorm:"index" json:"notes_id,omitempty"`
+	Note        Note      `gorm:"foreignKey:NotesID" json:"note,omitempty"`
 	OwnerID     *uint     `gorm:"index" json:"owner_id,omitempty"`
 	Description string    `json:"description"`
 	RentedFrom  time.Time `json:"rented_from"`

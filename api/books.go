@@ -371,3 +371,94 @@ func GetWaitlistStatus(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"waitlisted": count > 0})
 }
+
+// UpdateBook updates a book listing if caller is the uploader or an admin
+func UpdateBook(c *gin.Context) {
+	idStr := c.Param("id")
+	id, err := strconv.ParseUint(idStr, 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid book ID"})
+		return
+	}
+
+	uid := c.GetString("uid")
+	if uid == "" {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+
+	var user models.User
+	if err := services.DB.Where("uid = ?", uid).First(&user).Error; err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "User not found"})
+		return
+	}
+
+	var book models.Book
+	if err := services.DB.First(&book, id).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Book not found"})
+		return
+	}
+
+	if book.UploadedBy != user.ID && !user.IsAdmin {
+		c.JSON(http.StatusForbidden, gin.H{"error": "Not authorized to edit this book"})
+		return
+	}
+
+	var input struct {
+		Title       *string  `json:"title"`
+		Author      *string  `json:"author"`
+		Subject     *string  `json:"subject"`
+		Description *string  `json:"description"`
+		Category    *string  `json:"category"`
+		Slot        *string  `json:"slot"`
+		Condition   *string  `json:"condition"`
+		CoverImage  *string  `json:"cover_image"`
+		Price       *float64 `json:"price"`
+		Available   *bool    `json:"available"`
+	}
+
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if input.Title != nil {
+		book.Title = *input.Title
+	}
+	if input.Author != nil {
+		book.Author = *input.Author
+	}
+	if input.Subject != nil {
+		book.Subject = *input.Subject
+	}
+	if input.Description != nil {
+		book.Description = *input.Description
+	}
+	if input.Category != nil {
+		book.Category = *input.Category
+	}
+	if input.Slot != nil {
+		book.Slot = *input.Slot
+	}
+	if input.Condition != nil {
+		book.Condition = *input.Condition
+	}
+	if input.CoverImage != nil && *input.CoverImage != "" {
+		book.CoverImage = *input.CoverImage
+	}
+	if input.Price != nil {
+		book.Price = *input.Price
+	}
+	if input.Available != nil {
+		book.Available = *input.Available
+	}
+
+	if err := services.DB.Save(&book).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update book"})
+		return
+	}
+
+	services.DB.Preload("Uploader").First(&book, book.ID)
+	c.JSON(http.StatusOK, book)
+}
+

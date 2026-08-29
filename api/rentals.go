@@ -38,6 +38,7 @@ func PostRental(c *gin.Context) {
 	}
 
 	var ownerID uint
+	var itemTitle string
 	if newRental.BookID != nil {
 		var book models.Book
 		if err := services.DB.First(&book, *newRental.BookID).Error; err != nil {
@@ -53,6 +54,7 @@ func PostRental(c *gin.Context) {
 			return
 		}
 		ownerID = book.UploadedBy
+		itemTitle = book.Title
 	} else if newRental.NotesID != nil {
 		var note models.Note
 		if err := services.DB.First(&note, *newRental.NotesID).Error; err != nil {
@@ -68,6 +70,7 @@ func PostRental(c *gin.Context) {
 			return
 		}
 		ownerID = note.UploadedBy
+		itemTitle = note.Title
 	}
 
 	newRental.UserID = user.ID
@@ -79,7 +82,7 @@ func PostRental(c *gin.Context) {
 		return
 	}
 
-	services.CreateNotification(book.UploadedBy, "rental_request", fmt.Sprintf("%s wants to rent \"%s\"", user.Username, book.Title))
+	services.CreateNotification(ownerID, "rental_request", fmt.Sprintf("%s wants to rent \"%s\"", user.Username, itemTitle))
 
 	c.JSON(http.StatusCreated, newRental)
 }
@@ -99,7 +102,7 @@ func GetRentals(c *gin.Context) {
 	}
 
 	var rentals []models.Rental
-	query := services.DB.Preload("Book").Preload("Book.Uploader").Preload("User")
+	query := services.DB.Preload("Book").Preload("Book.Uploader").Preload("Note").Preload("Note.Uploader").Preload("User")
 	if !user.IsAdmin {
 		query = query.Where("user_id = ? OR owner_id = ?", user.ID, user.ID)
 	}
@@ -164,7 +167,7 @@ func ReturnRental(c *gin.Context) {
 	}
 
 	var rental models.Rental
-	if err := services.DB.Preload("Book").First(&rental, rentalID).Error; err != nil {
+	if err := services.DB.Preload("Book").Preload("Note").First(&rental, rentalID).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Rental not found"})
 		return
 	}
@@ -219,8 +222,8 @@ func ReturnRental(c *gin.Context) {
 	if rental.OwnerID != nil {
 		if rental.BookID != nil {
 			services.CreateNotification(*rental.OwnerID, "book_returned", fmt.Sprintf("Item \"%s\" was returned!", rental.Book.Title))
-		} else {
-			services.CreateNotification(*rental.OwnerID, "note_returned", "A rented study note was returned!")
+		} else if rental.NotesID != nil {
+			services.CreateNotification(*rental.OwnerID, "note_returned", fmt.Sprintf("Item \"%s\" was returned!", rental.Note.Title))
 		}
 	}
 
@@ -256,7 +259,7 @@ func BorrowedMaterials(c *gin.Context) {
 	}
 
 	var rentals []models.Rental
-	if err := services.DB.Where("user_id = ?", user.ID).Order("id DESC").Preload("Book").Preload("Book.Uploader").Find(&rentals).Error; err != nil {
+	if err := services.DB.Where("user_id = ?", user.ID).Order("id DESC").Preload("Book").Preload("Book.Uploader").Preload("Note").Preload("Note.Uploader").Find(&rentals).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch borrowed materials"})
 		return
 	}
@@ -279,6 +282,8 @@ func LentMaterials(c *gin.Context) {
 		Where("owner_id = ?", user.ID).
 		Preload("Book").
 		Preload("Book.Uploader").
+		Preload("Note").
+		Preload("Note.Uploader").
 		Preload("User").
 		Order("id DESC").
 		Find(&rentals).Error; err != nil {
@@ -301,7 +306,7 @@ func DecideRental(c *gin.Context) {
 	}
 
 	var rental models.Rental
-	if err := services.DB.Preload("Book").First(&rental, rentalID).Error; err != nil {
+	if err := services.DB.Preload("Book").Preload("Note").First(&rental, rentalID).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Rental not found"})
 		return
 	}
@@ -364,8 +369,10 @@ func DecideRental(c *gin.Context) {
 	var itemName string
 	if rental.BookID != nil {
 		itemName = rental.Book.Title
+	} else if rental.NotesID != nil {
+		itemName = rental.Note.Title
 	} else {
-		itemName = "a study note" // or load Note.Title if we preload it
+		itemName = "a study material"
 	}
 
 	services.CreateNotification(rental.UserID, "rental_decision", fmt.Sprintf("Your request to rent \"%s\" was %s.", itemName, statusText))
