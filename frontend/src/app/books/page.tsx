@@ -20,6 +20,7 @@ interface Book {
   author: string;
   category: string;
   slot?: string;
+  rented_slots?: string;
   cover_image: string;
   price?: number;
   available: boolean;

@@ -12,7 +12,9 @@ import { toast } from "sonner";
 import { NeoInput } from "@/components/ui/NeoInput";
 import { NeoSelect } from "@/components/ui/NeoSelect";
 import { NeoMultiSelect } from "@/components/ui/NeoMultiSelect";
+import { NeoButton } from "@/components/ui/NeoButton";
 import { SlotSelector, VIT_INDIVIDUAL_SLOTS } from "@/components/SlotSelector";
+import { AlertTriangle, PhoneCall, ArrowRight } from "lucide-react";
 
 const bookSchema = z.object({
   title: z.string().min(3, "Title must be at least 3 characters").max(100),
@@ -58,7 +60,7 @@ export default function BookUploadPage() {
       condition: "Good",
     }
   });
-  const { user, loading } = useAuth();
+  const { user, userProfile, loading } = useAuth();
   const router = useRouter();
   const [selectedSlots, setSelectedSlots] = useState<string[]>(["A1"]);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -69,7 +71,15 @@ export default function BookUploadPage() {
     return null;
   }
 
+  const hasPhone = Boolean(userProfile?.phone_number && userProfile.phone_number.trim() !== "");
+
   const onSubmit = async (data: BookFormData) => {
+    if (!hasPhone) {
+      toast.error("Please add your phone number in your profile before uploading books.");
+      router.push("/profile");
+      return;
+    }
+
     try {
       setIsSubmitting(true);
       let finalFileUrl = "";
@@ -122,6 +132,36 @@ export default function BookUploadPage() {
         <h1 className="font-serif text-5xl font-black mb-1">List a Textbook for Rent</h1>
         <p className="font-medium text-lg text-gray-700">Help fellow VITians ace their CAT & FAT exams by listing your course reference books.</p>
       </div>
+
+      {!hasPhone && (
+        <div className="mb-8 border-4 border-black bg-neo-yellow p-6 shadow-neo animate-in fade-in">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="flex items-start gap-3">
+              <div className="p-2 border-2 border-black bg-white shadow-sm shrink-0 mt-0.5">
+                <AlertTriangle className="h-6 w-6 text-black" />
+              </div>
+              <div>
+                <h3 className="font-black text-xl flex items-center gap-2 text-black">
+                  Phone Number Required
+                </h3>
+                <p className="font-medium text-sm mt-1 text-black/90">
+                  You must add your mobile number in your profile before uploading books so buyers and borrowers can contact you directly for handovers.
+                </p>
+              </div>
+            </div>
+            <NeoButton
+              type="button"
+              variant="primary"
+              className="whitespace-nowrap shrink-0 flex items-center gap-2 bg-white text-black hover:bg-black hover:text-white"
+              onClick={() => router.push("/profile")}
+            >
+              <PhoneCall className="h-4 w-4" />
+              Add Phone in Profile
+              <ArrowRight className="h-4 w-4 ml-1" />
+            </NeoButton>
+          </div>
+        </div>
+      )}
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 border-4 border-black bg-neo-purple p-8 shadow-neo">
 
@@ -240,7 +280,11 @@ export default function BookUploadPage() {
           disabled={isSubmitting}
           className="w-full border-4 border-black bg-neo-yellow px-6 py-4 font-bold text-xl shadow-neo hover:shadow-neo-hover active:shadow-neo-active transition-all disabled:opacity-50"
         >
-          {isSubmitting ? "Uploading Book..." : "List Textbook for Rent"}
+          {isSubmitting
+            ? "Uploading Book..."
+            : !hasPhone
+            ? "⚠️ Add Phone in Profile to List Book"
+            : "List Textbook for Rent"}
         </button>
 
       </form>

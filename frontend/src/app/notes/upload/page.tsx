@@ -12,7 +12,9 @@ import { toast } from "sonner";
 import { NeoInput } from "@/components/ui/NeoInput";
 import { NeoSelect } from "@/components/ui/NeoSelect";
 import { NeoMultiSelect } from "@/components/ui/NeoMultiSelect";
+import { NeoButton } from "@/components/ui/NeoButton";
 import { SlotSelector, VIT_INDIVIDUAL_SLOTS } from "@/components/SlotSelector";
+import { AlertTriangle, PhoneCall, ArrowRight } from "lucide-react";
 
 const noteSchema = z.object({
   title: z.string().min(3, "Title must be at least 3 characters").max(100),
@@ -57,7 +59,7 @@ export default function NoteUploadPage() {
       condition: "Good",
     }
   });
-  const { user, loading } = useAuth();
+  const { user, userProfile, loading } = useAuth();
   const router = useRouter();
   const [selectedSlots, setSelectedSlots] = useState<string[]>(["A1"]);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -68,7 +70,15 @@ export default function NoteUploadPage() {
     return null;
   }
 
+  const hasPhone = Boolean(userProfile?.phone_number && userProfile.phone_number.trim() !== "");
+
   const onSubmit = async (data: NoteFormData) => {
+    if (!hasPhone) {
+      toast.error("Please add your phone number in your profile before uploading notes.");
+      router.push("/profile");
+      return;
+    }
+
     try {
       setIsSubmitting(true);
       let finalFileUrl = "";
@@ -122,18 +132,39 @@ export default function NoteUploadPage() {
         <p className="font-medium text-lg text-gray-700">Upload handwritten notes, module formula sheets, and solved CAT/FAT question banks for fellow VITians.</p>
       </div>
       
+      {!hasPhone && (
+        <div className="mb-8 border-4 border-black bg-neo-yellow p-6 shadow-neo animate-in fade-in">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="flex items-start gap-3">
+              <div className="p-2 border-2 border-black bg-white shadow-sm shrink-0 mt-0.5">
+                <AlertTriangle className="h-6 w-6 text-black" />
+              </div>
+              <div>
+                <h3 className="font-black text-xl flex items-center gap-2 text-black">
+                  Phone Number Required
+                </h3>
+                <p className="font-medium text-sm mt-1 text-black/90">
+                  You must add your mobile number in your profile before sharing notes so students can reach you directly for study queries and revisions.
+                </p>
+              </div>
+            </div>
+            <NeoButton
+              type="button"
+              variant="primary"
+              className="whitespace-nowrap shrink-0 flex items-center gap-2 bg-white text-black hover:bg-black hover:text-white"
+              onClick={() => router.push("/profile")}
+            >
+              <PhoneCall className="h-4 w-4" />
+              Add Phone in Profile
+              <ArrowRight className="h-4 w-4 ml-1" />
+            </NeoButton>
+          </div>
+        </div>
+      )}
+
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 border-4 border-black bg-neo-blue p-8 shadow-neo">
         
-        <div className="space-y-2">
-          <label className="font-bold text-xl block">Note Title *</label>
-          <NeoInput 
-            {...register("title")}
-            placeholder="e.g. OS CAT-1 Module 1-3 Cheatsheet"
-          />
-          {errors.title && <span className="text-red-900 font-bold bg-white px-2 border-2 border-black inline-block mt-2 shadow-sm">{errors.title.message}</span>}
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-2">
             <label className="font-bold text-xl block">Note Title *</label>
             <NeoInput 
@@ -235,7 +266,11 @@ export default function NoteUploadPage() {
           disabled={isSubmitting}
           className="w-full border-4 border-black bg-neo-yellow px-6 py-4 font-bold text-xl shadow-neo hover:shadow-neo-hover active:shadow-neo-active transition-all disabled:opacity-50"
         >
-          {isSubmitting ? "Uploading..." : "Share Study Material"}
+          {isSubmitting
+            ? "Uploading..."
+            : !hasPhone
+            ? "⚠️ Add Phone in Profile to Share Notes"
+            : "Share Study Material"}
         </button>
 
       </form>

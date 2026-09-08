@@ -7,14 +7,14 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import { NeoButton } from "@/components/ui/NeoButton";
 import { NeoCard } from "@/components/ui/NeoCard";
-import { 
-  GraduationCap, 
-  Clock, 
-  MapPin, 
-  Sparkles, 
-  BookOpen, 
-  FileText, 
-  Check, 
+import {
+  GraduationCap,
+  Clock,
+  MapPin,
+  Sparkles,
+  BookOpen,
+  FileText,
+  Check,
   Zap,
   Rocket,
   Star
@@ -26,11 +26,11 @@ if (typeof window !== "undefined") {
 
 export default function Home() {
   const container = useRef<HTMLDivElement>(null);
-  
+
   useGSAP(() => {
     // 1. Hero Animation Timeline
     const tl = gsap.timeline();
-    
+
     tl.from(".hero-text", {
       y: 100,
       opacity: 0,
@@ -39,27 +39,27 @@ export default function Home() {
       ease: "back.out(1.5)",
       delay: 0.2
     })
-    .from(".hero-desc", {
-      y: 20,
-      opacity: 0,
-      duration: 0.6,
-      ease: "power2.out"
-    }, "-=0.4")
-    .from(".hero-btn", {
-      scale: 0,
-      opacity: 0,
-      duration: 0.5,
-      stagger: 0.1,
-      ease: "back.out(2)"
-    }, "-=0.2")
-    .from(".hero-shape", {
-      y: 50,
-      opacity: 0,
-      rotate: 45,
-      duration: 0.8,
-      stagger: 0.2,
-      ease: "back.out(1.5)"
-    }, "-=0.8");
+      .from(".hero-desc", {
+        y: 20,
+        opacity: 0,
+        duration: 0.6,
+        ease: "power2.out"
+      }, "-=0.4")
+      .from(".hero-btn", {
+        scale: 0,
+        opacity: 0,
+        duration: 0.5,
+        stagger: 0.1,
+        ease: "back.out(2)"
+      }, "-=0.2")
+      .from(".hero-shape", {
+        y: 50,
+        opacity: 0,
+        rotate: 45,
+        duration: 0.8,
+        stagger: 0.2,
+        ease: "back.out(1.5)"
+      }, "-=0.8");
 
     // Continuous floating animation for shapes
     gsap.to(".hero-shape", {
@@ -114,7 +114,7 @@ export default function Home() {
 
     // 3. How It Works (Scroll-Driven Rope & Steps)
     const steps = gsap.utils.toArray<HTMLElement>(".step-card");
-    
+
     const ropeTl = gsap.timeline({
       scrollTrigger: {
         trigger: ".how-it-works-section",
@@ -125,7 +125,7 @@ export default function Home() {
     });
 
     ropeTl.to(".connecting-line", { height: "100%", ease: "none" }, 0)
-          .to(".traveling-knot", { top: "100%", ease: "none" }, 0);
+      .to(".traveling-knot", { top: "100%", ease: "none" }, 0);
 
     steps.forEach((step, i) => {
       gsap.from(step, {
@@ -183,7 +183,7 @@ export default function Home() {
 
   return (
     <div ref={container} className="flex flex-col overflow-hidden">
-      
+
       {/* 1. HERO SECTION */}
       <main className="relative min-h-[92vh] flex flex-col items-center justify-center px-6 py-20 text-center w-full">
         {/* Decorative Floating Shapes */}
@@ -194,13 +194,13 @@ export default function Home() {
         <div className="flex flex-col items-center text-center w-full max-w-5xl mx-auto space-y-6 z-10">
           <div className="hero-text flex flex-wrap gap-2 justify-center items-center">
             <span className="flex items-center gap-1 border-2 border-black rounded-full px-4 py-1 font-black bg-neo-yellow shadow-neo text-xs uppercase">
-              <GraduationCap size={14} className="jiggle-icon" /> Exclusively for VIT Vellore Students
+              <GraduationCap size={14} className="jiggle-icon" /> For VIT Vellore Students
             </span>
             <span className="flex items-center gap-1 border-2 border-black rounded-full px-4 py-1 font-black bg-neo-green shadow-neo text-xs uppercase">
               <Zap size={14} className="pulse-icon" /> CAT-1 • CAT-2 • FAT Prep
             </span>
           </div>
-          
+
           <h1 className="hero-text font-serif text-5xl sm:text-7xl md:text-8xl font-black leading-[1.1] tracking-tight">
             Rent textbooks.
           </h1>
@@ -212,11 +212,11 @@ export default function Home() {
               Share handwritten notes.
             </span>
           </h1>
-          
+
           <p className="hero-desc text-lg sm:text-xl md:text-2xl font-medium max-w-3xl leading-relaxed text-gray-800 mt-6">
-            Don't spend ₹1,000+ on reference books for a 2-week exam cycle. Borrow course textbooks and module notes directly from your peers across VIT Vellore hostels & academic blocks.
+            Couldn't find your book at the library? Borrow course textbooks and module notes directly from your peers across VIT Vellore hostels & academic blocks.
           </p>
-          
+
           <div className="flex flex-col sm:flex-row gap-5 pt-6 pb-8">
             <div className="hero-btn">
               <Link href="/books">
@@ -249,12 +249,12 @@ export default function Home() {
         <div className="marquee-content flex gap-8 font-black text-2xl md:text-3xl font-serif">
           {[...Array(3)].map((_, i) => (
             <div key={i} className="flex gap-8 items-center">
-              <span className="flex items-center gap-2"><Star size={24} className="fill-black" /> CAT-1 & CAT-2 SPRINTS</span>
+              <span className="flex items-center gap-2"><Star size={24} className="fill-black" /> BOOKS FOR CAT2</span>
               <span className="flex items-center gap-2"><Star size={24} className="fill-black" /> FAT EXAM REVISION</span>
-              <span className="flex items-center gap-2"><Star size={24} className="fill-black" /> CORMEN • MORRIS MANO • SEDRA SMITH</span>
-              <span className="flex items-center gap-2"><Star size={24} className="fill-black" /> SJT, TT & HOSTEL HANDOVERS</span>
-              <span className="flex items-center gap-2"><Star size={24} className="fill-black" /> HANDWRITTEN CHEATSHEETS</span>
-              <span className="flex items-center gap-2"><Star size={24} className="fill-black" /> VIT VELLORE VERIFIED</span>
+              {/* <span className="flex items-center gap-2"><Star size={24} className="fill-black" /> CORMEN • MORRIS MANO • SEDRA SMITH</span> */}
+              <span className="flex items-center gap-2"><Star size={24} className="fill-black" /> CONVINIENT HANDOVERS</span>
+              <span className="flex items-center gap-2"><Star size={24} className="fill-black" /> HANDWRITTEN NOTES</span>
+              <span className="flex items-center gap-2"><Star size={24} className="fill-black" /> VIT VELLORE</span>
             </div>
           ))}
         </div>
@@ -279,42 +279,42 @@ export default function Home() {
           <div className="absolute left-8 md:left-1/2 top-0 bottom-0 w-2 md:-ml-1 border-r-4 border-dashed border-gray-300">
             <div className="connecting-line w-full border-r-4 border-dashed border-black h-0" />
             <div className="traveling-knot absolute -left-3 md:-left-3 w-8 h-8 bg-neo-yellow border-4 border-black rounded-full shadow-neo z-30 flex items-center justify-center transform -translate-y-1/2">
-               <span className="block w-2 h-2 bg-black rounded-full" />
+              <span className="block w-2 h-2 bg-black rounded-full" />
             </div>
           </div>
 
           {/* Steps */}
           {[
-            { 
-              num: "01", 
-              title: "Discover CAT & FAT Material", 
-              desc: "Search by course code, book title, or subject (e.g. DSD, MPMC, OS, DSA, Calculus, Chemistry). Find textbooks listed by students in your own campus blocks.", 
-              color: "white" 
+            {
+              num: "01",
+              title: "Discover CAT & FAT Material",
+              desc: "Search by course code, book title, or subject (e.g. DSD, MPMC, OS, DSA, Calculus, Chemistry). Find textbooks listed by students in your own campus blocks.",
+              color: "white"
             },
-            { 
-              num: "02", 
-              title: "Request & Coordinate on WhatsApp", 
-              desc: "Choose a rental duration (7 days for CAT, 15 days for FAT, or semester). Once the owner accepts, coordinate a quick meetup at SJT, TT, Library, Gazebo, or Hostels.", 
-              color: "blue" 
+            {
+              num: "02",
+              title: "Request & Coordinate on WhatsApp",
+              desc: "Choose a rental duration (7 days for CAT, 15 days for FAT, or semester). Once the owner accepts, coordinate a quick meetup at SJT, TT, Library, Gazebo, or Hostels.",
+              color: "blue"
             },
-            { 
-              num: "03", 
-              title: "Ace Exams & 1-Click Return", 
-              desc: "Complete your exam prep without spending thousands on new books. Return the book to the owner with one click on your dashboard.", 
-              color: "peach" 
+            {
+              num: "03",
+              title: "Ace Exams & 1-Click Return",
+              desc: "Complete your exam prep without spending thousands on new books. Return the book to the owner with one click on your dashboard.",
+              color: "peach"
             },
           ].map((step, i) => (
             <div key={step.num} className={`step-card w-full md:w-[45%] flex relative z-10 ${i % 2 === 0 ? "md:self-start" : "md:self-end"}`}>
-              <div 
-                className="horizontal-line hidden md:block absolute top-1/2 h-1 border-b-4 border-dashed border-black z-10" 
-                style={{ 
-                  [i % 2 === 0 ? 'right' : 'left']: '-10%', 
+              <div
+                className="horizontal-line hidden md:block absolute top-1/2 h-1 border-b-4 border-dashed border-black z-10"
+                style={{
+                  [i % 2 === 0 ? 'right' : 'left']: '-10%',
                   width: '10%',
                   marginTop: '-2px'
-                }} 
+                }}
               />
               <div className="hidden md:flex absolute top-1/2 -mt-6 w-12 h-12 rounded-full border-4 border-black bg-white items-center justify-center font-black z-20 shadow-neo"
-                   style={{ [i % 2 === 0 ? 'right' : 'left']: '-3rem' }}>
+                style={{ [i % 2 === 0 ? 'right' : 'left']: '-3rem' }}>
                 {step.num}
               </div>
               <NeoCard color={step.color as any} className="w-full relative z-20">

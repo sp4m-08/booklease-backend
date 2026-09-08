@@ -17,7 +17,7 @@ import { EditListingModal } from "@/components/EditListingModal";
 import { SlotBadges } from "@/components/SlotBadges";
 
 export default function ProfilePage() {
-  const { user, loading } = useAuth();
+  const { user, loading, refreshProfile } = useAuth();
   const router = useRouter();
   const queryClient = useQueryClient();
   const [phone, setPhone] = useState("");
@@ -84,6 +84,7 @@ export default function ProfilePage() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["profile"] });
+      refreshProfile();
       toast.success("Phone number updated successfully!");
       setPhone("");
     },

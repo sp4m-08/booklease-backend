@@ -23,6 +23,7 @@ interface NoteDetail {
   title: string;
   subject: string;
   slot?: string;
+  rented_slots?: string;
   condition?: string;
   available: boolean;
   description: string;

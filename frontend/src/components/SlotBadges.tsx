@@ -5,13 +5,15 @@ export function SlotBadges({
   className = "" 
 }: { 
   slot?: string; 
-  rentedSlots?: string;
+  rentedSlots?: string | string[];
   variant?: "purple" | "yellow";
   className?: string; 
 }) {
   if (!slot) return null;
   const slots = slot.split(",").map((s) => s.trim()).filter(Boolean);
-  const rented = rentedSlots.split(",").map((s) => s.trim()).filter(Boolean);
+  const rented = Array.isArray(rentedSlots)
+    ? rentedSlots.map((s) => s.trim()).filter(Boolean)
+    : (rentedSlots || "").split(",").map((s) => s.trim()).filter(Boolean);
   
   if (slots.length === 0) return null;
 
