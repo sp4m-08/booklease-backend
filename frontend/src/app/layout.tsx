@@ -18,20 +18,33 @@ const merriweather = Merriweather({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://booklease.netlify.app"),
   title: "Booklease | VIT Vellore Peer Textbook Rental & CAT/FAT Notes Hub",
   description: "Exclusively for VIT Vellore University students. Rent course textbooks for CAT-2 & FAT exams, share handwritten module notes, and coordinate handovers across campus.",
   keywords: ["VIT Vellore", "Booklease", "VIT CAT exams", "VIT FAT exams", "Textbook rental VIT", "VIT notes sharing", "FFCS reference books", "SJT", "TT", "VIT Vellore library"],
+  icons: {
+    icon: [
+      { url: "/icon.png", sizes: "any" },
+      { url: "/favicon.png", sizes: "any" },
+    ],
+    apple: [
+      { url: "/apple-icon.png" }
+    ],
+    shortcut: ["/icon.png"],
+  },
   openGraph: {
     title: "Booklease | VIT Vellore Textbook Rental & Exam Notes",
     description: "Peer-to-peer textbook rentals and handwritten study notes for CAT-2 and FAT exams at VIT Vellore.",
     url: "https://booklease.app",
     siteName: "Booklease VIT",
+    images: [{ url: "/icon.png" }],
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
     title: "Booklease | VIT Vellore",
     description: "Rent reference books and share notes for CAT/FAT exams at VIT Vellore.",
+    images: ["/icon.png"],
   },
 };
 
