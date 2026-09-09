@@ -19,11 +19,11 @@ const merriweather = Merriweather({
 
 export const metadata: Metadata = {
   title: "Booklease | VIT Vellore Peer Textbook Rental & CAT/FAT Notes Hub",
-  description: "Exclusively for VIT Vellore University students. Rent course textbooks for CAT-1, CAT-2 & FAT exams, share handwritten module notes, and coordinate handovers across campus.",
+  description: "Exclusively for VIT Vellore University students. Rent course textbooks for CAT-2 & FAT exams, share handwritten module notes, and coordinate handovers across campus.",
   keywords: ["VIT Vellore", "Booklease", "VIT CAT exams", "VIT FAT exams", "Textbook rental VIT", "VIT notes sharing", "FFCS reference books", "SJT", "TT", "VIT Vellore library"],
   openGraph: {
     title: "Booklease | VIT Vellore Textbook Rental & Exam Notes",
-    description: "Peer-to-peer textbook rentals and handwritten study notes for CAT-1, CAT-2 and FAT exams at VIT Vellore.",
+    description: "Peer-to-peer textbook rentals and handwritten study notes for CAT-2 and FAT exams at VIT Vellore.",
     url: "https://booklease.app",
     siteName: "Booklease VIT",
     type: "website",

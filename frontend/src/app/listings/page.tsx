@@ -12,9 +12,14 @@ import { NeoButton } from "@/components/ui/NeoButton";
 import { NeoInput } from "@/components/ui/NeoInput";
 import { BookCover } from "@/components/BookCover";
 import { NoteCover } from "@/components/NoteCover";
-import { EditListingModal } from "@/components/EditListingModal";
 import { SlotBadges } from "@/components/SlotBadges";
-import { BookOpen, FileText, Plus, Trash2, ExternalLink, Search, Sparkles, Edit3, CheckCircle, XCircle } from "lucide-react";
+import dynamic from "next/dynamic";
+import { BookOpen, FileText, Plus, Trash2, ExternalLink, Search, Sparkles, Edit3, CheckCircle, XCircle, GraduationCap } from "lucide-react";
+
+const EditListingModal = dynamic(
+  () => import("@/components/EditListingModal").then((mod) => mod.EditListingModal),
+  { ssr: false }
+);
 
 export default function YourListingsPage() {
   const { user, loading } = useAuth();
@@ -110,8 +115,9 @@ export default function YourListingsPage() {
       {/* Top Header Banner */}
       <div className="mb-10 border-b-4 border-black pb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
         <div>
-          <div className="inline-block border-2 border-black px-3 py-1 bg-neo-yellow font-black text-xs uppercase mb-3 shadow-neo">
-            🎓 VIT Vellore Student Hub
+          <div className="inline-flex items-center gap-1.5 border-2 border-black px-3 py-1 bg-neo-yellow font-black text-xs uppercase mb-3 shadow-neo">
+            <GraduationCap size={13} className="text-black" />
+            <span>VIT Vellore Student Hub</span>
           </div>
           <h1 className="font-serif text-5xl font-black mb-2">Your Listings</h1>
           <p className="font-medium text-lg text-gray-700">

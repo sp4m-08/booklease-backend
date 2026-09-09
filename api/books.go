@@ -453,6 +453,7 @@ func UpdateBook(c *gin.Context) {
 		CoverImage  *string  `json:"cover_image"`
 		Price       *float64 `json:"price"`
 		Available   *bool    `json:"available"`
+		Type        *string  `json:"type"`
 	}
 
 	if err := c.ShouldBindJSON(&input); err != nil {
@@ -480,6 +481,9 @@ func UpdateBook(c *gin.Context) {
 	}
 	if input.Condition != nil {
 		book.Condition = *input.Condition
+	}
+	if input.Type != nil {
+		book.Type = *input.Type
 	}
 	if input.CoverImage != nil && *input.CoverImage != "" {
 		book.CoverImage = *input.CoverImage

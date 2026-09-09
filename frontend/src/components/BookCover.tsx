@@ -4,15 +4,21 @@ import { useState, useEffect } from "react";
 import { getImageUrl } from "@/lib/utils";
 import { FileText, Book } from "lucide-react";
 
+import Image from "next/image";
+
 interface BookCoverProps {
   src?: string;
   title: string;
   author?: string;
   category?: string;
   className?: string;
+  priority?: boolean;
 }
 
-export function BookCover({ src, title, author, category, className = "" }: BookCoverProps) {
+const SHIMMER_BLUR_DATA_URL =
+  "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjUwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZTZlNmMzIi8+PC9zdmc+";
+
+export function BookCover({ src, title, author, category, className = "", priority = false }: BookCoverProps) {
   const [hasError, setHasError] = useState(false);
   const imageUrl = getImageUrl(src);
 
@@ -111,16 +117,20 @@ export function BookCover({ src, title, author, category, className = "" }: Book
     );
   }
 
-  // 4. Standard Image Rendering (PNG, JPG, JPEG, WebP)
+  // 4. Next.js Optimized Image with Blur Placeholder
   return (
-    <img
-      src={imageUrl}
-      alt={title}
-      onError={() => {
-        setHasError(true);
-      }}
-      className={`object-cover w-full h-full ${className}`}
-      loading="lazy"
-    />
+    <div className={`relative w-full h-full overflow-hidden ${className}`}>
+      <Image
+        src={imageUrl}
+        alt={title}
+        fill
+        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+        placeholder="blur"
+        blurDataURL={SHIMMER_BLUR_DATA_URL}
+        onError={() => setHasError(true)}
+        className="object-cover transition-opacity duration-300"
+        priority={priority}
+      />
+    </div>
   );
 }

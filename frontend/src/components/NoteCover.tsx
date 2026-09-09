@@ -4,14 +4,20 @@ import { useState, useEffect } from "react";
 import { getImageUrl } from "@/lib/utils";
 import { FileText } from "lucide-react";
 
+import Image from "next/image";
+
 interface NoteCoverProps {
   src?: string;
   title: string;
   subject?: string;
   className?: string;
+  priority?: boolean;
 }
 
-export function NoteCover({ src, title, subject, className = "" }: NoteCoverProps) {
+const SHIMMER_BLUR_DATA_URL =
+  "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjUwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZTZlNmMzIi8+PC9zdmc+";
+
+export function NoteCover({ src, title, subject, className = "", priority = false }: NoteCoverProps) {
   const [hasError, setHasError] = useState(false);
   const imageUrl = getImageUrl(src);
 
@@ -26,13 +32,19 @@ export function NoteCover({ src, title, subject, className = "" }: NoteCoverProp
 
   if (isImage && imageUrl && !hasError) {
     return (
-      <img
-        src={imageUrl}
-        alt={title}
-        onError={() => setHasError(true)}
-        className={`object-cover w-full h-full ${className}`}
-        loading="lazy"
-      />
+      <div className={`relative w-full h-full overflow-hidden ${className}`}>
+        <Image
+          src={imageUrl}
+          alt={title}
+          fill
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+          placeholder="blur"
+          blurDataURL={SHIMMER_BLUR_DATA_URL}
+          onError={() => setHasError(true)}
+          className="object-cover transition-opacity duration-300"
+          priority={priority}
+        />
+      </div>
     );
   }
 

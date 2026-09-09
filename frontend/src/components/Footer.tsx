@@ -66,7 +66,7 @@ export default function Footer() {
               Booklease VIT
             </div>
             <p className="font-medium text-base text-gray-700 max-w-md">
-              Peer-to-peer textbook rentals and handwritten study notes designed specifically for <strong>VIT Vellore University</strong> students preparing for <strong>CAT-1, CAT-2, and FAT</strong> exams.
+              Peer-to-peer textbook rentals and handwritten study notes designed specifically for <strong>VIT Vellore University</strong> students preparing for <strong>CAT-2 and FAT</strong> exams.
             </p>
             <div className="flex flex-wrap gap-2 pt-1">
               <span className="flex items-center gap-1 border-2 border-black px-2.5 py-0.5 bg-neo-green font-black text-xs uppercase shadow-sm">

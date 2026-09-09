@@ -14,9 +14,20 @@ import { ArrowLeft, Download, ExternalLink, FileText, Trash2, UserCheck, Message
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { useRef } from "react";
+import dynamic from "next/dynamic";
 import { NeoSelect } from "@/components/ui/NeoSelect";
-import { EditListingModal } from "@/components/EditListingModal";
 import { SlotBadges } from "@/components/SlotBadges";
+import { DocumentViewerSkeleton } from "@/components/DocumentViewer";
+
+const DocumentViewer = dynamic(() => import("@/components/DocumentViewer"), {
+  ssr: false,
+  loading: () => <DocumentViewerSkeleton />,
+});
+
+const EditListingModal = dynamic(
+  () => import("@/components/EditListingModal").then((mod) => mod.EditListingModal),
+  { ssr: false }
+);
 
 interface NoteDetail {
   id: number;
@@ -234,59 +245,9 @@ export default function NoteDetailPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 items-start">
         
-        {/* Left Column: Document / File Preview */}
+        {/* Left Column: Document / File Preview (Lazy-loaded) */}
         <div className="lg:col-span-2 space-y-4 animate-element">
-          <NeoCard className="flex flex-col p-0 overflow-hidden shadow-neo-lg" color="white">
-            <div className="bg-black text-white p-4 font-bold border-b-4 border-black flex justify-between items-center">
-              <span className="flex items-center gap-2 text-sm uppercase">
-                <FileText size={18} />
-                Document Viewer ({fileExt?.toUpperCase() || "FILE"})
-              </span>
-              {fileUrl && (
-                <div className="flex gap-2">
-                  <a href={fileUrl} target="_blank" rel="noreferrer">
-                    <NeoButton variant="primary" size="sm" className="bg-neo-blue text-black flex items-center gap-1">
-                      <ExternalLink size={14} /> View Document
-                    </NeoButton>
-                  </a>
-                </div>
-              )}
-            </div>
-
-            {/* Adaptive File Viewer */}
-            {isPdf && fileUrl ? (
-              <div className="h-[75vh] w-full bg-gray-100">
-                <iframe 
-                  src={`${fileUrl}#view=FitH`} 
-                  className="w-full h-full border-none"
-                  title={note.title}
-                />
-              </div>
-            ) : isImage && fileUrl ? (
-              <div className="p-8 bg-gray-100 flex items-center justify-center min-h-[400px]">
-                <img 
-                  src={fileUrl} 
-                  alt={note.title} 
-                  className="max-h-[70vh] object-contain border-4 border-black shadow-neo"
-                />
-              </div>
-            ) : (
-              <div className="p-12 text-center bg-neo-yellow/20 flex flex-col items-center justify-center min-h-[350px]">
-                <FileText className="w-20 h-20 text-black mb-4 stroke-1" />
-                <h3 className="font-serif text-3xl font-black mb-2">{note.title}</h3>
-                <p className="font-bold text-gray-700 mb-6 max-w-md">
-                  This document format ({fileExt?.toUpperCase() || "DOC"}) is ready to be viewed.
-                </p>
-                {fileUrl && (
-                  <a href={fileUrl} target="_blank" rel="noreferrer">
-                    <NeoButton variant="primary" size="lg" className="bg-neo-blue text-black flex items-center gap-2">
-                      <ExternalLink size={20} /> View Document File
-                    </NeoButton>
-                  </a>
-                )}
-              </div>
-            )}
-          </NeoCard>
+          <DocumentViewer fileUrl={fileUrl} fileExt={fileExt} title={note.title} />
         </div>
 
         {/* Right Column: Note Metadata & Contact */}

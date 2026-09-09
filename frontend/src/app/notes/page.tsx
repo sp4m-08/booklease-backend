@@ -10,6 +10,10 @@ import { useGSAP } from "@gsap/react";
 import { NeoButton } from "@/components/ui/NeoButton";
 import { NeoCard } from "@/components/ui/NeoCard";
 import { NeoInput } from "@/components/ui/NeoInput";
+import { NeoSelect } from "@/components/ui/NeoSelect";
+import { SlotBadges } from "@/components/SlotBadges";
+import { NoteCover } from "@/components/NoteCover";
+import { ThumbsUp, Filter, Sparkles, X, ArrowUpDown, Tag, Flame, Clock, Award, Zap } from "lucide-react";
 
 interface Note {
   id: number;
@@ -30,13 +34,14 @@ interface Note {
   created_at: string;
 }
 
-import { NoteCover } from "@/components/NoteCover";
-import { ThumbsUp } from "lucide-react";
-
 export default function NotesPage() {
   const container = useRef<HTMLDivElement>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedSubject, setSelectedSubject] = useState("All");
+  const [selectedSlot, setSelectedSlot] = useState("All");
+  const [selectedExam, setSelectedExam] = useState("All");
+  const [priceType, setPriceType] = useState<"All" | "free" | "paid">("All");
+  const [sortBy, setSortBy] = useState<"upvotes" | "price_asc" | "price_desc" | "newest">("upvotes");
 
   const { data: notes, isLoading, error } = useQuery<Note[]>({
     queryKey: ["notes"],
@@ -47,20 +52,56 @@ export default function NotesPage() {
   });
 
   const branches = ["All", "CSE", "ECE", "EEE", "Mechanical", "Biotech", "Civil", "Common"];
+  const slots = ["All", "A1", "A2", "B1", "B2", "C1", "C2", "D1", "D2", "E1", "E2", "F1", "F2", "G1", "G2"];
+  const examOptions = ["All", "CAT-2", "FAT", "Lab FAT"];
 
   const filteredNotes = useMemo(() => {
     if (!notes) return [];
     let filtered = notes.filter((note) => {
-      const matchesSearch = note.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                            (note.subject || "").toLowerCase().includes(searchTerm.toLowerCase());
+      const search = searchTerm.toLowerCase();
+      const matchesSearch = 
+        !searchTerm ||
+        note.title.toLowerCase().includes(search) || 
+        (note.subject || "").toLowerCase().includes(search) ||
+        (note.description || "").toLowerCase().includes(search) ||
+        (note.slot || "").toLowerCase().includes(search);
+
       const matchesSubject = selectedSubject === "All" || 
                             (note.subject || "").toLowerCase() === selectedSubject.toLowerCase();
-      return matchesSearch && matchesSubject;
+
+      const matchesSlot = selectedSlot === "All" ||
+        (note.slot && (
+          note.slot.toLowerCase() === "all slots" ||
+          note.slot.split(",").map((s) => s.trim().toLowerCase()).includes(selectedSlot.toLowerCase())
+        ));
+
+      const matchesExam = selectedExam === "All" ||
+        note.title.toLowerCase().includes(selectedExam.toLowerCase()) ||
+        (note.description || "").toLowerCase().includes(selectedExam.toLowerCase());
+
+      const matchesPrice = 
+        priceType === "All" ||
+        (priceType === "free" && (!note.price || Number(note.price) === 0)) ||
+        (priceType === "paid" && note.price && Number(note.price) > 0);
+
+      return matchesSearch && matchesSubject && matchesSlot && matchesExam && matchesPrice;
     });
 
-    // Sort by upvotes descending
-    return filtered.sort((a, b) => b.upvotes - a.upvotes);
-  }, [notes, searchTerm, selectedSubject]);
+    // Sort items
+    return filtered.sort((a, b) => {
+      if (sortBy === "price_asc") {
+        return (Number(a.price) || 0) - (Number(b.price) || 0);
+      }
+      if (sortBy === "price_desc") {
+        return (Number(b.price) || 0) - (Number(a.price) || 0);
+      }
+      if (sortBy === "newest") {
+        return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+      }
+      // default: most upvotes
+      return (b.upvotes || 0) - (a.upvotes || 0);
+    });
+  }, [notes, searchTerm, selectedSubject, selectedSlot, selectedExam, priceType, sortBy]);
 
   useGSAP(() => {
     if (filteredNotes.length > 0) {
@@ -74,12 +115,30 @@ export default function NotesPage() {
     }
   }, { dependencies: [filteredNotes], scope: container });
 
+  const hasActiveFilters = 
+    searchTerm !== "" || 
+    selectedSubject !== "All" || 
+    selectedSlot !== "All" || 
+    selectedExam !== "All" || 
+    priceType !== "All" || 
+    sortBy !== "upvotes";
+
+  const clearFilters = () => {
+    setSearchTerm("");
+    setSelectedSubject("All");
+    setSelectedSlot("All");
+    setSelectedExam("All");
+    setPriceType("All");
+    setSortBy("upvotes");
+  };
+
   return (
     <div ref={container} className="max-w-7xl mx-auto w-full px-8 py-12 flex-grow">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 border-b-4 border-black pb-6 gap-6">
         <div>
-          <div className="inline-block border-2 border-black px-3 py-0.5 bg-neo-purple font-black text-xs uppercase mb-2 shadow-sm">
-            ⚡ Exam Revision Hub
+          <div className="inline-flex items-center gap-1.5 border-2 border-black px-3 py-0.5 bg-neo-purple font-black text-xs uppercase mb-2 shadow-sm">
+            <Zap size={13} className="fill-black text-black" />
+            <span>Exam Revision Hub</span>
           </div>
           <h1 className="font-serif text-5xl font-black mb-2">CAT & FAT Study Notes</h1>
           <p className="font-medium text-xl text-gray-700">Handwritten class notes, module formula sheets, and solved papers shared by VITians.</p>
@@ -90,28 +149,136 @@ export default function NotesPage() {
       </div>
 
       {/* Discovery / Filter Bar */}
-      <div className="flex flex-col lg:flex-row gap-6 mb-12">
-        <div className="flex-grow">
-          <NeoInput 
-            placeholder="Search notes by course code, subject, or exam (e.g. OS CAT-1, DSD Cheatsheet, Calculus FAT)..." 
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
+      <div className="mb-10 space-y-4 border-4 border-black bg-white p-5 shadow-neo">
+        {/* Top Controls: Search + Dropdowns */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-3">
+          {/* Main Search Input */}
+          <div className="sm:col-span-2 lg:col-span-5">
+            <NeoInput 
+              placeholder="Search notes by subject, title, module, or course code..." 
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+
+          {/* Branch Filter Dropdown */}
+          <div className="sm:col-span-1 lg:col-span-2">
+            <NeoSelect
+              value={selectedSubject}
+              onChange={setSelectedSubject}
+              placeholder="Branch"
+              options={[
+                { label: "All Branches", value: "All" },
+                ...branches.filter((b) => b !== "All").map((b) => ({ label: b, value: b }))
+              ]}
+            />
+          </div>
+
+          {/* Slot Filter Dropdown */}
+          <div className="sm:col-span-1 lg:col-span-2">
+            <NeoSelect
+              value={selectedSlot}
+              onChange={setSelectedSlot}
+              placeholder="Slot"
+              options={[
+                { label: "All Slots", value: "All" },
+                ...slots.filter((s) => s !== "All").map((s) => ({ label: `Slot ${s}`, value: s }))
+              ]}
+            />
+          </div>
+
+          {/* Sort By Dropdown */}
+          <div className="sm:col-span-2 lg:col-span-3">
+            <NeoSelect
+              value={sortBy}
+              onChange={(val) => setSortBy(val as typeof sortBy)}
+              placeholder="Sort By"
+              options={[
+                { label: "Most Upvoted", value: "upvotes" },
+                { label: "Price: Low to High", value: "price_asc" },
+                { label: "Price: High to Low", value: "price_desc" },
+                { label: "Newest First", value: "newest" },
+              ]}
+            />
+          </div>
         </div>
-        <div className="flex flex-wrap gap-2 items-center">
-          {branches.map((sub) => (
+
+        {/* Second Row: Exam & Price Quick Filters */}
+        <div className="flex flex-wrap items-center justify-between gap-4 pt-3 border-t-2 border-dashed border-black">
+          {/* Exam Filter Pills */}
+          <div className="flex flex-wrap items-center gap-1.5">
+            <span className="text-xs font-black uppercase text-gray-700 mr-1 flex items-center gap-1">
+              <Award size={13} /> Exam:
+            </span>
+            {examOptions.map((exam) => (
+              <button
+                key={exam}
+                onClick={() => setSelectedExam(exam)}
+                className={`border-2 border-black px-2.5 py-1 font-black text-xs transition-all ${
+                  selectedExam === exam 
+                    ? "bg-neo-purple text-black shadow-neo" 
+                    : "bg-white text-black hover:bg-neo-yellow"
+                }`}
+              >
+                {exam}
+              </button>
+            ))}
+          </div>
+
+          {/* Price Filter Pills */}
+          <div className="flex flex-wrap items-center gap-1.5">
+            <span className="text-xs font-black uppercase text-gray-700 mr-1 flex items-center gap-1">
+              <Tag size={13} /> Price:
+            </span>
+            {[
+              { label: "All Prices", value: "All" },
+              { label: "Free (₹0)", value: "free" },
+              { label: "Paid", value: "paid" },
+            ].map((p) => (
+              <button
+                key={p.value}
+                onClick={() => setPriceType(p.value as typeof priceType)}
+                className={`border-2 border-black px-2.5 py-1 font-black text-xs transition-all ${
+                  priceType === p.value 
+                    ? "bg-neo-green text-black shadow-neo" 
+                    : "bg-white text-black hover:bg-neo-yellow"
+                }`}
+              >
+                {p.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Third Row: Quick Branch Pills & Clear All Action */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 pt-2 border-t-2 border-dashed border-gray-200">
+          <div className="flex flex-wrap items-center gap-1.5">
+            <span className="text-xs font-black uppercase text-gray-600 mr-1 flex items-center gap-1">
+              <Filter size={13} /> Branch:
+            </span>
+            {branches.map((sub) => (
+              <button
+                key={sub}
+                onClick={() => setSelectedSubject(sub)}
+                className={`border-2 border-black px-2.5 py-0.5 font-bold text-xs transition-all ${
+                  selectedSubject === sub 
+                    ? "bg-black text-white shadow-neo" 
+                    : "bg-white text-black hover:bg-neo-yellow"
+                }`}
+              >
+                {sub}
+              </button>
+            ))}
+          </div>
+
+          {hasActiveFilters && (
             <button
-              key={sub}
-              onClick={() => setSelectedSubject(sub)}
-              className={`border-2 border-black px-4 py-2 font-bold text-sm transition-all ${
-                selectedSubject === sub 
-                  ? "bg-black text-white shadow-neo" 
-                  : "bg-white text-black hover:bg-gray-100"
-              }`}
+              onClick={clearFilters}
+              className="inline-flex items-center gap-1 text-xs font-black uppercase text-red-600 border-2 border-red-600 bg-red-50 hover:bg-red-100 px-3 py-1 transition-all self-start md:self-auto shadow-xs"
             >
-              {sub}
+              <X size={13} /> Clear All Filters
             </button>
-          ))}
+          )}
         </div>
       </div>
 
@@ -152,10 +319,11 @@ export default function NotesPage() {
                 <div className="p-5 flex-grow flex flex-col justify-between bg-white">
                   <div>
                     <div className="flex justify-between items-center mb-2">
-                      <div className="flex gap-2">
+                      <div className="flex gap-2 items-center flex-wrap">
                         <span className="inline-block px-2 py-0.5 bg-neo-yellow border-2 border-black font-bold text-xs uppercase shadow-sm">
                           {note.subject || "General"}
                         </span>
+                        {note.slot && <SlotBadges slot={note.slot} variant="purple" />}
                         <span className="inline-block px-2 py-0.5 bg-neo-green border-2 border-black font-black text-xs uppercase shadow-sm">
                           {note.price && note.price > 0 ? `₹${note.price}` : "FREE"}
                         </span>

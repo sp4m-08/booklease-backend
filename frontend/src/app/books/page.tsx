@@ -13,6 +13,8 @@ import { NeoInput } from "@/components/ui/NeoInput";
 
 import { BookCover } from "@/components/BookCover";
 import { SlotBadges } from "@/components/SlotBadges";
+import { NeoSelect } from "@/components/ui/NeoSelect";
+import { GraduationCap, Filter, Award, Tag, X, CheckCircle2, Flame, Clock, BookOpen } from "lucide-react";
 
 interface Book {
   id: number;
@@ -24,12 +26,19 @@ interface Book {
   cover_image: string;
   price?: number;
   available: boolean;
+  type?: string;
+  condition?: string;
 }
 
 export default function BooksPage() {
   const container = useRef<HTMLDivElement>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
+  const [selectedSlot, setSelectedSlot] = useState("All");
+  const [selectedExam, setSelectedExam] = useState("All");
+  const [selectedType, setSelectedType] = useState<"All" | "Textbook" | "Printout">("All");
+  const [availability, setAvailability] = useState<"All" | "available" | "rented">("All");
+  const [sortBy, setSortBy] = useState<"popular" | "price_asc" | "price_desc" | "newest">("popular");
 
   const { data: books, isLoading, error } = useQuery<Book[]>({
     queryKey: ["books"],
@@ -40,18 +49,65 @@ export default function BooksPage() {
   });
 
   const branches = ["All", "CSE", "ECE", "EEE", "Mechanical", "Biotech", "Civil", "Common"];
+  const slots = ["All", "A1", "A2", "B1", "B2", "C1", "C2", "D1", "D2", "E1", "E2", "F1", "F2", "G1", "G2"];
+  const examOptions = ["All", "CAT-2", "FAT"];
 
   const filteredBooks = useMemo(() => {
     if (!books) return [];
-    return books.filter((book) => {
-      const matchesSearch = book.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                            book.author.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                            (book.category || "").toLowerCase().includes(searchTerm.toLowerCase());
+    let filtered = books.filter((book) => {
+      const search = searchTerm.toLowerCase();
+      const matchesSearch = 
+        !searchTerm ||
+        book.title.toLowerCase().includes(search) || 
+        book.author.toLowerCase().includes(search) ||
+        (book.category || "").toLowerCase().includes(search) ||
+        (book.type || "").toLowerCase().includes(search) ||
+        (book.slot || "").toLowerCase().includes(search);
+
       const matchesCategory = selectedCategory === "All" || 
                               book.category?.toLowerCase() === selectedCategory.toLowerCase();
-      return matchesSearch && matchesCategory;
+
+      const matchesSlot = selectedSlot === "All" ||
+        (book.slot && (
+          book.slot.toLowerCase() === "all slots" ||
+          book.slot.split(",").map((s) => s.trim().toLowerCase()).includes(selectedSlot.toLowerCase())
+        ));
+
+      const matchesExam = selectedExam === "All" ||
+        book.title.toLowerCase().includes(selectedExam.toLowerCase()) ||
+        (book.slot || "").toLowerCase().includes(selectedExam.toLowerCase());
+
+      const matchesType = 
+        selectedType === "All" ||
+        (selectedType === "Textbook" && (!book.type || book.type.toLowerCase().includes("textbook"))) ||
+        (selectedType === "Printout" && book.type && (book.type.toLowerCase().includes("printout") || book.type.toLowerCase().includes("xerox")));
+
+      const matchesAvailability = 
+        availability === "All" ||
+        (availability === "available" && book.available) ||
+        (availability === "rented" && !book.available);
+
+      return matchesSearch && matchesCategory && matchesSlot && matchesExam && matchesType && matchesAvailability;
     });
-  }, [books, searchTerm, selectedCategory]);
+
+    // Sort items
+    return filtered.sort((a, b) => {
+      if (sortBy === "price_asc") {
+        return (Number(a.price) || 0) - (Number(b.price) || 0);
+      }
+      if (sortBy === "price_desc") {
+        return (Number(b.price) || 0) - (Number(a.price) || 0);
+      }
+      if (sortBy === "newest") {
+        return (b.id || 0) - (a.id || 0);
+      }
+      // default: available first, then id
+      if (a.available !== b.available) {
+        return a.available ? -1 : 1;
+      }
+      return (b.id || 0) - (a.id || 0);
+    });
+  }, [books, searchTerm, selectedCategory, selectedSlot, selectedExam, selectedType, availability, sortBy]);
 
   useGSAP(() => {
     if (filteredBooks.length > 0) {
@@ -65,44 +121,198 @@ export default function BooksPage() {
     }
   }, { dependencies: [filteredBooks], scope: container });
 
+  const hasActiveFilters = 
+    searchTerm !== "" || 
+    selectedCategory !== "All" || 
+    selectedSlot !== "All" || 
+    selectedExam !== "All" || 
+    selectedType !== "All" ||
+    availability !== "All" || 
+    sortBy !== "popular";
+
+  const clearFilters = () => {
+    setSearchTerm("");
+    setSelectedCategory("All");
+    setSelectedSlot("All");
+    setSelectedExam("All");
+    setSelectedType("All");
+    setAvailability("All");
+    setSortBy("popular");
+  };
+
   return (
     <div ref={container} className="max-w-7xl mx-auto w-full px-8 py-12 flex-grow">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 border-b-4 border-black pb-6 gap-6">
         <div>
-          <div className="inline-block border-2 border-black px-3 py-0.5 bg-neo-yellow font-black text-xs uppercase mb-2 shadow-sm">
-            🎓 VIT Vellore Library
+          <div className="inline-flex items-center gap-1.5 border-2 border-black px-3 py-0.5 bg-neo-yellow font-black text-xs uppercase mb-2 shadow-sm">
+            <GraduationCap size={13} className="text-black" />
+            <span>VIT Vellore Library</span>
           </div>
           <h1 className="font-serif text-5xl font-black mb-2">Course Reference Books</h1>
-          <p className="font-medium text-xl text-gray-700">Find and rent syllabus textbooks for your CAT-1, CAT-2, and FAT exam preparation.</p>
+          <p className="font-medium text-xl text-gray-700">Find and rent syllabus textbooks and spiral printouts for your CAT-2 and FAT exam preparation.</p>
         </div>
         <Link href="/books/upload">
-          <NeoButton variant="primary" size="lg" className="bg-neo-green text-black">List a Book for Rent</NeoButton>
+          <NeoButton variant="primary" size="lg" className="bg-neo-green text-black">List a Book or Printout</NeoButton>
         </Link>
       </div>
 
       {/* Discovery / Filter Bar */}
-      <div className="flex flex-col lg:flex-row gap-6 mb-12">
-        <div className="flex-grow">
-          <NeoInput 
-            placeholder="Search by course code, title, or author (e.g. DSD, Cormen, OS, Microprocessors)..." 
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
+      <div className="mb-10 space-y-4 border-4 border-black bg-white p-5 shadow-neo">
+        {/* Top Controls: Search + Dropdowns */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-3">
+          {/* Main Search Input */}
+          <div className="sm:col-span-2 lg:col-span-5">
+            <NeoInput 
+              placeholder="Search by course code, title, or author (e.g. DSD, Cormen, OS)..." 
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+
+          {/* Branch Filter Dropdown */}
+          <div className="sm:col-span-1 lg:col-span-2">
+            <NeoSelect
+              value={selectedCategory}
+              onChange={setSelectedCategory}
+              placeholder="Branch"
+              options={[
+                { label: "All Branches", value: "All" },
+                ...branches.filter((b) => b !== "All").map((b) => ({ label: b, value: b }))
+              ]}
+            />
+          </div>
+
+          {/* Slot Filter Dropdown */}
+          <div className="sm:col-span-1 lg:col-span-2">
+            <NeoSelect
+              value={selectedSlot}
+              onChange={setSelectedSlot}
+              placeholder="Slot"
+              options={[
+                { label: "All Slots", value: "All" },
+                ...slots.filter((s) => s !== "All").map((s) => ({ label: `Slot ${s}`, value: s }))
+              ]}
+            />
+          </div>
+
+          {/* Sort By Dropdown */}
+          <div className="sm:col-span-2 lg:col-span-3">
+            <NeoSelect
+              value={sortBy}
+              onChange={(val) => setSortBy(val as typeof sortBy)}
+              placeholder="Sort By"
+              options={[
+                { label: "Available First", value: "popular" },
+                { label: "Price: Low to High", value: "price_asc" },
+                { label: "Price: High to Low", value: "price_desc" },
+                { label: "Newest Listed", value: "newest" },
+              ]}
+            />
+          </div>
         </div>
-        <div className="flex flex-wrap gap-2 items-center">
-          {branches.map((cat) => (
+
+        {/* Second Row: Format, Exam & Availability Quick Filters */}
+        <div className="flex flex-wrap items-center justify-between gap-4 pt-3 border-t-2 border-dashed border-black">
+          <div className="flex flex-wrap items-center gap-4">
+            {/* Format Filter Pills */}
+            <div className="flex flex-wrap items-center gap-1.5">
+              <span className="text-xs font-black uppercase text-gray-700 mr-1 flex items-center gap-1">
+                <BookOpen size={13} /> Format:
+              </span>
+              {[
+                { label: "All Formats", value: "All" },
+                { label: "Textbooks", value: "Textbook" },
+                { label: "Spiral Printouts / Xerox", value: "Printout" },
+              ].map((fmt) => (
+                <button
+                  key={fmt.value}
+                  onClick={() => setSelectedType(fmt.value as typeof selectedType)}
+                  className={`border-2 border-black px-2.5 py-1 font-black text-xs transition-all ${
+                    selectedType === fmt.value 
+                      ? "bg-neo-yellow text-black shadow-neo" 
+                      : "bg-white text-black hover:bg-neo-yellow"
+                  }`}
+                >
+                  {fmt.label}
+                </button>
+              ))}
+            </div>
+
+            {/* Exam Filter Pills */}
+            <div className="flex flex-wrap items-center gap-1.5">
+              <span className="text-xs font-black uppercase text-gray-700 mr-1 flex items-center gap-1">
+                <Award size={13} /> Exam:
+              </span>
+              {examOptions.map((exam) => (
+                <button
+                  key={exam}
+                  onClick={() => setSelectedExam(exam)}
+                  className={`border-2 border-black px-2.5 py-1 font-black text-xs transition-all ${
+                    selectedExam === exam 
+                      ? "bg-neo-yellow text-black shadow-neo" 
+                      : "bg-white text-black hover:bg-neo-yellow"
+                  }`}
+                >
+                  {exam}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Availability Pills */}
+          <div className="flex flex-wrap items-center gap-1.5">
+            <span className="text-xs font-black uppercase text-gray-700 mr-1 flex items-center gap-1">
+              <CheckCircle2 size={13} /> Status:
+            </span>
+            {[
+              { label: "All Status", value: "All" },
+              { label: "Available Now", value: "available" },
+              { label: "Rented Out", value: "rented" },
+            ].map((st) => (
+              <button
+                key={st.value}
+                onClick={() => setAvailability(st.value as typeof availability)}
+                className={`border-2 border-black px-2.5 py-1 font-black text-xs transition-all ${
+                  availability === st.value 
+                    ? "bg-neo-green text-black shadow-neo" 
+                    : "bg-white text-black hover:bg-neo-yellow"
+                }`}
+              >
+                {st.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Third Row: Quick Branch Pills & Clear All Action */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 pt-2 border-t-2 border-dashed border-gray-200">
+          <div className="flex flex-wrap items-center gap-1.5">
+            <span className="text-xs font-black uppercase text-gray-600 mr-1 flex items-center gap-1">
+              <Filter size={13} /> Branch:
+            </span>
+            {branches.map((cat) => (
+              <button
+                key={cat}
+                onClick={() => setSelectedCategory(cat)}
+                className={`border-2 border-black px-2.5 py-0.5 font-bold text-xs transition-all ${
+                  selectedCategory === cat 
+                    ? "bg-black text-white shadow-neo" 
+                    : "bg-white text-black hover:bg-neo-yellow"
+                }`}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
+
+          {hasActiveFilters && (
             <button
-              key={cat}
-              onClick={() => setSelectedCategory(cat)}
-              className={`border-2 border-black px-4 py-2 font-bold text-sm transition-all ${
-                selectedCategory === cat 
-                  ? "bg-black text-white shadow-neo" 
-                  : "bg-white text-black hover:bg-gray-100"
-              }`}
+              onClick={clearFilters}
+              className="inline-flex items-center gap-1 text-xs font-black uppercase text-red-600 border-2 border-red-600 bg-red-50 hover:bg-red-100 px-3 py-1 transition-all self-start md:self-auto shadow-xs"
             >
-              {cat}
+              <X size={13} /> Clear All Filters
             </button>
-          ))}
+          )}
         </div>
       </div>
 
@@ -116,11 +326,11 @@ export default function BooksPage() {
         <div className="p-12 text-center font-bold text-xl border-4 border-black bg-red-100">Failed to load textbooks.</div>
       ) : books?.length === 0 ? (
         <div className="p-12 text-center font-bold text-2xl border-4 border-black border-dashed bg-white shadow-neo">
-          No textbooks listed for rent right now. Be the first VITian to list one!
+          No textbooks or printouts listed for rent right now. Be the first VITian to list one!
         </div>
       ) : filteredBooks.length === 0 ? (
         <div className="p-12 text-center font-bold text-xl border-4 border-black bg-neo-yellow shadow-neo">
-          No books found matching your search.
+          No books or printouts found matching your search.
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -151,6 +361,11 @@ export default function BooksPage() {
                       <span className="border-2 border-black bg-neo-yellow px-2 py-0.5 text-xs font-bold shadow-sm">
                         {book.category || "General"}
                       </span>
+                      {book.type && book.type !== "Original Textbook" && (
+                        <span className="border-2 border-black bg-neo-blue/80 px-2 py-0.5 text-xs font-bold shadow-sm">
+                          {book.type.includes("Spiral") ? "Spiral Printout" : book.type.includes("Xerox") ? "Xerox Copy" : "Printout"}
+                        </span>
+                      )}
                       <SlotBadges slot={book.slot} rentedSlots={book.rented_slots} />
                     </div>
                     <span className="border-2 border-black bg-neo-green px-2 py-0.5 text-xs font-black shadow-sm">

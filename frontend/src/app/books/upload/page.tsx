@@ -14,13 +14,14 @@ import { NeoSelect } from "@/components/ui/NeoSelect";
 import { NeoMultiSelect } from "@/components/ui/NeoMultiSelect";
 import { NeoButton } from "@/components/ui/NeoButton";
 import { SlotSelector, VIT_INDIVIDUAL_SLOTS } from "@/components/SlotSelector";
-import { AlertTriangle, PhoneCall, ArrowRight } from "lucide-react";
+import { AlertTriangle, PhoneCall, ArrowRight, GraduationCap } from "lucide-react";
 
 const bookSchema = z.object({
   title: z.string().min(3, "Title must be at least 3 characters").max(100),
   author: z.string().min(2, "Author is required").max(100),
   category: z.string().min(2, "Category is required"),
   slot: z.string().optional(),
+  type: z.string().min(1, "Type is required"),
   condition: z.string().min(2, "Condition is required"),
   price: z.string().optional(),
   description: z.string().max(500, "Description cannot exceed 500 characters").optional(),
@@ -39,6 +40,13 @@ export const VIT_BRANCHES = [
   "Common",
 ] as const;
 
+export const BOOK_TYPES = [
+  "Original Textbook",
+  "Spiral-Bound Printout",
+  "Xerox / Printed Booklet",
+  "Loose Module Printout",
+] as const;
+
 export const BOOK_CONDITIONS = [
   "Brand New",
   "Like New",
@@ -52,11 +60,12 @@ export const VIT_SLOTS = [
 ] as const;
 
 export default function BookUploadPage() {
-  const { register, handleSubmit, control, formState: { errors } } = useForm<BookFormData>({
+  const { register, handleSubmit, control, watch, formState: { errors } } = useForm<BookFormData>({
     resolver: zodResolver(bookSchema),
     defaultValues: {
       price: "0",
       category: "CSE",
+      type: "Original Textbook",
       condition: "Good",
     }
   });
@@ -105,6 +114,7 @@ export default function BookUploadPage() {
         author: data.author,
         category: data.category,
         slot: formattedSlots,
+        type: data.type || "Original Textbook",
         condition: data.condition,
         price: isNaN(numPrice) ? 0 : numPrice,
         description: data.description,
@@ -112,7 +122,7 @@ export default function BookUploadPage() {
         available: true,
       });
 
-      toast.success("Textbook uploaded successfully!");
+      toast.success("Textbook or printout listed successfully!");
       router.push("/books");
 
     } catch (err: any) {
@@ -123,14 +133,17 @@ export default function BookUploadPage() {
     }
   };
 
+  const selectedType = watch("type");
+
   return (
     <div className="max-w-3xl mx-auto w-full px-8 py-12 flex-grow">
       <div className="mb-8 border-b-4 border-black pb-4">
-        <div className="inline-block border-2 border-black px-3 py-0.5 bg-neo-yellow font-black text-xs uppercase mb-2 shadow-sm">
-          🎓 VIT Vellore Campus
+        <div className="inline-flex items-center gap-1.5 border-2 border-black px-3 py-0.5 bg-neo-yellow font-black text-xs uppercase mb-2 shadow-sm">
+          <GraduationCap size={13} className="text-black" />
+          <span>VIT Vellore Campus</span>
         </div>
-        <h1 className="font-serif text-5xl font-black mb-1">List a Textbook for Rent</h1>
-        <p className="font-medium text-lg text-gray-700">Help fellow VITians ace their CAT & FAT exams by listing your course reference books.</p>
+        <h1 className="font-serif text-5xl font-black mb-1">List a Book or Printout</h1>
+        <p className="font-medium text-lg text-gray-700">List course textbooks, spiral-bound ebook printouts, or module xerox copies for fellow VITians.</p>
       </div>
 
       {!hasPhone && (
@@ -144,8 +157,8 @@ export default function BookUploadPage() {
                 <h3 className="font-black text-xl flex items-center gap-2 text-black">
                   Phone Number Required
                 </h3>
-                <p className="font-medium text-sm mt-1 text-black/90">
-                  You must add your mobile number in your profile before uploading books so buyers and borrowers can contact you directly for handovers.
+                <p className="text-sm font-medium text-gray-800">
+                  You need to save your WhatsApp phone number in your profile so students can coordinate campus handovers with you.
                 </p>
               </div>
             </div>
@@ -167,20 +180,21 @@ export default function BookUploadPage() {
 
         {/* Book Title */}
         <div className="space-y-2">
-          <label className="font-bold text-xl block">Book Title / Course *</label>
+          <label className="font-bold text-xl block">Title / Subject Course *</label>
           <NeoInput
             {...register("title")}
-            placeholder="e.g. Digital Design (DSD) or Introduction to Algorithms"
+            placeholder="e.g. Introduction to Algorithms (CLRS) or DSD Module Xerox"
           />
           {errors.title && <span className="text-red-900 font-bold bg-white px-2 border-2 border-black inline-block mt-2 shadow-sm">{errors.title.message}</span>}
         </div>
 
+        {/* Author / Source & Branch */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-2">
-            <label className="font-bold text-lg block">Author *</label>
+            <label className="font-bold text-lg block">Author / Source *</label>
             <NeoInput
               {...register("author")}
-              placeholder="e.g. Morris Mano"
+              placeholder="e.g. Cormen / Ebook Printout / SJT Xerox"
             />
             {errors.author && <span className="text-red-900 font-bold bg-white px-2 border-2 border-black inline-block mt-2 shadow-sm">{errors.author.message}</span>}
           </div>
@@ -202,22 +216,23 @@ export default function BookUploadPage() {
           </div>
         </div>
 
+        {/* Format / Type & Condition & Price */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="space-y-2">
-            <label className="font-bold text-xl block">Slot (Optional)</label>
+            <label className="font-bold text-xl block">Format / Type *</label>
             <Controller
-              name="slot"
+              name="type"
               control={control}
               render={({ field }) => (
-                <NeoMultiSelect
-                  value={field.value ? field.value.split(',').map(s => s.trim()).filter(Boolean) : []}
-                  onChange={(arr) => field.onChange(arr.join(', '))}
-                  options={VIT_SLOTS.map(s => ({ label: s, value: s }))}
-                  placeholder="Select Slots (Multiple)"
+                <NeoSelect
+                  value={field.value || "Original Textbook"}
+                  onChange={field.onChange}
+                  options={BOOK_TYPES.map(t => ({ label: t, value: t }))}
                 />
               )}
             />
           </div>
+
           <div className="space-y-2">
             <label className="font-bold text-xl block">Condition *</label>
             <Controller
@@ -233,6 +248,7 @@ export default function BookUploadPage() {
             />
             {errors.condition && <span className="text-red-900 font-bold bg-white px-2 border-2 border-black inline-block mt-2 shadow-sm">{errors.condition.message}</span>}
           </div>
+
           <div className="space-y-2">
             <label className="font-bold text-lg block">Price (₹)</label>
             <NeoInput
@@ -244,6 +260,13 @@ export default function BookUploadPage() {
             />
           </div>
         </div>
+
+        {selectedType && selectedType.includes("Printout") && (
+          <div className="bg-neo-yellow border-2 border-black p-3 font-bold text-xs text-black shadow-sm flex items-center gap-2">
+            <span>💡</span>
+            <span>Awesome! Listing your spiral/ebook printouts saves paper and helps juniors skip costly xerox shop queues!</span>
+          </div>
+        )}
 
         {/* Multi-Slot Selector */}
         <SlotSelector

@@ -23,3 +23,11 @@ export const VIT_SLOTS = [
   "G2",
   "All Slots",
 ] as const;
+
+export const BOOK_TYPES = [
+  "Original Textbook",
+  "Spiral-Bound Printout",
+  "Xerox / Printed Booklet",
+  "Loose Module Printout",
+] as const;
+

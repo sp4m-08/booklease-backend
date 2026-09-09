@@ -197,7 +197,7 @@ export default function Home() {
               <GraduationCap size={14} className="jiggle-icon" /> For VIT Vellore Students
             </span>
             <span className="flex items-center gap-1 border-2 border-black rounded-full px-4 py-1 font-black bg-neo-green shadow-neo text-xs uppercase">
-              <Zap size={14} className="pulse-icon" /> CAT-1 • CAT-2 • FAT Prep
+              <Zap size={14} className="pulse-icon" /> CAT-2 • FAT Prep
             </span>
           </div>
 

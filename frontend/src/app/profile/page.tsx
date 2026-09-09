@@ -12,7 +12,7 @@ import { NeoButton } from "@/components/ui/NeoButton";
 import { NeoInput } from "@/components/ui/NeoInput";
 import { BookCover } from "@/components/BookCover";
 import { NoteCover } from "@/components/NoteCover";
-import { BookOpen, FileText, Heart, User as UserIcon, Trash2, ExternalLink, Edit3 } from "lucide-react";
+import { BookOpen, FileText, Heart, User as UserIcon, Trash2, ExternalLink, Edit3, ShieldCheck } from "lucide-react";
 import { EditListingModal } from "@/components/EditListingModal";
 import { SlotBadges } from "@/components/SlotBadges";
 
@@ -174,8 +174,9 @@ export default function ProfilePage() {
         </div>
         {profile.is_admin && (
           <Link href="/admin">
-            <span className="border-4 border-black bg-red-500 text-white font-black px-4 py-2 text-sm shadow-neo hover:bg-red-600 inline-block">
-              🛡️ Admin Moderation Panel
+            <span className="border-4 border-black bg-red-500 text-white font-black px-4 py-2 text-sm shadow-neo hover:bg-red-600 inline-flex items-center gap-1.5">
+              <ShieldCheck size={16} />
+              <span>Admin Moderation Panel</span>
             </span>
           </Link>
         )}

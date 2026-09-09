@@ -84,8 +84,9 @@ export default function NotificationsPage() {
     <div className="max-w-4xl mx-auto w-full px-6 py-12 flex-grow">
       <div className="flex justify-between items-end mb-10 border-b-4 border-black pb-6">
         <div>
-          <div className="inline-block border-2 border-black px-3 py-0.5 bg-neo-yellow font-black text-xs uppercase mb-2 shadow-sm">
-            🎓 Campus Alerts
+          <div className="inline-flex items-center gap-1.5 border-2 border-black px-3 py-0.5 bg-neo-yellow font-black text-xs uppercase mb-2 shadow-sm">
+            <Bell size={13} className="text-black" />
+            <span>Campus Alerts</span>
           </div>
           <h1 className="font-serif text-5xl font-black">Notifications</h1>
         </div>

@@ -14,7 +14,7 @@ import { NeoSelect } from "@/components/ui/NeoSelect";
 import { NeoMultiSelect } from "@/components/ui/NeoMultiSelect";
 import { NeoButton } from "@/components/ui/NeoButton";
 import { SlotSelector, VIT_INDIVIDUAL_SLOTS } from "@/components/SlotSelector";
-import { AlertTriangle, PhoneCall, ArrowRight } from "lucide-react";
+import { AlertTriangle, PhoneCall, ArrowRight, Zap } from "lucide-react";
 
 const noteSchema = z.object({
   title: z.string().min(3, "Title must be at least 3 characters").max(100),
@@ -125,8 +125,9 @@ export default function NoteUploadPage() {
   return (
     <div className="max-w-3xl mx-auto w-full px-8 py-12 flex-grow">
       <div className="mb-8 border-b-4 border-black pb-4">
-        <div className="inline-block border-2 border-black px-3 py-0.5 bg-neo-purple font-black text-xs uppercase mb-2 shadow-sm">
-          ⚡ VIT Exam Revision Hub
+        <div className="inline-flex items-center gap-1.5 border-2 border-black px-3 py-0.5 bg-neo-purple font-black text-xs uppercase mb-2 shadow-sm">
+          <Zap size={13} className="fill-black text-black" />
+          <span>VIT Exam Revision Hub</span>
         </div>
         <h1 className="font-serif text-5xl font-black mb-1">Share Exam Study Notes</h1>
         <p className="font-medium text-lg text-gray-700">Upload handwritten notes, module formula sheets, and solved CAT/FAT question banks for fellow VITians.</p>
@@ -169,7 +170,7 @@ export default function NoteUploadPage() {
             <label className="font-bold text-xl block">Note Title *</label>
             <NeoInput 
               {...register("title")}
-              placeholder="e.g. OS CAT-1 Module 1-3 Cheatsheet"
+              placeholder="e.g. OS CAT-2 Module 1-3 Cheatsheet"
             />
             {errors.title && <span className="text-red-900 font-bold bg-white px-2 border-2 border-black inline-block mt-2 shadow-sm">{errors.title.message}</span>}
           </div>

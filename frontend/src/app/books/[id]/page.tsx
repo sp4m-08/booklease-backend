@@ -11,12 +11,17 @@ import { NeoButton } from "@/components/ui/NeoButton";
 import { NeoSelect } from "@/components/ui/NeoSelect";
 import { BookCover } from "@/components/BookCover";
 import { SlotBadges } from "@/components/SlotBadges";
-import { EditListingModal } from "@/components/EditListingModal";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { ArrowLeft, Heart, MessageSquare, Trash2, Calendar, UserCheck, BookOpen, Bell } from "lucide-react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { useRef } from "react";
+
+const EditListingModal = dynamic(
+  () => import("@/components/EditListingModal").then((mod) => mod.EditListingModal),
+  { ssr: false }
+);
 
 
 export default function BookDetailsPage() {
@@ -250,6 +255,11 @@ export default function BookDetailsPage() {
               <span className="inline-block border-2 border-black bg-neo-purple px-3 py-1 font-black text-xs uppercase shadow-neo">
                 {book.category || "Academic Textbook"}
               </span>
+              {book.type && (
+                <span className="inline-block border-2 border-black bg-neo-blue/80 px-3 py-1 font-black text-xs uppercase shadow-neo">
+                  {book.type}
+                </span>
+              )}
               <SlotBadges slot={book.slot} rentedSlots={book.rented_slots} variant="yellow" />
               <span className="inline-block border-2 border-black bg-neo-green px-3 py-1 font-black text-sm uppercase shadow-neo">
                 {book.price && book.price > 0 ? `₹${book.price} Rent` : "FREE to Rent"}

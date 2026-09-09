@@ -41,13 +41,13 @@ export function NeoSelect({ value, onChange, options, placeholder = "Select an o
       </button>
 
       {isOpen && (
-        <div className="absolute z-[100] w-full mt-1 border-4 border-black bg-white shadow-neo max-h-60 overflow-y-auto">
+        <div className="absolute z-[100] left-0 w-full min-w-[140px] mt-1 border-4 border-black bg-white shadow-neo max-h-60 overflow-y-auto">
           {options.map((option) => (
             <button
               key={option.value}
               type="button"
-              className={`w-full text-left p-3 font-bold border-b-2 border-black last:border-b-0 hover:bg-neo-yellow transition-colors ${
-                value === option.value ? "bg-neo-purple text-black" : "text-gray-800"
+              className={`w-full text-left px-3.5 py-2.5 font-bold text-sm border-b-2 border-black last:border-b-0 hover:bg-neo-yellow transition-colors truncate ${
+                value === option.value ? "bg-neo-purple text-black" : "text-gray-900"
               }`}
               onClick={() => {
                 onChange(option.value);

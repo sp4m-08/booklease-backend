@@ -7,7 +7,7 @@ import api from "@/lib/api";
 import { uploadFile } from "@/lib/upload";
 import { NeoButton } from "@/components/ui/NeoButton";
 import { NeoInput } from "@/components/ui/NeoInput";
-import { VIT_BRANCHES, VIT_SLOTS } from "@/lib/constants";
+import { VIT_BRANCHES, VIT_SLOTS, BOOK_TYPES } from "@/lib/constants";
 import { SlotSelector, VIT_INDIVIDUAL_SLOTS } from "@/components/SlotSelector";
 import { X, UploadCloud, Check, Edit3 } from "lucide-react";
 
@@ -29,6 +29,7 @@ export function EditListingModal({ isOpen, type, item, onClose, onSuccess }: Edi
       title: "",
       author: "",
       category: "CSE",
+      bookType: "Original Textbook",
       subject: "CSE",
       price: "0",
       description: "",
@@ -41,6 +42,7 @@ export function EditListingModal({ isOpen, type, item, onClose, onSuccess }: Edi
       setValue("title", item.title || "");
       setValue("author", item.author || "");
       setValue("category", item.category || "CSE");
+      setValue("bookType", item.type || "Original Textbook");
       setValue("subject", item.subject || "CSE");
       setValue("price", (item.price !== undefined && item.price !== null) ? String(item.price) : "0");
       setValue("description", item.description || "");
@@ -83,6 +85,7 @@ export function EditListingModal({ isOpen, type, item, onClose, onSuccess }: Edi
           title: data.title,
           author: data.author,
           category: data.category,
+          type: data.bookType || "Original Textbook",
           slot: formattedSlots,
           price: isNaN(numPrice) ? 0 : numPrice,
           description: data.description,
@@ -120,8 +123,9 @@ export function EditListingModal({ isOpen, type, item, onClose, onSuccess }: Edi
         {/* Header */}
         <div className="flex justify-between items-start border-b-4 border-black pb-4">
           <div>
-            <div className="inline-block border-2 border-black px-2.5 py-0.5 bg-neo-yellow font-black text-xs uppercase mb-1 shadow-sm">
-              ✏️ Edit {type === "book" ? "Textbook Listing" : "Study Note"}
+            <div className="inline-flex items-center gap-1.5 border-2 border-black px-2.5 py-0.5 bg-neo-yellow font-black text-xs uppercase mb-1 shadow-sm">
+              <Edit3 size={12} className="text-black" />
+              <span>Edit {type === "book" ? "Textbook / Printout" : "Study Note"}</span>
             </div>
             <h2 className="font-serif text-3xl font-black">Edit Listing Information</h2>
           </div>
@@ -139,18 +143,18 @@ export function EditListingModal({ isOpen, type, item, onClose, onSuccess }: Edi
           {/* Title */}
           <div className="space-y-1">
             <label className="font-bold text-base block">
-              {type === "book" ? "Book Title *" : "Note Title *"}
+              {type === "book" ? "Book / Printout Title *" : "Note Title *"}
             </label>
             <NeoInput 
               {...register("title", { required: "Title is required" })}
-              placeholder={type === "book" ? "e.g. Digital Logic and Computer Design" : "e.g. OS CAT-1 Cheatsheet"}
+              placeholder={type === "book" ? "e.g. Digital Logic and Computer Design" : "e.g. OS CAT-2 Cheatsheet"}
             />
             {errors.title && <span className="text-red-700 font-bold text-xs">{errors.title.message as string}</span>}
           </div>
 
-          {/* Book-Specific: Author & Branch */}
+          {/* Book-Specific: Author, Branch & Format */}
           {type === "book" ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div className="space-y-1">
                 <label className="font-bold text-base block">Author *</label>
                 <NeoInput 
@@ -168,6 +172,18 @@ export function EditListingModal({ isOpen, type, item, onClose, onSuccess }: Edi
                 >
                   {VIT_BRANCHES.map((b) => (
                     <option key={b} value={b}>{b}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="space-y-1">
+                <label className="font-bold text-base block">Format / Type *</label>
+                <select
+                  {...register("bookType")}
+                  className="w-full border-4 border-black p-3 font-bold bg-white focus:outline-none focus:ring-4 focus:ring-black shadow-sm"
+                >
+                  {BOOK_TYPES.map((t) => (
+                    <option key={t} value={t}>{t}</option>
                   ))}
                 </select>
               </div>
@@ -214,8 +230,8 @@ export function EditListingModal({ isOpen, type, item, onClose, onSuccess }: Edi
                   {...register("available")}
                   className="w-full border-4 border-black p-3 font-bold bg-white focus:outline-none focus:ring-4 focus:ring-black shadow-sm"
                 >
-                  <option value="true">🟢 Available to Rent</option>
-                  <option value="false">🔴 Currently Rented Out</option>
+                  <option value="true">Available to Rent</option>
+                  <option value="false">Currently Rented Out</option>
                 </select>
               </div>
             )}
