@@ -3,6 +3,7 @@ package api
 import (
 	"net/http"
 	"strconv"
+	"strings"
 
 	"bookapi/models"
 	"bookapi/services"
@@ -72,6 +73,11 @@ func CreateNote(c *gin.Context) {
 	var user models.User
 	if err := services.DB.Where("uid = ?", uid).First(&user).Error; err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "User not found"})
+		return
+	}
+
+	if strings.TrimSpace(user.PhoneNumber) == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Please enter your phone number in your profile before uploading notes."})
 		return
 	}
 

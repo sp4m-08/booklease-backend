@@ -107,6 +107,11 @@ func CreateBook(c *gin.Context) {
 		return
 	}
 
+	if strings.TrimSpace(user.PhoneNumber) == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Please enter your phone number in your profile before listing a book."})
+		return
+	}
+
 	newBook.UploadedBy = user.ID
 	newBook.Available = true
 	newBook.Slot = newBook.Slot

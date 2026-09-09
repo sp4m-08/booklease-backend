@@ -1,0 +1,30 @@
+# Git & Config
+.git
+.gitignore
+.agents
+.air.toml
+
+# Binaries & Executables
+*.exe
+main
+main.exe
+tmp/
+
+# Frontend (handled in its own build context)
+frontend/node_modules
+frontend/.next
+frontend/.env.local
+
+# Scratch and debugging scripts
+check_rentals.go
+fix_notes.go
+fix_rentals.go
+
+# Environment & Credentials (sensitive - pass via env in production)
+.env.local
+
+# OS / IDE
+.DS_Store
+Thumbs.db
+.vscode
+.idea
