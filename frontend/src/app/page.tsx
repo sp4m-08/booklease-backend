@@ -266,11 +266,12 @@ export default function Home() {
           <span className="text-xs font-black uppercase tracking-wider bg-black text-white px-3 py-1 border border-black inline-block mb-3">
             Campus Workflow
           </span>
+          <br />
           <h2 className="font-serif text-5xl md:text-6xl font-black inline-block bg-neo-green px-6 py-2 border-4 border-black shadow-neo transform -rotate-1">
             How Booklease Works
           </h2>
           <p className="font-medium text-lg text-gray-700 mt-4 max-w-xl mx-auto">
-            From discovering a reference book to campus meetup in 3 simple steps.
+            From discovering a reference book to campus meetup in simple steps.
           </p>
         </div>
 
@@ -287,20 +288,30 @@ export default function Home() {
           {[
             {
               num: "01",
-              title: "Discover CAT & FAT Material",
-              desc: "Search by course code, book title, or subject (e.g. DSD, MPMC, OS, DSA, Calculus, Chemistry). Find textbooks listed by students in your own campus blocks.",
+              tag: "CAT-2 & FAT Exam Prep",
+              title: "Worried About CAT-2?",
+              desc: "Find syllabus reference textbooks, handwritten formula sheets, and solved question papers uploaded by peers in your own campus blocks.",
               color: "white"
             },
             {
               num: "02",
-              title: "Request & Coordinate on WhatsApp",
-              desc: "Choose a rental duration (7 days for CAT, 15 days for FAT, or semester). Once the owner accepts, coordinate a quick meetup at SJT, TT, Library, Gazebo, or Hostels.",
+              tag: "Slot-Based Rentals",
+              title: "Request & Connect on WhatsApp",
+              desc: "Choose durations tailored to your exam slot (A1–G2) or custom days. Chat directly with student owners on WhatsApp and coordinate a quick handover wherever you like across campus.",
               color: "blue"
             },
             {
               num: "03",
+              tag: "Exclusive Student Feature",
+              title: "Sell or Rent Your Ebook Printouts",
+              desc: "Took spiral printouts of 200-page ebooks or module PPT slides? Don't throw them in the dustbin after exams! List your spiral printouts and xerox booklets to recover your printing costs.",
+              color: "yellow"
+            },
+            {
+              num: "04",
+              tag: "Zero Late Fees",
               title: "Ace Exams & 1-Click Return",
-              desc: "Complete your exam prep without spending thousands on new books. Return the book to the owner with one click on your dashboard.",
+              desc: "Complete your exam revision without spending thousands on new textbooks. Return the book or pass materials to the next student with a single click on your dashboard.",
               color: "peach"
             },
           ].map((step, i) => (
@@ -318,7 +329,10 @@ export default function Home() {
                 {step.num}
               </div>
               <NeoCard color={step.color as any} className="w-full relative z-20">
-                <h3 className="font-serif text-3xl font-black mb-3">{step.title}</h3>
+                <span className="inline-block border-2 border-black bg-black text-white px-2 py-0.5 text-xs font-black uppercase mb-2">
+                  {step.tag}
+                </span>
+                <h3 className="font-serif text-2xl md:text-3xl font-black mb-3">{step.title}</h3>
                 <p className="font-medium text-base text-gray-800 leading-relaxed">{step.desc}</p>
               </NeoCard>
             </div>
@@ -336,34 +350,44 @@ export default function Home() {
             <h2 className="font-serif text-5xl md:text-6xl font-black">Everything You Need for Exam Week</h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             <NeoCard color="purple" className="feature-card hover:-translate-y-2 transition-transform duration-300">
-              <div className="h-16 w-16 bg-white border-4 border-black rounded-full flex items-center justify-center mb-6 shadow-neo text-3xl text-neo-purple drop-shadow-[1px_1px_0px_rgba(0,0,0,1)]">
-                <Clock size={32} className="jiggle-icon" />
+              <div className="h-14 w-14 bg-white border-4 border-black rounded-full flex items-center justify-center mb-5 shadow-neo text-2xl text-neo-purple drop-shadow-[1px_1px_0px_rgba(0,0,0,1)]">
+                <Clock size={28} className="jiggle-icon" />
               </div>
-              <h3 className="font-serif text-3xl font-black mb-3">CAT & FAT Sprints</h3>
-              <p className="font-medium text-base text-gray-900 leading-relaxed">
-                Rent standard syllabus reference books for 7 or 15 days. Save money and pass the book along to the next student once your exams wrap up.
+              <h3 className="font-serif text-2xl font-black mb-2">CAT-2 & FAT Sprints</h3>
+              <p className="font-medium text-sm text-gray-900 leading-relaxed">
+                Rent standard syllabus reference books for flexible exam durations. Save money and pass the book along to the next student once exams finish.
               </p>
             </NeoCard>
 
-            <NeoCard color="blue" className="feature-card mt-0 md:mt-8 hover:-translate-y-2 transition-transform duration-300">
-              <div className="h-16 w-16 bg-white border-4 border-black rounded-full flex items-center justify-center mb-6 shadow-neo text-3xl text-blue-300 drop-shadow-[1px_1px_0px_rgba(0,0,0,1)]">
-                <FileText size={32} className="jiggle-icon" />
+            <NeoCard color="blue" className="feature-card hover:-translate-y-2 transition-transform duration-300">
+              <div className="h-14 w-14 bg-white border-4 border-black rounded-full flex items-center justify-center mb-5 shadow-neo text-2xl text-blue-300 drop-shadow-[1px_1px_0px_rgba(0,0,0,1)]">
+                <FileText size={28} className="jiggle-icon" />
               </div>
-              <h3 className="font-serif text-3xl font-black mb-3">Module Notes & Solved Papers</h3>
-              <p className="font-medium text-base text-gray-900 leading-relaxed">
-                Download handwritten class notes, module formula sheets, and solved CAT question papers uploaded by high-GPA peers.
+              <h3 className="font-serif text-2xl font-black mb-2">Notes & Solved Papers</h3>
+              <p className="font-medium text-sm text-gray-900 leading-relaxed">
+                Download handwritten class notes, module formula sheets, and solved CAT question papers uploaded by fellow students in your branch.
               </p>
             </NeoCard>
 
-            <NeoCard color="peach" className="feature-card mt-0 md:mt-16 hover:-translate-y-2 transition-transform duration-300">
-              <div className="h-16 w-16 bg-white border-4 border-black rounded-full flex items-center justify-center mb-6 shadow-neo text-3xl text-neo-peach drop-shadow-[1px_1px_0px_rgba(0,0,0,1)]">
-                <MapPin size={32} className="jiggle-icon" />
+            <NeoCard color="yellow" className="feature-card hover:-translate-y-2 transition-transform duration-300">
+              <div className="h-14 w-14 bg-white border-4 border-black rounded-full flex items-center justify-center mb-5 shadow-neo text-2xl text-yellow-600 drop-shadow-[1px_1px_0px_rgba(0,0,0,1)]">
+                <BookOpen size={28} className="jiggle-icon" />
               </div>
-              <h3 className="font-serif text-3xl font-black mb-3">Hostel & Block Handover</h3>
-              <p className="font-medium text-base text-gray-900 leading-relaxed">
-                Coordinate handovers right inside VIT campus. Meet at the Central Library, SJT, TT, MB, PRB, Foodys, or your hostel gate.
+              <h3 className="font-serif text-2xl font-black mb-2">Ebook Printouts Hub</h3>
+              <p className="font-medium text-sm text-gray-900 leading-relaxed">
+                Turn your spiral-bound ebook prints and module xerox booklets into cash instead of throwing them into the trash bin.
+              </p>
+            </NeoCard>
+
+            <NeoCard color="peach" className="feature-card hover:-translate-y-2 transition-transform duration-300">
+              <div className="h-14 w-14 bg-white border-4 border-black rounded-full flex items-center justify-center mb-5 shadow-neo text-2xl text-neo-peach drop-shadow-[1px_1px_0px_rgba(0,0,0,1)]">
+                <MapPin size={28} className="jiggle-icon" />
+              </div>
+              <h3 className="font-serif text-2xl font-black mb-2">Campus Handovers</h3>
+              <p className="font-medium text-sm text-gray-900 leading-relaxed">
+                Coordinate fast handovers at any location across campus convenient for you and the owner.
               </p>
             </NeoCard>
           </div>
