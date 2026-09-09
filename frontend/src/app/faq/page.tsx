@@ -7,7 +7,7 @@ import { NeoCard } from "@/components/ui/NeoCard";
 import { NeoInput } from "@/components/ui/NeoInput";
 import { NeoButton } from "@/components/ui/NeoButton";
 import Link from "next/link";
-import { ChevronDown, BookOpen, ShieldCheck, RefreshCw, GraduationCap, Clock, MapPin, Zap, Sparkles, Bookmark, UploadCloud } from "lucide-react";
+import { ChevronDown, BookOpen, ShieldCheck, RefreshCw, GraduationCap, Clock, MapPin, Sparkles, Bookmark, UploadCloud } from "lucide-react";
 
 interface FAQItem {
   id: number;
@@ -94,7 +94,7 @@ export default function FAQPage() {
       {/* Header */}
       <div className="text-center mb-12">
         <div className="inline-flex items-center gap-2 border-4 border-black bg-neo-yellow px-4 py-1.5 text-sm font-black uppercase mb-4 shadow-neo">
-          <Zap className="w-4 h-4 fill-black text-black" />
+          <Sparkles className="w-4 h-4 text-black" />
           <span>Built for VIT Students</span>
         </div>
         <h1 className="font-serif text-5xl md:text-6xl font-black mb-4">

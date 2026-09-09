@@ -13,7 +13,7 @@ import { NeoInput } from "@/components/ui/NeoInput";
 import { NeoSelect } from "@/components/ui/NeoSelect";
 import { SlotBadges } from "@/components/SlotBadges";
 import { NoteCover } from "@/components/NoteCover";
-import { ThumbsUp, Filter, Sparkles, X, ArrowUpDown, Tag, Flame, Clock, Award, Zap } from "lucide-react";
+import { ThumbsUp, Filter, Sparkles, X, ArrowUpDown, Tag, Flame, Clock, Award } from "lucide-react";
 
 interface Note {
   id: number;
@@ -49,6 +49,8 @@ export default function NotesPage() {
       const response = await api.get("/notes/");
       return response.data;
     },
+    refetchOnMount: "always",
+    staleTime: 0,
   });
 
   const branches = ["All", "CSE", "ECE", "EEE", "Mechanical", "Biotech", "Civil", "Common"];
@@ -137,7 +139,7 @@ export default function NotesPage() {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 border-b-4 border-black pb-6 gap-6">
         <div>
           <div className="inline-flex items-center gap-1.5 border-2 border-black px-3 py-0.5 bg-neo-purple font-black text-xs uppercase mb-2 shadow-sm">
-            <Zap size={13} className="fill-black text-black" />
+            <Sparkles size={13} className="text-black" />
             <span>Exam Revision Hub</span>
           </div>
           <h1 className="font-serif text-5xl font-black mb-2">CAT & FAT Study Notes</h1>

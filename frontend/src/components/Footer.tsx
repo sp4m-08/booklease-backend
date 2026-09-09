@@ -7,7 +7,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import { 
   GraduationCap, 
-  Zap, 
+  Sparkles, 
   MapPin, 
   Book, 
   FileText, 
@@ -73,7 +73,7 @@ export default function Footer() {
                 <GraduationCap size={14} /> VIT Vellore Verified
               </span>
               <span className="flex items-center gap-1 border-2 border-black px-2.5 py-0.5 bg-neo-yellow font-black text-xs uppercase shadow-sm">
-                <Zap size={14} /> CAT & FAT Prep
+                <Sparkles size={14} /> CAT & FAT Prep
               </span>
               <span className="flex items-center gap-1 border-2 border-black px-2.5 py-0.5 bg-neo-peach font-black text-xs uppercase shadow-sm">
                 <MapPin size={14} /> SJT • TT • Hostels

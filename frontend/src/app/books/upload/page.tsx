@@ -6,6 +6,7 @@ import * as z from "zod";
 import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
 import api from "@/lib/api";
 import { uploadFile } from "@/lib/upload";
 import { toast } from "sonner";
@@ -71,6 +72,7 @@ export default function BookUploadPage() {
   });
   const { user, userProfile, loading } = useAuth();
   const router = useRouter();
+  const queryClient = useQueryClient();
   const [selectedSlots, setSelectedSlots] = useState<string[]>(["A1"]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -122,8 +124,12 @@ export default function BookUploadPage() {
         available: true,
       });
 
+      await queryClient.invalidateQueries({ queryKey: ["books"] });
+      await queryClient.invalidateQueries({ queryKey: ["mybooks"] });
+
       toast.success("Textbook or printout listed successfully!");
       router.push("/books");
+      router.refresh();
 
     } catch (err: any) {
       console.error(err);

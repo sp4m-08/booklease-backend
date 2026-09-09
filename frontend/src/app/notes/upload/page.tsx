@@ -6,6 +6,7 @@ import * as z from "zod";
 import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
 import api from "@/lib/api";
 import { uploadFile } from "@/lib/upload";
 import { toast } from "sonner";
@@ -14,7 +15,7 @@ import { NeoSelect } from "@/components/ui/NeoSelect";
 import { NeoMultiSelect } from "@/components/ui/NeoMultiSelect";
 import { NeoButton } from "@/components/ui/NeoButton";
 import { SlotSelector, VIT_INDIVIDUAL_SLOTS } from "@/components/SlotSelector";
-import { AlertTriangle, PhoneCall, ArrowRight, Zap } from "lucide-react";
+import { AlertTriangle, PhoneCall, ArrowRight, Sparkles } from "lucide-react";
 
 const noteSchema = z.object({
   title: z.string().min(3, "Title must be at least 3 characters").max(100),
@@ -61,6 +62,7 @@ export default function NoteUploadPage() {
   });
   const { user, userProfile, loading } = useAuth();
   const router = useRouter();
+  const queryClient = useQueryClient();
   const [selectedSlots, setSelectedSlots] = useState<string[]>(["A1"]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -111,8 +113,12 @@ export default function NoteUploadPage() {
         is_public: true,
       });
 
+      await queryClient.invalidateQueries({ queryKey: ["notes"] });
+      await queryClient.invalidateQueries({ queryKey: ["mynotes"] });
+
       toast.success("Note uploaded successfully!");
       router.push("/notes");
+      router.refresh();
 
     } catch (err: any) {
       console.error(err);
@@ -126,7 +132,7 @@ export default function NoteUploadPage() {
     <div className="max-w-3xl mx-auto w-full px-8 py-12 flex-grow">
       <div className="mb-8 border-b-4 border-black pb-4">
         <div className="inline-flex items-center gap-1.5 border-2 border-black px-3 py-0.5 bg-neo-purple font-black text-xs uppercase mb-2 shadow-sm">
-          <Zap size={13} className="fill-black text-black" />
+          <Sparkles size={13} className="text-black" />
           <span>VIT Exam Revision Hub</span>
         </div>
         <h1 className="font-serif text-5xl font-black mb-1">Share Exam Study Notes</h1>

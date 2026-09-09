@@ -46,6 +46,8 @@ export default function BooksPage() {
       const response = await api.get("/book/");
       return response.data;
     },
+    refetchOnMount: "always",
+    staleTime: 0,
   });
 
   const branches = ["All", "CSE", "ECE", "EEE", "Mechanical", "Biotech", "Civil", "Common"];
