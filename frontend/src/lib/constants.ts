@@ -19,6 +19,8 @@ export const VIT_SLOTS = [
   "D2",
   "E1",
   "E2",
+  "F1",
+  "F2",
   "G1",
   "G2",
   "All Slots",

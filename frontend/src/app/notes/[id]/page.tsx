@@ -7,7 +7,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
 import { NeoCard } from "@/components/ui/NeoCard";
 import { NeoButton } from "@/components/ui/NeoButton";
-import { getImageUrl, formatStudentName } from "@/lib/utils";
+import { getImageUrl, formatStudentName, getAvailableSlotOptions } from "@/lib/utils";
 import Link from "next/link";
 import { toast } from "sonner";
 import { ArrowLeft, Download, ExternalLink, FileText, Trash2, UserCheck, MessageSquare, ThumbsUp, Edit3, Bell } from "lucide-react";
@@ -360,12 +360,8 @@ export default function NoteDetailPage() {
                     router.push("/login");
                     return;
                   }
-                  if (note.slot) {
-                    const firstSlot = note.slot.split(',')[0].trim();
-                    setRentDuration(firstSlot);
-                  } else {
-                    setRentDuration("A1");
-                  }
+                  const slotOptions = getAvailableSlotOptions(note.slot, note.rented_slots);
+                  setRentDuration(slotOptions[0]?.value || "All Slots");
                   setIsRentModalOpen(true);
                 }}
                 className="w-full text-xl bg-neo-green flex items-center justify-center gap-2 group hover:scale-105 transition-transform"
@@ -422,33 +418,7 @@ export default function NoteDetailPage() {
                 <NeoSelect
                   value={rentDuration}
                   onChange={(val) => setRentDuration(val)}
-                  options={
-                    note.slot
-                      ? [
-                          ...note.slot.split(',')
-                            .map((s: string) => s.trim())
-                            .filter((s: string) => !(note.rented_slots || "").split(",").map((rs: string) => rs.trim()).includes(s))
-                            .map((s: string) => ({ label: s, value: s })),
-                          { label: "Custom (Select Days)", value: "custom" }
-                        ]
-                      : [
-                          { label: "A1", value: "A1" },
-                          { label: "A2", value: "A2" },
-                          { label: "B1", value: "B1" },
-                          { label: "B2", value: "B2" },
-                          { label: "C1", value: "C1" },
-                          { label: "C2", value: "C2" },
-                          { label: "D1", value: "D1" },
-                          { label: "D2", value: "D2" },
-                          { label: "E1", value: "E1" },
-                          { label: "E2", value: "E2" },
-                          { label: "F1", value: "F1" },
-                          { label: "F2", value: "F2" },
-                          { label: "G1", value: "G1" },
-                          { label: "G2", value: "G2" },
-                          { label: "Custom (Select Days)", value: "custom" }
-                        ]
-                  }
+                  options={getAvailableSlotOptions(note.slot, note.rented_slots)}
                   className="mb-3"
                 />
 

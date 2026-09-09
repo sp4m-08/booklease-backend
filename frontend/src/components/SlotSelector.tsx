@@ -5,7 +5,7 @@ import { Check, CheckCheck, RotateCcw } from "lucide-react";
 
 // The discrete VIT exam slots (excluding "All Slots" from the pills grid, handled by Select All)
 export const VIT_INDIVIDUAL_SLOTS = [
-  "A1", "A2", "B1", "B2", "C1", "C2", "D1", "D2", "E1", "E2", "G1", "G2"
+  "A1", "A2", "B1", "B2", "C1", "C2", "D1", "D2", "E1", "E2", "F1", "F2", "G1", "G2"
 ] as const;
 
 interface SlotSelectorProps {

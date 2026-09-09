@@ -17,7 +17,7 @@ import { ArrowLeft, Heart, MessageSquare, Trash2, Calendar, UserCheck, BookOpen,
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { useRef } from "react";
-import { formatStudentName } from "@/lib/utils";
+import { formatStudentName, getAvailableSlotOptions } from "@/lib/utils";
 
 const EditListingModal = dynamic(
   () => import("@/components/EditListingModal").then((mod) => mod.EditListingModal),
@@ -351,12 +351,8 @@ export default function BookDetailsPage() {
                     router.push("/login");
                     return;
                   }
-                  if (book.slot) {
-                    const firstSlot = book.slot.split(',')[0].trim();
-                    setRentDuration(firstSlot);
-                  } else {
-                    setRentDuration("A1");
-                  }
+                  const slotOptions = getAvailableSlotOptions(book.slot, book.rented_slots);
+                  setRentDuration(slotOptions[0]?.value || "All Slots");
                   setIsRentModalOpen(true);
                 }}
                 className="flex-1 min-w-[200px] text-xl bg-neo-green flex items-center justify-center gap-2 group hover:scale-105 transition-transform"
@@ -431,33 +427,7 @@ export default function BookDetailsPage() {
                 <NeoSelect
                   value={rentDuration}
                   onChange={(val) => setRentDuration(val)}
-                  options={
-                    book.slot
-                      ? [
-                        ...book.slot.split(',')
-                          .map((s: string) => s.trim())
-                          .filter((s: string) => !(book.rented_slots || "").split(",").map((rs: string) => rs.trim()).includes(s))
-                          .map((s: string) => ({ label: s, value: s })),
-                        { label: "Custom (Select Days)", value: "custom" }
-                      ]
-                      : [
-                        { label: "A1", value: "A1" },
-                        { label: "A2", value: "A2" },
-                        { label: "B1", value: "B1" },
-                        { label: "B2", value: "B2" },
-                        { label: "C1", value: "C1" },
-                        { label: "C2", value: "C2" },
-                        { label: "D1", value: "D1" },
-                        { label: "D2", value: "D2" },
-                        { label: "E1", value: "E1" },
-                        { label: "E2", value: "E2" },
-                        { label: "F1", value: "F1" },
-                        { label: "F2", value: "F2" },
-                        { label: "G1", value: "G1" },
-                        { label: "G2", value: "G2" },
-                        { label: "Custom (Select Days)", value: "custom" }
-                      ]
-                  }
+                  options={getAvailableSlotOptions(book.slot, book.rented_slots)}
                   className="mb-3"
                 />
 
