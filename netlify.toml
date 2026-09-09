@@ -1,0 +1,13 @@
+# Netlify Configuration for BookLease Next.js Frontend
+
+[build]
+  base = "frontend"
+  publish = ".next"
+  command = "npm run build"
+
+# Enable Netlify Next.js Runtime
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
+[build.environment]
+  NODE_VERSION = "20"
