@@ -1,0 +1,22 @@
+name: Keep Backend Alive
+
+on:
+  schedule:
+    # Runs every 10 minutes (Render spins down after 15 minutes of inactivity)
+    - cron: '*/10 * * * *'
+  workflow_dispatch: # Allows manual trigger from GitHub Actions tab
+
+jobs:
+  ping-backend:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Render Backend Healthz
+        run: |
+          echo "Pinging backend at https://booklease-backend.onrender.com/healthz"
+          RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" https://booklease-backend.onrender.com/healthz)
+          echo "HTTP Status Code: $RESPONSE"
+          if [ "$RESPONSE" -eq 200 ]; then
+            echo "✅ Backend is active and healthy!"
+          else
+            echo "⚠️ Backend returned status $RESPONSE"
+          fi
