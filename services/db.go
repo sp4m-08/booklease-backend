@@ -4,6 +4,7 @@ import (
 	"bookapi/models"
 	"log"
 	"os"
+	"time"
 
 	"github.com/joho/godotenv"
 	"gorm.io/driver/postgres"
@@ -29,6 +30,17 @@ func InitDatabase() {
 	}), &gorm.Config{})
 	if err != nil {
 		log.Fatalf("❌ Failed to connect to database: %v", err)
+	}
+
+	sqlDB, err := db.DB()
+	if err != nil {
+		log.Printf("⚠️ Warning: Failed to configure sql.DB connection pool: %v", err)
+	} else {
+		sqlDB.SetMaxOpenConns(50)                 // Max simultaneous open connections
+		sqlDB.SetMaxIdleConns(25)                 // Pre-warmed idle connections ready for quick execution
+		sqlDB.SetConnMaxLifetime(5 * time.Minute) // Recycle stale connections
+		sqlDB.SetConnMaxIdleTime(2 * time.Minute) // Close idle connections after 2 minutes
+		log.Println("⚡ Database connection pool configured (MaxOpen: 50, MaxIdle: 25)")
 	}
 
 	log.Println("✅ Connected to Supabase PostgreSQL!")

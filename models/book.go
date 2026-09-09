@@ -8,14 +8,14 @@ type Book struct {
 	Author      string    `json:"author"`
 	Subject     string    `json:"subject"`
 	Description string    `json:"description"`
-	Category    string    `json:"category"`
+	Category    string    `gorm:"index" json:"category"`
 	Slot        string    `json:"slot"`
 	RentedSlots string    `json:"rented_slots"`
 	Condition   string    `json:"condition"` // E.g., Brand New, Like New, Highlighted, Torn Pages
 	CoverImage  string    `json:"cover_image"`
 	FilePath    string    `json:"file_path"`
 	Price       float64   `gorm:"default:0" json:"price"`
-	Available   bool      `gorm:"default:true" json:"available"`
+	Available   bool      `gorm:"default:true;index" json:"available"`
 	UploadedBy  uint      `gorm:"index" json:"uploaded_by"` // Foreign key (User.ID)
 	Uploader    User      `gorm:"foreignKey:UploadedBy" json:"uploader,omitempty"`
 	Type        string    `json:"type"`
@@ -37,7 +37,7 @@ type Rental struct {
 	Slot        string    `json:"slot"`
 	RentedFrom  time.Time `json:"rented_from"`
 	DueDate     time.Time `json:"due_date"`
-	IsReturned  bool      `gorm:"default:false" json:"is_returned"`
+	IsReturned  bool      `gorm:"default:false;index" json:"is_returned"`
 	Status      *bool     `json:"status"` // nil = pending, true = accepted, false = rejected
 }
 
@@ -62,15 +62,15 @@ type BookWaitlist struct {
 type Note struct {
 	ID          uint      `gorm:"primaryKey" json:"id"`
 	Title       string    `gorm:"not null" json:"title"`
-	Subject     string    `json:"subject"`
+	Subject     string    `gorm:"index" json:"subject"`
 	Slot        string    `json:"slot"`
 	RentedSlots string    `json:"rented_slots"`
 	Condition   string    `json:"condition"`
 	Description string    `json:"description"`
 	FilePath    string    `json:"file_path"`
 	Price       float64   `gorm:"default:0" json:"price"`
-	Available   bool      `gorm:"default:true" json:"available"`
-	IsPublic    bool      `gorm:"default:true" json:"is_public"`
+	Available   bool      `gorm:"default:true;index" json:"available"`
+	IsPublic    bool      `gorm:"default:true;index" json:"is_public"`
 	Upvotes     uint      `gorm:"default:0" json:"upvotes"`
 	IsUpvoted   bool      `gorm:"-" json:"is_upvoted"`
 	UploadedBy  uint      `gorm:"index" json:"uploaded_by"`

@@ -266,6 +266,8 @@ func ReturnRental(c *gin.Context) {
 		}
 	}
 
+	services.InvalidatePattern(c.Request.Context(), "books:*")
+	services.InvalidatePattern(c.Request.Context(), "notes:*")
 	c.JSON(http.StatusOK, gin.H{"message": "Item returned successfully"})
 }
 
@@ -428,6 +430,9 @@ func DecideRental(c *gin.Context) {
 	}
 
 	services.CreateNotification(rental.UserID, "rental_decision", fmt.Sprintf("Your request to rent \"%s\" was %s.", itemName, statusText))
+
+	services.InvalidatePattern(c.Request.Context(), "books:*")
+	services.InvalidatePattern(c.Request.Context(), "notes:*")
 
 	c.JSON(http.StatusOK, gin.H{"message": fmt.Sprintf("Rental %s successfully", statusText)})
 }

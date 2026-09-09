@@ -1,9 +1,11 @@
 package api
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
 
 	"bookapi/models"
 	"bookapi/services"
@@ -13,12 +15,23 @@ import (
 
 // GetNotes returns all public notes
 func GetNotes(c *gin.Context) {
+	cacheKey := "notes:public:all"
 	var notes []models.Note
-	if err := services.DB.Where("is_public = ?", true).Preload("Uploader").Order("id DESC").Find(&notes).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch notes"})
-		return
+
+	// 1. Check Redis Cache for public notes list
+	hit := services.GetCache(c.Request.Context(), cacheKey, &notes)
+	if !hit {
+		if err := services.DB.Where("is_public = ?", true).Preload("Uploader").Order("id DESC").Find(&notes).Error; err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch notes"})
+			return
+		}
+		services.SetCache(c.Request.Context(), cacheKey, notes, 60*time.Second)
+		c.Header("X-Cache", "MISS")
+	} else {
+		c.Header("X-Cache", "HIT")
 	}
 
+	// 2. Personalize is_upvoted if user is authenticated
 	uid := c.GetString("uid")
 	if uid != "" {
 		var user models.User
@@ -43,10 +56,18 @@ func GetNote(c *gin.Context) {
 		return
 	}
 
+	cacheKey := fmt.Sprintf("notes:id:%d", id)
 	var note models.Note
-	if err := services.DB.Preload("Uploader").First(&note, id).Error; err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Note not found"})
-		return
+	hit := services.GetCache(c.Request.Context(), cacheKey, &note)
+	if !hit {
+		if err := services.DB.Preload("Uploader").First(&note, id).Error; err != nil {
+			c.JSON(http.StatusNotFound, gin.H{"error": "Note not found"})
+			return
+		}
+		services.SetCache(c.Request.Context(), cacheKey, note, 5*time.Minute)
+		c.Header("X-Cache", "MISS")
+	} else {
+		c.Header("X-Cache", "HIT")
 	}
 
 	uid := c.GetString("uid")
@@ -94,6 +115,7 @@ func CreateNote(c *gin.Context) {
 		return
 	}
 
+	services.InvalidatePattern(c.Request.Context(), "notes:*")
 	services.DB.Preload("Uploader").First(&newNote, newNote.ID)
 	c.JSON(http.StatusCreated, newNote)
 }
@@ -134,6 +156,8 @@ func DeleteNote(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete note"})
 		return
 	}
+
+	services.InvalidatePattern(c.Request.Context(), "notes:*")
 	c.JSON(http.StatusOK, gin.H{"message": "Note deleted successfully"})
 }
 
@@ -197,6 +221,7 @@ func ToggleNoteUpvote(c *gin.Context) {
 			note.Upvotes--
 			services.DB.Save(&note)
 		}
+		services.InvalidatePattern(c.Request.Context(), "notes:*")
 		c.JSON(http.StatusOK, gin.H{"message": "Upvote removed", "upvotes": note.Upvotes, "is_upvoted": false})
 	} else {
 		// Add upvote
@@ -207,6 +232,7 @@ func ToggleNoteUpvote(c *gin.Context) {
 		services.DB.Create(&upvote)
 		note.Upvotes++
 		services.DB.Save(&note)
+		services.InvalidatePattern(c.Request.Context(), "notes:*")
 		c.JSON(http.StatusOK, gin.H{"message": "Upvoted", "upvotes": note.Upvotes, "is_upvoted": true})
 	}
 }
@@ -400,6 +426,7 @@ func UpdateNote(c *gin.Context) {
 		return
 	}
 
+	services.InvalidatePattern(c.Request.Context(), "notes:*")
 	services.DB.Preload("Uploader").First(&note, note.ID)
 	c.JSON(http.StatusOK, note)
 }

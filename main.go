@@ -2,29 +2,39 @@ package main
 
 import (
 	"log"
+	"net/http"
 	"os"
 	"strings"
 	"time"
 
+	"bookapi/middleware"
 	"bookapi/routes"
 	"bookapi/services"
 
 	"github.com/gin-contrib/cors"
+	"github.com/gin-contrib/gzip"
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
-	// 1. Initialize Firebase, Database & AWS S3
+	// 1. Initialize Firebase, Database, AWS S3 & Redis Cache
 	services.InitFirebase()
 	services.InitDatabase()
 	services.InitS3()
+	services.InitRedis()
 
 	r := gin.Default()
 
 	// Avoid untrusted proxy warnings in Gin
 	_ = r.SetTrustedProxies(nil)
 
-	// 2. CORS Middleware Configuration
+	// 2. High-Performance Gzip Compression Middleware
+	r.Use(gzip.Gzip(gzip.DefaultCompression))
+
+	// 3. Global Token-Bucket IP Rate Limiter (180 requests/min per IP, burst: 40)
+	r.Use(middleware.RateLimitMiddleware(180, 40))
+
+	// 4. CORS Middleware Configuration
 	allowedOrigins := []string{
 		"http://localhost:3000",
 		"http://localhost:5173",
@@ -47,16 +57,50 @@ func main() {
 		MaxAge:           12 * time.Hour,
 	}))
 
-	// 3. Static Files & Root
+	// 5. Health & Readiness Probes (For load balancers and orchestrators)
+	r.GET("/healthz", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{
+			"status": "healthy",
+			"time":   time.Now().UTC(),
+		})
+	})
+
+	r.GET("/readyz", func(c *gin.Context) {
+		status := gin.H{
+			"status":   "ready",
+			"database": "connected",
+			"redis":    "connected",
+		}
+
+		// Check PostgreSQL Connection
+		if services.DB != nil {
+			if sqlDB, err := services.DB.DB(); err != nil || sqlDB.Ping() != nil {
+				status["database"] = "degraded"
+				status["status"] = "degraded"
+			}
+		} else {
+			status["database"] = "disconnected"
+			status["status"] = "degraded"
+		}
+
+		// Check Redis Cache
+		if services.RedisClient == nil || services.RedisClient.Ping(c.Request.Context()).Err() != nil {
+			status["redis"] = "disconnected (fail-soft fallback active)"
+		}
+
+		c.JSON(http.StatusOK, status)
+	})
+
+	// 6. Static Files & Root
 	r.GET("/", func(c *gin.Context) {
 		c.File("./static/index.html")
 	})
 	r.Static("/static", "./static")
 
-	// 4. API Routes
+	// 7. API Routes
 	routes.RegisterAPIRoutes(r, services.App)
 
-	// 5. Start Server with Dynamic Port
+	// 8. Start Server with Dynamic Port
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"

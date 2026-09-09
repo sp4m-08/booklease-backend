@@ -1,10 +1,12 @@
 package api
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
 
 	"bookapi/models"
 	"bookapi/services"
@@ -14,26 +16,36 @@ import (
 
 // GetBooks returns all books, optionally filtered by category or search term
 func GetBooks(c *gin.Context) {
+	category := c.Query("category")
+	search := c.Query("search")
+	limitStr := c.DefaultQuery("limit", "50")
+	offsetStr := c.DefaultQuery("offset", "0")
+
+	// 1. Check Redis Cache
+	cacheKey := fmt.Sprintf("books:all:%s:%s:%s:%s", strings.ToLower(category), strings.ToLower(search), limitStr, offsetStr)
+	var cachedBooks []models.Book
+	if services.GetCache(c.Request.Context(), cacheKey, &cachedBooks) {
+		c.Header("X-Cache", "HIT")
+		c.JSON(http.StatusOK, cachedBooks)
+		return
+	}
+
 	query := services.DB.Model(&models.Book{}).Preload("Uploader")
 
-	category := c.Query("category")
 	if category != "" {
 		query = query.Where("LOWER(category) = ?", strings.ToLower(category))
 	}
 
-	search := c.Query("search")
 	if search != "" {
 		query = query.Where("LOWER(title) LIKE ? OR LOWER(author) LIKE ? OR LOWER(subject) LIKE ?",
 			"%"+strings.ToLower(search)+"%", "%"+strings.ToLower(search)+"%", "%"+strings.ToLower(search)+"%")
 	}
 
-	limitStr := c.DefaultQuery("limit", "50")
 	limit, err := strconv.Atoi(limitStr)
 	if err == nil && limit > 0 {
 		query = query.Limit(limit)
 	}
 
-	offsetStr := c.DefaultQuery("offset", "0")
 	offset, err := strconv.Atoi(offsetStr)
 	if err == nil && offset >= 0 {
 		query = query.Offset(offset)
@@ -44,6 +56,11 @@ func GetBooks(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch books"})
 		return
 	}
+
+	// 2. Cache DB Result for 60 seconds
+	services.SetCache(c.Request.Context(), cacheKey, books, 60*time.Second)
+
+	c.Header("X-Cache", "MISS")
 	c.JSON(http.StatusOK, books)
 }
 
@@ -56,11 +73,22 @@ func GetBook(c *gin.Context) {
 		return
 	}
 
+	cacheKey := fmt.Sprintf("books:id:%d", id)
+	var cachedBook models.Book
+	if services.GetCache(c.Request.Context(), cacheKey, &cachedBook) {
+		c.Header("X-Cache", "HIT")
+		c.JSON(http.StatusOK, cachedBook)
+		return
+	}
+
 	var book models.Book
 	if err := services.DB.Preload("Uploader").First(&book, id).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Book not found"})
 		return
 	}
+
+	services.SetCache(c.Request.Context(), cacheKey, book, 5*time.Minute)
+	c.Header("X-Cache", "MISS")
 	c.JSON(http.StatusOK, book)
 }
 
@@ -122,6 +150,9 @@ func CreateBook(c *gin.Context) {
 		return
 	}
 
+	// Invalidate books cache
+	services.InvalidatePattern(c.Request.Context(), "books:*")
+
 	// Reload with Uploader relationship
 	services.DB.Preload("Uploader").First(&newBook, newBook.ID)
 	c.JSON(http.StatusCreated, newBook)
@@ -164,6 +195,8 @@ func DeleteBook(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete book"})
 		return
 	}
+
+	services.InvalidatePattern(c.Request.Context(), "books:*")
 	c.JSON(http.StatusOK, gin.H{"message": "Book deleted successfully"})
 }
 
@@ -463,6 +496,7 @@ func UpdateBook(c *gin.Context) {
 		return
 	}
 
+	services.InvalidatePattern(c.Request.Context(), "books:*")
 	services.DB.Preload("Uploader").First(&book, book.ID)
 	c.JSON(http.StatusOK, book)
 }
