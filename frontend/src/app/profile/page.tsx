@@ -177,16 +177,16 @@ export default function ProfilePage() {
   if (!user || !profile) return null;
 
   return (
-    <div className="max-w-6xl mx-auto w-full px-6 py-12 flex-grow">
+    <div className="max-w-6xl mx-auto w-full px-4 sm:px-6 py-6 sm:py-12 flex-grow">
       {/* Header */}
-      <div className="mb-12 border-b-4 border-black pb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div className="mb-6 sm:mb-12 border-b-4 border-black pb-4 sm:pb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="font-serif text-5xl font-black mb-2">Your Student Profile</h1>
-          <p className="font-medium text-lg text-gray-700">Manage your account, listings, notes, and saved items.</p>
+          <h1 className="font-serif text-3xl sm:text-5xl font-black mb-1 sm:mb-2">Your Student Profile</h1>
+          <p className="font-medium text-sm sm:text-lg text-gray-700">Manage your account, listings, notes, and saved items.</p>
         </div>
         {profile.is_admin && (
-          <Link href="/admin">
-            <span className="border-4 border-black bg-red-500 text-white font-black px-4 py-2 text-sm shadow-neo hover:bg-red-600 inline-flex items-center gap-1.5">
+          <Link href="/admin" className="w-full sm:w-auto">
+            <span className="w-full sm:w-auto border-3 sm:border-4 border-black bg-red-500 text-white font-black px-3.5 sm:px-4 py-2 text-xs sm:text-sm shadow-neo hover:bg-red-600 inline-flex items-center justify-center gap-1.5">
               <ShieldCheck size={16} />
               <span>Admin Moderation Panel</span>
             </span>
@@ -194,37 +194,37 @@ export default function ProfilePage() {
         )}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-12 items-start">
         
         {/* User Details Sidebar */}
-        <div className="lg:col-span-1 space-y-8">
-          <NeoCard color="purple" className="flex flex-col space-y-6">
-            <div className="flex items-center gap-3 border-b-4 border-black pb-4">
-              <div className="w-12 h-12 border-3 border-black bg-neo-yellow flex items-center justify-center font-black text-2xl shadow-neo">
+        <div className="lg:col-span-1 space-y-6 sm:space-y-8">
+          <NeoCard color="purple" className="flex flex-col space-y-4 sm:space-y-6 p-4 sm:p-6">
+            <div className="flex items-center gap-3 border-b-3 sm:border-b-4 border-black pb-3 sm:pb-4">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 border-3 border-black bg-neo-yellow flex items-center justify-center font-black text-xl sm:text-2xl shadow-neo">
                 {formatStudentName(profile.username, "Student").charAt(0).toUpperCase() || "U"}
               </div>
               <div>
-                <h2 className="font-serif text-2xl font-black">{formatStudentName(profile.username, "Student")}</h2>
-                <span className="text-xs font-bold bg-white px-2 py-0.5 border-2 border-black inline-block">
+                <h2 className="font-serif text-xl sm:text-2xl font-black">{formatStudentName(profile.username, "Student")}</h2>
+                <span className="text-[11px] sm:text-xs font-bold bg-white px-2 py-0.5 border-2 border-black inline-block">
                   {profile.is_admin ? "Administrator" : "Verified Student"}
                 </span>
               </div>
             </div>
 
-            <div className="space-y-4 font-medium text-base">
+            <div className="space-y-3 sm:space-y-4 font-medium text-sm sm:text-base">
               <div>
-                <span className="text-xs font-black uppercase text-gray-700 block">Email Address</span>
-                <span className="font-bold break-all">{profile.email}</span>
+                <span className="text-[11px] sm:text-xs font-black uppercase text-gray-700 block">Email Address</span>
+                <span className="font-bold break-all text-sm sm:text-base">{profile.email}</span>
               </div>
               <div>
-                <span className="text-xs font-black uppercase text-gray-700 block">WhatsApp / Phone</span>
-                <span className="font-bold">{profile.phone_number || "Not Set (Add below to receive WhatsApp messages)"}</span>
+                <span className="text-[11px] sm:text-xs font-black uppercase text-gray-700 block">WhatsApp / Phone</span>
+                <span className="font-bold text-sm sm:text-base">{profile.phone_number || "Not Set (Add below to receive WhatsApp messages)"}</span>
               </div>
             </div>
             
-            <div className="pt-6 border-t-4 border-black">
-              <label className="block font-bold mb-2 text-sm">Update WhatsApp / Phone Number</label>
-              <div className="flex flex-col gap-3">
+            <div className="pt-4 sm:pt-6 border-t-3 sm:border-t-4 border-black">
+              <label className="block font-bold mb-2 text-xs sm:text-sm">Update WhatsApp / Phone Number</label>
+              <div className="flex flex-col gap-2.5 sm:gap-3">
                 <NeoInput 
                   placeholder="10-digit mobile number (e.g. 9876543210)"
                   value={phone}
@@ -234,7 +234,7 @@ export default function ProfilePage() {
                   variant="primary"
                   onClick={() => updatePhone.mutate(phone)}
                   disabled={updatePhone.isPending || !phone}
-                  className="w-full bg-neo-yellow"
+                  className="w-full bg-neo-yellow text-sm sm:text-base py-2.5 sm:py-3"
                 >
                   {updatePhone.isPending ? "Saving..." : "Save Phone Number"}
                 </NeoButton>
@@ -247,11 +247,11 @@ export default function ProfilePage() {
         <div className="lg:col-span-2 space-y-6">
           
           {/* Navigation Tabs */}
-          <div className="flex flex-wrap gap-3 border-b-4 border-black pb-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-3 border-b-3 sm:border-b-4 border-black pb-4">
             <button
               onClick={() => setActiveTab("books")}
-              className={`flex items-center gap-2 border-4 border-black px-4 py-2 font-bold text-base transition-all ${
-                activeTab === "books" ? "bg-neo-green shadow-neo" : "bg-white hover:bg-gray-100"
+              className={`flex items-center justify-center gap-2 border-3 sm:border-4 border-black px-3 sm:px-4 py-2 sm:py-2.5 font-bold text-sm sm:text-base transition-all ${
+                activeTab === "books" ? "bg-neo-green shadow-neo font-black" : "bg-white hover:bg-gray-100"
               }`}
             >
               <BookOpen size={18} />
@@ -259,8 +259,8 @@ export default function ProfilePage() {
             </button>
             <button
               onClick={() => setActiveTab("notes")}
-              className={`flex items-center gap-2 border-4 border-black px-4 py-2 font-bold text-base transition-all ${
-                activeTab === "notes" ? "bg-neo-blue shadow-neo" : "bg-white hover:bg-gray-100"
+              className={`flex items-center justify-center gap-2 border-3 sm:border-4 border-black px-3 sm:px-4 py-2 sm:py-2.5 font-bold text-sm sm:text-base transition-all ${
+                activeTab === "notes" ? "bg-neo-blue shadow-neo font-black" : "bg-white hover:bg-gray-100"
               }`}
             >
               <FileText size={18} />
@@ -268,8 +268,8 @@ export default function ProfilePage() {
             </button>
             <button
               onClick={() => setActiveTab("wishlist")}
-              className={`flex items-center gap-2 border-4 border-black px-4 py-2 font-bold text-base transition-all ${
-                activeTab === "wishlist" ? "bg-neo-peach shadow-neo" : "bg-white hover:bg-gray-100"
+              className={`flex items-center justify-center gap-2 border-3 sm:border-4 border-black px-3 sm:px-4 py-2 sm:py-2.5 font-bold text-sm sm:text-base transition-all ${
+                activeTab === "wishlist" ? "bg-neo-peach shadow-neo font-black" : "bg-white hover:bg-gray-100"
               }`}
             >
               <Heart size={18} />

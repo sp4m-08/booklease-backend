@@ -196,11 +196,11 @@ export default function BookDetailsPage() {
   const canDelete = isOwner || userProfile?.is_admin;
 
   return (
-    <div ref={containerRef} className="max-w-6xl mx-auto w-full px-6 py-12 flex-grow">
+    <div ref={containerRef} className="max-w-7xl mx-auto w-full px-4 sm:px-6 py-6 sm:py-12 flex-grow">
       {/* Back Link */}
-      <div className="mb-8 flex justify-between items-center animate-element">
+      <div className="mb-6 sm:mb-8 flex justify-between items-center animate-element">
         <Link href="/books">
-          <NeoButton variant="secondary" className="bg-white flex items-center gap-2">
+          <NeoButton variant="secondary" className="bg-white flex items-center gap-2 text-sm sm:text-base">
             <ArrowLeft size={18} />
             Back to Library
           </NeoButton>
@@ -215,7 +215,7 @@ export default function BookDetailsPage() {
               }
             }}
             disabled={deleteBookMutation.isPending}
-            className="flex items-center gap-2"
+            className="flex items-center gap-2 text-sm sm:text-base"
           >
             <Trash2 size={18} />
             Delete Listing
@@ -223,11 +223,11 @@ export default function BookDetailsPage() {
         )}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-12 items-start">
 
         {/* Left Column: Book Cover */}
         <div className="lg:col-span-5 animate-element">
-          <div className="border-4 border-black shadow-neo-lg aspect-[3/4] overflow-hidden bg-white">
+          <div className="border-3 sm:border-4 border-black shadow-neo-lg aspect-[3/4] overflow-hidden bg-white">
             <BookCover
               src={book.cover_image}
               title={book.title}
@@ -236,100 +236,102 @@ export default function BookDetailsPage() {
             />
           </div>
 
-          <div className="mt-4 flex justify-between items-center p-4 border-4 border-black bg-white shadow-neo">
+          <div className="mt-4 flex justify-between items-center p-3.5 sm:p-4 border-3 sm:border-4 border-black bg-white shadow-neo">
             <div>
               <span className="text-xs font-black uppercase text-gray-600 block">Status</span>
-              <span className={`font-black text-lg flex items-center gap-2 ${book.available ? "text-green-600" : "text-red-500"}`}>
+              <span className={`font-black text-base sm:text-lg flex items-center gap-2 ${book.available ? "text-green-600" : "text-red-500"}`}>
                 <span className={`w-3 h-3 rounded-full border-2 border-black ${book.available ? "bg-green-500" : "bg-red-500"}`}></span>
                 {book.available ? "Available for Rent" : "Currently Rented Out"}
               </span>
             </div>
-            <span className="border-2 border-black px-3 py-1 bg-neo-yellow font-black text-xs uppercase shadow-sm">
+            <span className="border-2 border-black px-2.5 sm:px-3 py-1 bg-neo-yellow font-black text-xs uppercase shadow-sm">
               {book.category || "General"}
             </span>
           </div>
         </div>
 
         {/* Right Column: Book Details & Actions */}
-        <div className="lg:col-span-7 space-y-8">
+        <div className="lg:col-span-7 space-y-6 sm:space-y-8">
           <div className="animate-element">
             <div className="flex flex-wrap gap-2 mb-3 items-center">
-              <span className="inline-block border-2 border-black bg-neo-purple px-3 py-1 font-black text-xs uppercase shadow-neo">
+              <span className="inline-block border-2 border-black bg-neo-purple px-2.5 sm:px-3 py-0.5 sm:py-1 font-black text-xs uppercase shadow-neo">
                 {book.category || "Academic Textbook"}
               </span>
               {book.type && (
-                <span className="inline-block border-2 border-black bg-neo-blue/80 px-3 py-1 font-black text-xs uppercase shadow-neo">
+                <span className="inline-block border-2 border-black bg-neo-blue/80 px-2.5 sm:px-3 py-0.5 sm:py-1 font-black text-xs uppercase shadow-neo">
                   {book.type}
                 </span>
               )}
               <SlotBadges slot={book.slot} rentedSlots={book.rented_slots} variant="yellow" />
-              <span className="inline-block border-2 border-black bg-neo-green px-3 py-1 font-black text-sm uppercase shadow-neo">
+              <span className="inline-block border-2 border-black bg-neo-green px-2.5 sm:px-3 py-0.5 sm:py-1 font-black text-xs sm:text-sm uppercase shadow-neo">
                 {book.price && book.price > 0 ? `₹${book.price} Rent` : "FREE to Rent"}
               </span>
             </div>
-            <h1 className="font-serif text-4xl md:text-5xl font-black mb-2 leading-tight">
+            <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl font-black mb-2 leading-tight">
               {book.title}
             </h1>
-            <p className="text-2xl font-bold text-gray-700">by {book.author || "Unknown Author"}</p>
+            <p className="text-base sm:text-xl font-bold text-gray-700 mb-4">
+              by <span className="text-black">{book.author}</span>
+            </p>
           </div>
 
-          {/* Description */}
-          <NeoCard color="white" className="p-6 animate-element">
-            <div className="flex justify-between items-center mb-3 border-b-2 border-black pb-2">
-              <h3 className="font-serif text-xl font-black">
-                Book Condition & Description
-              </h3>
-              {book.condition && (
-                <span className="bg-neo-yellow border-2 border-black px-2 py-0.5 text-xs font-black uppercase">
-                  {book.condition}
-                </span>
-              )}
+          <NeoCard color="yellow" className="p-4 sm:p-6 animate-element">
+            <h2 className="font-serif text-xl sm:text-2xl font-black mb-3 border-b-2 border-black pb-2">Overview & Condition</h2>
+            <div className="space-y-3 font-medium text-sm sm:text-base leading-relaxed">
+              <div className="flex justify-between border-b border-black/20 pb-2">
+                <span className="font-bold">Book / Item Condition:</span>
+                <span className="font-black">{book.condition || "Used - Good Condition"}</span>
+              </div>
+              <div className="flex justify-between border-b border-black/20 pb-2">
+                <span className="font-bold">Subject / Course:</span>
+                <span className="font-black">{book.category || "Engineering"}</span>
+              </div>
+              <div className="pt-2">
+                <span className="font-bold block mb-1">Owner&apos;s Notes:</span>
+                <p className="text-gray-800 text-sm">
+                  {book.description || "Available for flexible duration during CAT-2 and FAT exam preparation. Connect with the owner for edition or condition details."}
+                </p>
+              </div>
             </div>
-            <p className="text-base text-gray-800 leading-relaxed whitespace-pre-wrap">
-              {book.description || "The uploader has not provided a specific description for this book. Inquire with the owner for edition or condition details."}
-            </p>
           </NeoCard>
 
-          {/* Owner Info Card */}
-          <NeoCard color="peach" className="p-6 animate-element">
-            <div className="flex items-center gap-3 mb-4 border-b-2 border-black pb-3">
-              <UserCheck size={24} />
-              <h3 className="font-serif text-xl font-black">Listed By Campus Student</h3>
+          <NeoCard color="peach" className="p-4 sm:p-6 animate-element">
+            <div className="flex items-center gap-3 mb-4 border-b-2 border-black pb-2">
+              <UserCheck size={22} />
+              <h2 className="font-serif text-xl sm:text-2xl font-black">Listed By Campus Student</h2>
             </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm font-medium">
+            <div className="space-y-3 font-medium text-sm sm:text-base">
               <div>
-                <span className="text-xs font-black uppercase text-gray-700 block">Student Name</span>
-                <span className="font-bold text-base">
-                  {formatStudentName(book.uploader?.username, "Verified Student")}
+                <span className="text-xs font-black uppercase text-gray-700 block">Owner Name</span>
+                <span className="font-bold text-base sm:text-lg">
+                  {formatStudentName(book.uploader?.username, "Campus Student")}
                 </span>
               </div>
             </div>
 
             {book.uploader?.phone_number && (
-              <div className="mt-4 pt-3 border-t-2 border-dashed border-black">
+              <div className="mt-4 pt-4 border-t-2 border-dashed border-black">
                 {user ? (
-                  <a
-                    href={`https://wa.me/91${book.uploader.phone_number}?text=Hi, I saw your book "${book.title}" on BookLease and I'm interested in renting it!`}
-                    target="_blank"
+                  <a 
+                    href={`https://wa.me/91${book.uploader.phone_number}?text=Hi, I found your book "${book.title}" on BookLease and wanted to know if it is available for rent!`} 
+                    target="_blank" 
                     rel="noreferrer"
+                    className="block"
                   >
-                    <NeoButton variant="primary" size="sm" className="w-full bg-[#25D366] text-white border-black group hover:scale-105 transition-transform">
-                      <MessageSquare size={16} className="inline mr-2 group-hover:animate-bounce" />
-                      Chat with Owner on WhatsApp
+                    <NeoButton variant="primary" className="w-full bg-[#25D366] text-white flex items-center justify-center gap-2 border-black group hover:scale-105 transition-transform text-sm sm:text-base py-2.5 sm:py-3">
+                      <MessageSquare size={18} className="group-hover:animate-bounce" /> Message on WhatsApp
                     </NeoButton>
                   </a>
                 ) : (
-                  <NeoButton
-                    variant="primary"
-                    size="sm"
-                    className="w-full bg-[#25D366] text-white border-black group hover:scale-105 transition-transform"
+                  <NeoButton 
+                    variant="primary" 
+                    className="w-full bg-[#25D366] text-white flex items-center justify-center gap-2 border-black group hover:scale-105 transition-transform text-sm sm:text-base py-2.5 sm:py-3"
                     onClick={() => {
                       toast.error("Please sign in to contact the owner.");
                       router.push("/login");
                     }}
                   >
-                    <MessageSquare size={16} className="inline mr-2 group-hover:animate-bounce" />
+                    <MessageSquare size={18} className="group-hover:animate-bounce" />
                     Sign In to WhatsApp Owner
                   </NeoButton>
                 )}
@@ -338,15 +340,14 @@ export default function BookDetailsPage() {
           </NeoCard>
 
           {/* Action Buttons */}
-          <div className="flex flex-wrap gap-4 pt-4 animate-element">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-2 animate-element">
             {isOwner ? (
-              <div className="border-4 border-black bg-neo-yellow px-6 py-4 font-bold text-lg shadow-neo w-full text-center flex justify-center items-center gap-2">
+              <div className="border-3 sm:border-4 border-black bg-neo-yellow px-4 sm:px-6 py-3 sm:py-4 font-bold text-base sm:text-lg shadow-neo w-full text-center flex justify-center items-center gap-2">
                 <span className="w-5 h-5 bg-black text-neo-yellow rounded-full flex items-center justify-center text-xs">i</span> You listed this book for rent.
               </div>
             ) : book.available ? (
               <NeoButton
                 variant="primary"
-                size="lg"
                 onClick={() => {
                   if (!user) {
                     router.push("/login");
@@ -356,15 +357,14 @@ export default function BookDetailsPage() {
                   setRentDuration(slotOptions[0]?.value || "All Slots");
                   setIsRentModalOpen(true);
                 }}
-                className="flex-1 min-w-[200px] text-xl bg-neo-green flex items-center justify-center gap-2 group hover:scale-105 transition-transform"
+                className="w-full sm:flex-1 text-lg sm:text-xl bg-neo-green flex items-center justify-center gap-2 group hover:scale-105 transition-transform py-3 sm:py-4"
               >
                 Request to Rent
-                <BookOpen size={24} className="group-hover:rotate-12 group-hover:scale-110 transition-transform duration-300" />
+                <BookOpen size={22} className="group-hover:rotate-12 group-hover:scale-110 transition-transform duration-300" />
               </NeoButton>
             ) : (
               <NeoButton
                 variant="primary"
-                size="lg"
                 onClick={() => {
                   if (!user) {
                     router.push("/login");
@@ -376,7 +376,7 @@ export default function BookDetailsPage() {
                     joinWaitlistMutation.mutate();
                   }
                 }}
-                className={`flex-1 min-w-[200px] text-xl flex items-center justify-center gap-2 group hover:scale-105 transition-transform ${isWaitlisted ? 'bg-neo-blue text-white' : 'bg-gray-200'}`}
+                className={`w-full sm:flex-1 text-lg sm:text-xl flex items-center justify-center gap-2 group hover:scale-105 transition-transform py-3 sm:py-4 ${isWaitlisted ? 'bg-neo-blue text-white' : 'bg-gray-200'}`}
               >
                 {isWaitlisted ? "On Waitlist" : "Join Waitlist"}
                 <Bell size={20} className={isWaitlisted ? "fill-white" : ""} />
@@ -395,7 +395,7 @@ export default function BookDetailsPage() {
                   addToWishlistMutation.mutate();
                 }
               }}
-              className={`border-4 border-black px-6 py-4 font-black text-lg shadow-neo hover:shadow-neo-hover active:shadow-neo-active transition-all flex items-center gap-2 group hover:scale-105 ${isWishlisted ? "bg-neo-yellow" : "bg-white"
+              className={`w-full sm:w-auto border-3 sm:border-4 border-black px-5 sm:px-6 py-3 sm:py-4 font-black text-base sm:text-lg shadow-neo hover:shadow-neo-hover active:shadow-neo-active transition-all flex items-center justify-center gap-2 group hover:scale-105 ${isWishlisted ? "bg-neo-yellow" : "bg-white"
                 }`}
             >
               <Heart size={20} className={`group-hover:scale-110 transition-transform ${isWishlisted ? "fill-red-500 text-red-500" : ""}`} />
@@ -407,16 +407,16 @@ export default function BookDetailsPage() {
 
       {/* Rental Request Modal Dialog */}
       {isRentModalOpen && (
-        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
-          <div className="bg-white border-4 border-black p-8 max-w-lg w-full shadow-neo-lg space-y-6 animate-in fade-in zoom-in duration-200">
-            <div className="flex justify-between items-start border-b-4 border-black pb-4">
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-3 sm:p-4">
+          <div className="bg-white border-3 sm:border-4 border-black p-5 sm:p-8 max-w-lg w-full shadow-neo-lg space-y-4 sm:space-y-6 animate-in fade-in zoom-in duration-200 max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-start border-b-3 sm:border-b-4 border-black pb-3 sm:pb-4">
               <div>
-                <h3 className="font-serif text-3xl font-black">Request to Rent</h3>
-                <p className="text-sm font-bold text-gray-600 mt-1">{book.title}</p>
+                <h3 className="font-serif text-2xl sm:text-3xl font-black">Request to Rent</h3>
+                <p className="text-xs sm:text-sm font-bold text-gray-600 mt-1">{book.title}</p>
               </div>
               <button
                 onClick={() => setIsRentModalOpen(false)}
-                className="border-2 border-black px-3 py-1 font-black text-lg bg-gray-200 hover:bg-gray-300"
+                className="border-2 border-black px-2.5 py-1 font-black text-base sm:text-lg bg-gray-200 hover:bg-gray-300"
               >
                 ✕
               </button>
@@ -424,7 +424,7 @@ export default function BookDetailsPage() {
 
             <div className="space-y-4">
               <div>
-                <label className="block font-bold mb-2 text-base">Desired Exam Slot / Duration</label>
+                <label className="block font-bold mb-2 text-sm sm:text-base">Desired Exam Slot / Duration</label>
                 <NeoSelect
                   value={rentDuration}
                   onChange={(val) => setRentDuration(val)}
@@ -440,7 +440,7 @@ export default function BookDetailsPage() {
                       max="365"
                       value={customDays}
                       onChange={(e) => setCustomDays(parseInt(e.target.value) || 1)}
-                      className="border-4 border-black p-2 font-bold w-24 text-center focus:outline-none"
+                      className="border-3 sm:border-4 border-black p-2 font-bold w-24 text-center focus:outline-none"
                     />
                     <span className="font-bold whitespace-nowrap">Days</span>
                   </div>
@@ -448,28 +448,28 @@ export default function BookDetailsPage() {
               </div>
 
               <div>
-                <label className="block font-bold mb-2 text-base">Message / Handover Spot (Optional)</label>
+                <label className="block font-bold mb-2 text-sm sm:text-base">Message / Handover Spot (Optional)</label>
                 <textarea
                   value={rentalNote}
                   onChange={(e) => setRentalNote(e.target.value)}
                   rows={3}
                   placeholder="e.g. Hi! Need this book for CAT-2 revision. Can meet near SJT or Block L for handover."
-                  className="w-full border-4 border-black p-3 font-medium focus:outline-none focus:ring-2 focus:ring-black"
+                  className="w-full border-3 sm:border-4 border-black p-3 font-medium focus:outline-none focus:ring-2 focus:ring-black text-sm sm:text-base"
                 />
               </div>
             </div>
 
-            <div className="flex gap-4 pt-4 border-t-4 border-black">
+            <div className="flex flex-col-reverse sm:flex-row gap-3 sm:gap-4 pt-3 sm:pt-4 border-t-3 sm:border-t-4 border-black">
               <NeoButton
                 variant="secondary"
-                className="w-1/2 bg-white"
+                className="w-full sm:w-1/2 bg-white"
                 onClick={() => setIsRentModalOpen(false)}
               >
                 Cancel
               </NeoButton>
               <NeoButton
                 variant="primary"
-                className="w-1/2 bg-neo-green text-black"
+                className="w-full sm:w-1/2 bg-neo-green text-black"
                 onClick={() => rentMutation.mutate()}
                 disabled={rentMutation.isPending}
               >

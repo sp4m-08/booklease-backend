@@ -111,30 +111,30 @@ export default function YourListingsPage() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto w-full px-6 py-12 flex-grow">
+    <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 py-6 sm:py-12 flex-grow">
       {/* Top Header Banner */}
-      <div className="mb-10 border-b-4 border-black pb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+      <div className="mb-6 sm:mb-10 border-b-4 border-black pb-4 sm:pb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 sm:gap-6">
         <div>
-          <div className="inline-flex items-center gap-1.5 border-2 border-black px-3 py-1 bg-neo-yellow font-black text-xs uppercase mb-3 shadow-neo">
+          <div className="inline-flex items-center gap-1.5 border-2 border-black px-2.5 sm:px-3 py-0.5 sm:py-1 bg-neo-yellow font-black text-xs uppercase mb-2 sm:mb-3 shadow-neo">
             <GraduationCap size={13} className="text-black" />
             <span>VIT Vellore Student Hub</span>
           </div>
-          <h1 className="font-serif text-5xl font-black mb-2">Your Listings</h1>
-          <p className="font-medium text-lg text-gray-700">
+          <h1 className="font-serif text-3xl sm:text-5xl font-black mb-1 sm:mb-2">Your Listings</h1>
+          <p className="font-medium text-sm sm:text-lg text-gray-700">
             Manage all the CAT/FAT course reference books you've listed for rent and the revision notes you've shared with VITians.
           </p>
         </div>
 
         {/* Quick Action Upload Buttons */}
-        <div className="flex flex-wrap gap-3">
-          <Link href="/books/upload">
-            <NeoButton variant="primary" className="bg-neo-green flex items-center gap-2">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3 w-full sm:w-auto">
+          <Link href="/books/upload" className="w-full sm:w-auto">
+            <NeoButton variant="primary" className="w-full sm:w-auto bg-neo-green flex items-center justify-center gap-2 text-sm sm:text-base py-2.5 sm:py-3">
               <Plus size={18} />
               List a Book
             </NeoButton>
           </Link>
-          <Link href="/notes/upload">
-            <NeoButton variant="primary" className="bg-neo-purple flex items-center gap-2">
+          <Link href="/notes/upload" className="w-full sm:w-auto">
+            <NeoButton variant="primary" className="w-full sm:w-auto bg-neo-purple flex items-center justify-center gap-2 text-sm sm:text-base py-2.5 sm:py-3">
               <Plus size={18} />
               Share Notes
             </NeoButton>
@@ -143,50 +143,50 @@ export default function YourListingsPage() {
       </div>
 
       {/* Summary Stat Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-10">
-        <NeoCard color="yellow" className="p-6">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-6 mb-6 sm:mb-10">
+        <NeoCard color="yellow" className="p-4 sm:p-6">
           <span className="text-xs font-black uppercase text-gray-700 block mb-1">Total Active Listings</span>
-          <div className="font-serif text-4xl font-black">{totalListings}</div>
-          <p className="text-xs font-bold text-gray-600 mt-2">Books + Study Materials</p>
+          <div className="font-serif text-3xl sm:text-4xl font-black">{totalListings}</div>
+          <p className="text-xs font-bold text-gray-600 mt-1 sm:mt-2">Books + Study Materials</p>
         </NeoCard>
 
-        <NeoCard color="green" className="p-6">
+        <NeoCard color="green" className="p-4 sm:p-6">
           <div className="flex justify-between items-start">
             <div>
               <span className="text-xs font-black uppercase text-gray-700 block mb-1">Books Listed</span>
-              <div className="font-serif text-4xl font-black">{myBooks?.length || 0}</div>
+              <div className="font-serif text-3xl sm:text-4xl font-black">{myBooks?.length || 0}</div>
             </div>
-            <BookOpen className="w-8 h-8 opacity-40" />
+            <BookOpen className="w-7 h-7 sm:w-8 sm:h-8 opacity-40" />
           </div>
-          <p className="text-xs font-bold text-gray-600 mt-2">Available for student rental</p>
+          <p className="text-xs font-bold text-gray-600 mt-1 sm:mt-2">Available for student rental</p>
         </NeoCard>
 
-        <NeoCard color="blue" className="p-6">
+        <NeoCard color="blue" className="p-4 sm:p-6">
           <div className="flex justify-between items-start">
             <div>
               <span className="text-xs font-black uppercase text-gray-700 block mb-1">Notes Uploaded</span>
-              <div className="font-serif text-4xl font-black">{myNotes?.length || 0}</div>
+              <div className="font-serif text-3xl sm:text-4xl font-black">{myNotes?.length || 0}</div>
             </div>
-            <FileText className="w-8 h-8 opacity-40" />
+            <FileText className="w-7 h-7 sm:w-8 sm:h-8 opacity-40" />
           </div>
-          <p className="text-xs font-bold text-gray-600 mt-2">PDFs, Docs & Notes shared</p>
+          <p className="text-xs font-bold text-gray-600 mt-1 sm:mt-2">PDFs, Docs & Notes shared</p>
         </NeoCard>
       </div>
 
       {/* Filter & Search Bar */}
-      <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-4 mb-8">
-        <div className="flex gap-2">
+      <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3 sm:gap-4 mb-6 sm:mb-8">
+        <div className="grid grid-cols-3 sm:flex gap-1.5 sm:gap-2">
           <button
             onClick={() => setFilterTab("all")}
-            className={`border-4 border-black px-4 py-2 font-black text-sm transition-all ${
+            className={`border-3 sm:border-4 border-black px-2.5 sm:px-4 py-2 font-black text-xs sm:text-sm text-center transition-all ${
               filterTab === "all" ? "bg-black text-white shadow-neo" : "bg-white hover:bg-gray-100"
             }`}
           >
-            All Listings ({totalListings})
+            All ({totalListings})
           </button>
           <button
             onClick={() => setFilterTab("books")}
-            className={`border-4 border-black px-4 py-2 font-black text-sm transition-all ${
+            className={`border-3 sm:border-4 border-black px-2.5 sm:px-4 py-2 font-black text-xs sm:text-sm text-center transition-all ${
               filterTab === "books" ? "bg-neo-green text-black shadow-neo" : "bg-white hover:bg-gray-100"
             }`}
           >
@@ -194,7 +194,7 @@ export default function YourListingsPage() {
           </button>
           <button
             onClick={() => setFilterTab("notes")}
-            className={`border-4 border-black px-4 py-2 font-black text-sm transition-all ${
+            className={`border-3 sm:border-4 border-black px-2.5 sm:px-4 py-2 font-black text-xs sm:text-sm text-center transition-all ${
               filterTab === "notes" ? "bg-neo-blue text-black shadow-neo" : "bg-white hover:bg-gray-100"
             }`}
           >

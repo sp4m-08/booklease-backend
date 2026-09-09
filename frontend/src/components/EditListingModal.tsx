@@ -117,8 +117,8 @@ export function EditListingModal({ isOpen, type, item, onClose, onSuccess }: Edi
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
-      <div className="bg-white border-4 border-black p-6 sm:p-8 max-w-2xl w-full shadow-neo-lg space-y-6 my-8 animate-in fade-in zoom-in duration-200">
+    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+      <div className="bg-white border-4 border-black p-4 sm:p-8 max-w-2xl w-full shadow-neo-lg space-y-5 my-auto max-h-[90vh] overflow-y-auto animate-in fade-in zoom-in duration-200">
         
         {/* Header */}
         <div className="flex justify-between items-start border-b-4 border-black pb-4">
@@ -127,11 +127,12 @@ export function EditListingModal({ isOpen, type, item, onClose, onSuccess }: Edi
               <Edit3 size={12} className="text-black" />
               <span>Edit {type === "book" ? "Textbook / Printout" : "Study Note"}</span>
             </div>
-            <h2 className="font-serif text-3xl font-black">Edit Listing Information</h2>
+            <h2 className="font-serif text-2xl sm:text-3xl font-black">Edit Listing Information</h2>
           </div>
           <button 
             onClick={onClose}
             className="border-2 border-black p-1.5 font-black hover:bg-gray-200 shadow-sm transition-all"
+            aria-label="Close modal"
           >
             <X size={20} />
           </button>

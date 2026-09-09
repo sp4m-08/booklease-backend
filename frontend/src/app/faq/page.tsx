@@ -90,55 +90,55 @@ export default function FAQPage() {
   };
 
   return (
-    <div className="max-w-5xl mx-auto w-full px-6 py-12 flex-grow">
+    <div className="max-w-5xl mx-auto w-full px-4 sm:px-6 py-8 sm:py-12 flex-grow">
       {/* Header */}
-      <div className="text-center mb-12">
-        <div className="inline-flex items-center gap-2 border-4 border-black bg-neo-yellow px-4 py-1.5 text-sm font-black uppercase mb-4 shadow-neo">
+      <div className="text-center mb-8 sm:mb-12">
+        <div className="inline-flex items-center gap-2 border-3 sm:border-4 border-black bg-neo-yellow px-3.5 py-1 sm:px-4 sm:py-1.5 text-xs sm:text-sm font-black uppercase mb-4 shadow-neo">
           <Sparkles className="w-4 h-4 text-black" />
           <span>Built for VIT Students</span>
         </div>
-        <h1 className="font-serif text-5xl md:text-6xl font-black mb-4">
+        <h1 className="font-serif text-3xl sm:text-5xl md:text-6xl font-black mb-3 sm:mb-4">
           CAT-2 & FAT Exam Prep FAQ
         </h1>
-        <p className="font-medium text-xl text-gray-700 max-w-2xl mx-auto">
+        <p className="font-medium text-base sm:text-xl text-gray-700 max-w-2xl mx-auto">
           Everything you need to know about renting reference books, sharing handwritten notes, and campus handovers.
         </p>
       </div>
 
       {/* Feature Highlights */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-        <NeoCard color="blue" className="text-center p-6">
-          <Clock className="w-10 h-10 mx-auto mb-3" />
-          <h3 className="font-black text-xl mb-1">CAT-2 & FAT</h3>
-          <p className="text-sm font-medium text-gray-800">Borrow reference books tailored to your exam slots or rent flexibly by days.</p>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 mb-8 sm:mb-12">
+        <NeoCard color="blue" className="text-center p-5 sm:p-6">
+          <Clock className="w-8 h-8 sm:w-10 sm:h-10 mx-auto mb-2 sm:mb-3" />
+          <h3 className="font-black text-lg sm:text-xl mb-1">CAT-2 & FAT</h3>
+          <p className="text-xs sm:text-sm font-medium text-gray-800">Borrow reference books tailored to your exam slots or rent flexibly by days.</p>
         </NeoCard>
-        <NeoCard color="yellow" className="text-center p-6">
-          <MapPin className="w-10 h-10 mx-auto mb-3" />
-          <h3 className="font-black text-xl mb-1">Campus Handover</h3>
-          <p className="text-sm font-medium text-gray-800">Meet up anywhere over campus in VIT Vellore.</p>
+        <NeoCard color="yellow" className="text-center p-5 sm:p-6">
+          <MapPin className="w-8 h-8 sm:w-10 sm:h-10 mx-auto mb-2 sm:mb-3" />
+          <h3 className="font-black text-lg sm:text-xl mb-1">Campus Handover</h3>
+          <p className="text-xs sm:text-sm font-medium text-gray-800">Meet up anywhere over campus in VIT Vellore.</p>
         </NeoCard>
-        <NeoCard color="peach" className="text-center p-6">
-          <ShieldCheck className="w-10 h-10 mx-auto mb-3" />
-          <h3 className="font-black text-xl mb-1">VIT Verified Only</h3>
-          <p className="text-sm font-medium text-gray-800">Safe peer network verified with @vitstudent.ac.in emails.</p>
+        <NeoCard color="peach" className="text-center p-5 sm:p-6">
+          <ShieldCheck className="w-8 h-8 sm:w-10 sm:h-10 mx-auto mb-2 sm:mb-3" />
+          <h3 className="font-black text-lg sm:text-xl mb-1">VIT Verified Only</h3>
+          <p className="text-xs sm:text-sm font-medium text-gray-800">Safe peer network verified with @vitstudent.ac.in emails.</p>
         </NeoCard>
       </div>
 
       {/* Search Filter */}
-      <div className="mb-8">
+      <div className="mb-6 sm:mb-8">
         <NeoInput
-          placeholder="Search VIT exam prep questions (e.g. CAT, FAT, handovers, returns, notes)..."
+          placeholder="Search VIT exam prep questions..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
       </div>
 
       {/* Accordion FAQ Items */}
-      <div className="space-y-4">
+      <div className="space-y-3 sm:space-y-4">
         {isLoading ? (
-          <div className="p-12 text-center font-bold text-xl">Loading questions...</div>
+          <div className="p-8 sm:p-12 text-center font-bold text-lg sm:text-xl">Loading questions...</div>
         ) : filteredFAQs.length === 0 ? (
-          <div className="p-8 text-center border-4 border-black bg-white shadow-neo font-bold">
+          <div className="p-6 sm:p-8 text-center border-4 border-black bg-white shadow-neo font-bold text-sm sm:text-base">
             No matching questions found for "{search}".
           </div>
         ) : (
@@ -147,21 +147,21 @@ export default function FAQPage() {
             return (
               <div
                 key={faq.id || index}
-                className="border-4 border-black bg-white shadow-neo transition-all"
+                className="border-3 sm:border-4 border-black bg-white shadow-neo transition-all"
               >
                 <button
                   onClick={() => toggleItem(index)}
-                  className="w-full p-6 text-left font-serif font-black text-xl md:text-2xl flex justify-between items-center hover:bg-neo-purple/10 transition-colors"
+                  className="w-full p-4 sm:p-6 text-left font-serif font-black text-lg sm:text-2xl flex justify-between items-center hover:bg-neo-purple/10 transition-colors gap-3"
                 >
-                  <span className="pr-4">{faq.question}</span>
+                  <span>{faq.question}</span>
                   <ChevronDown
-                    className={`w-6 h-6 flex-shrink-0 transition-transform duration-300 ${
+                    className={`w-5 h-5 sm:w-6 sm:h-6 flex-shrink-0 transition-transform duration-300 ${
                       isOpen ? "rotate-180 text-black" : ""
                     }`}
                   />
                 </button>
                 {isOpen && (
-                  <div className="px-6 pb-6 pt-2 border-t-2 border-dashed border-black font-medium text-lg text-gray-800 leading-relaxed bg-gray-50">
+                  <div className="px-4 sm:px-6 pb-4 sm:pb-6 pt-2 border-t-2 border-dashed border-black font-medium text-sm sm:text-lg text-gray-800 leading-relaxed bg-gray-50">
                     {faq.answer}
                   </div>
                 )}
@@ -172,17 +172,17 @@ export default function FAQPage() {
       </div>
 
       {/* Help Banner */}
-      <div className="mt-16 border-4 border-black bg-neo-green p-8 shadow-neo flex flex-col md:flex-row justify-between items-center gap-6 text-center md:text-left">
+      <div className="mt-10 sm:mt-16 border-3 sm:border-4 border-black bg-neo-green p-6 sm:p-8 shadow-neo flex flex-col md:flex-row justify-between items-center gap-5 sm:gap-6 text-center md:text-left">
         <div>
-          <h2 className="font-serif text-3xl font-black mb-1">Ready for your upcoming CAT/FAT exams?</h2>
-          <p className="font-medium text-lg text-gray-900">Find reference books and revision notes from your peers right now.</p>
+          <h2 className="font-serif text-2xl sm:text-3xl font-black mb-1">Ready for your upcoming CAT/FAT exams?</h2>
+          <p className="font-medium text-sm sm:text-lg text-gray-900">Find reference books and revision notes from your peers right now.</p>
         </div>
-        <div className="flex gap-4">
-          <Link href="/books">
-            <NeoButton variant="primary" size="lg">Find Books</NeoButton>
+        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full sm:w-auto">
+          <Link href="/books" className="w-full sm:w-auto">
+            <NeoButton variant="primary" size="lg" className="w-full sm:w-auto">Find Books</NeoButton>
           </Link>
-          <Link href="/notes">
-            <NeoButton variant="secondary" size="lg" className="bg-white">Browse Notes</NeoButton>
+          <Link href="/notes" className="w-full sm:w-auto">
+            <NeoButton variant="secondary" size="lg" className="bg-white w-full sm:w-auto">Browse Notes</NeoButton>
           </Link>
         </div>
       </div>

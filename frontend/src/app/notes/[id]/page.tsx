@@ -203,22 +203,22 @@ export default function NoteDetailPage() {
   const canDelete = isOwner || userProfile?.is_admin;
 
   return (
-    <div ref={containerRef} className="max-w-7xl mx-auto w-full px-6 py-12 flex-grow">
+    <div ref={containerRef} className="max-w-7xl mx-auto w-full px-4 sm:px-6 py-6 sm:py-12 flex-grow">
       {/* Top Header */}
-      <div className="mb-8 flex justify-between items-center animate-element">
+      <div className="mb-6 sm:mb-8 flex justify-between items-center animate-element">
         <Link href="/notes">
-          <NeoButton variant="secondary" className="bg-white flex items-center gap-2">
+          <NeoButton variant="secondary" className="bg-white flex items-center gap-2 text-sm sm:text-base">
             <ArrowLeft size={18} />
             Back to Notes
           </NeoButton>
         </Link>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3">
           {isOwner && (
             <NeoButton 
               variant="secondary"
               onClick={() => setIsEditModalOpen(true)}
-              className="bg-neo-yellow hover:bg-yellow-300 flex items-center gap-2"
+              className="bg-neo-yellow hover:bg-yellow-300 flex items-center gap-2 text-sm sm:text-base"
             >
               <Edit3 size={18} />
               Edit Note
@@ -234,7 +234,7 @@ export default function NoteDetailPage() {
                 }
               }}
               disabled={deleteNoteMutation.isPending}
-              className="flex items-center gap-2"
+              className="flex items-center gap-2 text-sm sm:text-base"
             >
               <Trash2 size={18} />
               Delete Note
@@ -243,7 +243,7 @@ export default function NoteDetailPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-12 items-start">
         
         {/* Left Column: Document / File Preview (Lazy-loaded) */}
         <div className="lg:col-span-2 space-y-4 animate-element">
@@ -251,24 +251,24 @@ export default function NoteDetailPage() {
         </div>
 
         {/* Right Column: Note Metadata & Contact */}
-        <div className="flex flex-col gap-8">
-          <NeoCard color="yellow" className="p-6 animate-element">
+        <div className="flex flex-col gap-6 sm:gap-8">
+          <NeoCard color="yellow" className="p-4 sm:p-6 animate-element">
               <div className="flex flex-wrap gap-2 mb-4 items-center justify-between w-full">
                 <div className="flex flex-wrap gap-2">
-                  <span className="inline-block px-3 py-1 bg-white border-2 border-black font-black text-xs uppercase shadow-sm">
+                  <span className="inline-block px-2.5 sm:px-3 py-0.5 sm:py-1 bg-white border-2 border-black font-black text-xs uppercase shadow-sm">
                     {note.subject || "General Study Material"}
                   </span>
                   <SlotBadges slot={note.slot} rentedSlots={note.rented_slots} variant="purple" className="inline-flex" />
                   {note.condition && (
-                    <span className="inline-block px-3 py-1 bg-white border-2 border-black font-black text-xs uppercase shadow-sm">
+                    <span className="inline-block px-2.5 sm:px-3 py-0.5 sm:py-1 bg-white border-2 border-black font-black text-xs uppercase shadow-sm">
                       {note.condition}
                     </span>
                   )}
-                  <span className="inline-block px-3 py-1 bg-neo-green border-2 border-black font-black text-xs uppercase shadow-sm">
+                  <span className="inline-block px-2.5 sm:px-3 py-0.5 sm:py-1 bg-neo-green border-2 border-black font-black text-xs uppercase shadow-sm">
                     {note.price && note.price > 0 ? `₹${note.price}` : "FREE"}
                   </span>
                   {!note.available && (
-                    <span className="inline-block px-3 py-1 bg-black text-white border-2 border-black font-black text-xs uppercase shadow-sm">
+                    <span className="inline-block px-2.5 sm:px-3 py-0.5 sm:py-1 bg-black text-white border-2 border-black font-black text-xs uppercase shadow-sm">
                       🔴 Rented Out
                     </span>
                   )}
@@ -283,51 +283,52 @@ export default function NoteDetailPage() {
                   upvoteMutation.mutate();
                 }}
                 disabled={upvoteMutation.isPending}
-                className={`flex items-center gap-2 px-3 py-1 border-2 border-black font-black text-sm transition-all shadow-sm ${note.is_upvoted ? "bg-neo-blue text-white" : "bg-white hover:bg-gray-100"}`}
+                className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1 border-2 border-black font-black text-xs sm:text-sm transition-all shadow-sm ${note.is_upvoted ? "bg-neo-blue text-white" : "bg-white hover:bg-gray-100"}`}
               >
-                <ThumbsUp size={16} className={note.is_upvoted ? "fill-white" : ""} />
+                <ThumbsUp size={15} className={note.is_upvoted ? "fill-white" : ""} />
                 {note.upvotes || 0} Upvotes
               </button>
             </div>
-            <h1 className="font-serif text-3xl md:text-4xl font-black mb-4 leading-tight">{note.title}</h1>
-            <p className="font-medium text-base text-gray-800 leading-relaxed whitespace-pre-wrap">
+            <h1 className="font-serif text-2xl sm:text-3xl md:text-4xl font-black mb-3 leading-tight">{note.title}</h1>
+            <p className="font-medium text-sm sm:text-base text-gray-800 leading-relaxed whitespace-pre-wrap">
               {note.description || "No specific summary provided for this note file."}
             </p>
-            <p className="text-xs font-bold text-gray-600 mt-6 pt-4 border-t-2 border-black">
+            <p className="text-xs font-bold text-gray-600 mt-4 sm:mt-6 pt-3 sm:pt-4 border-t-2 border-black">
               Shared on {new Date(note.created_at).toLocaleDateString()}
             </p>
           </NeoCard>
 
-          <NeoCard color="blue" className="p-6 animate-element">
-            <div className="flex items-center gap-3 mb-6 border-b-4 border-black pb-3">
-              <UserCheck size={24} />
-              <h2 className="font-serif text-2xl font-black">Author & Contact</h2>
+          <NeoCard color="blue" className="p-4 sm:p-6 animate-element">
+            <div className="flex items-center gap-3 mb-4 sm:mb-6 border-b-3 sm:border-b-4 border-black pb-2 sm:pb-3">
+              <UserCheck size={22} />
+              <h2 className="font-serif text-xl sm:text-2xl font-black">Author & Contact</h2>
             </div>
             
-            <div className="space-y-4 font-medium text-sm">
+            <div className="space-y-3 font-medium text-sm">
               <div>
                 <span className="text-xs font-black uppercase text-gray-700 block">Uploaded By</span>
-                <span className="font-bold text-lg">
+                <span className="font-bold text-base sm:text-lg">
                   {formatStudentName(note.uploader?.username, "Campus Student")}
                 </span>
               </div>
 
               {note.uploader?.phone_number ? (
-                <div className="pt-4 border-t-2 border-dashed border-black">
+                <div className="pt-3 sm:pt-4 border-t-2 border-dashed border-black">
                   {user ? (
                     <a 
                       href={`https://wa.me/91${note.uploader.phone_number}?text=Hi, I found your notes "${note.title}" on BookLease and wanted to thank you / ask a doubt!`} 
                       target="_blank" 
                       rel="noreferrer"
+                      className="block"
                     >
-                      <NeoButton variant="primary" className="w-full bg-[#25D366] text-white flex items-center justify-center gap-2 border-black group hover:scale-105 transition-transform">
+                      <NeoButton variant="primary" className="w-full bg-[#25D366] text-white flex items-center justify-center gap-2 border-black group hover:scale-105 transition-transform text-sm sm:text-base py-2.5 sm:py-3">
                         <MessageSquare size={18} className="group-hover:animate-bounce" /> Message on WhatsApp
                       </NeoButton>
                     </a>
                   ) : (
                     <NeoButton 
                       variant="primary" 
-                      className="w-full bg-[#25D366] text-white flex items-center justify-center gap-2 border-black group hover:scale-105 transition-transform"
+                      className="w-full bg-[#25D366] text-white flex items-center justify-center gap-2 border-black group hover:scale-105 transition-transform text-sm sm:text-base py-2.5 sm:py-3"
                       onClick={() => {
                         toast.error("Please sign in to contact the uploader.");
                         router.push("/login");
@@ -346,9 +347,9 @@ export default function NoteDetailPage() {
           </NeoCard>
 
           {/* Action Buttons */}
-          <div className="flex flex-col gap-4 animate-element">
+          <div className="flex flex-col gap-3 sm:gap-4 animate-element">
             {isOwner ? (
-              <div className="border-4 border-black bg-neo-yellow px-6 py-4 font-bold text-lg shadow-neo w-full text-center flex justify-center items-center gap-2">
+              <div className="border-3 sm:border-4 border-black bg-neo-yellow px-4 sm:px-6 py-3 sm:py-4 font-bold text-base sm:text-lg shadow-neo w-full text-center flex justify-center items-center gap-2">
                 <span className="w-5 h-5 bg-black text-neo-yellow rounded-full flex items-center justify-center text-xs">i</span> You shared this note.
               </div>
             ) : note.available ? (
@@ -364,10 +365,10 @@ export default function NoteDetailPage() {
                   setRentDuration(slotOptions[0]?.value || "All Slots");
                   setIsRentModalOpen(true);
                 }}
-                className="w-full text-xl bg-neo-green flex items-center justify-center gap-2 group hover:scale-105 transition-transform"
+                className="w-full text-lg sm:text-xl bg-neo-green flex items-center justify-center gap-2 group hover:scale-105 transition-transform py-3 sm:py-4"
               >
                 Request to Rent 
-                <FileText size={24} className="group-hover:rotate-12 group-hover:scale-110 transition-transform duration-300" />
+                <FileText size={22} className="group-hover:rotate-12 group-hover:scale-110 transition-transform duration-300" />
               </NeoButton>
             ) : (
               <NeoButton 
@@ -384,7 +385,7 @@ export default function NoteDetailPage() {
                     joinWaitlistMutation.mutate();
                   }
                 }}
-                className={`w-full text-xl flex items-center justify-center gap-2 group hover:scale-105 transition-transform ${isWaitlisted ? 'bg-neo-blue text-white' : 'bg-gray-200'}`}
+                className={`w-full text-lg sm:text-xl flex items-center justify-center gap-2 group hover:scale-105 transition-transform py-3 sm:py-4 ${isWaitlisted ? 'bg-neo-blue text-white' : 'bg-gray-200'}`}
               >
                 {isWaitlisted ? "On Waitlist" : "Join Waitlist"}
                 <Bell size={20} className={isWaitlisted ? "fill-white" : ""} />
@@ -397,16 +398,16 @@ export default function NoteDetailPage() {
 
       {/* Rental Request Modal Dialog */}
       {isRentModalOpen && (
-        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
-          <div className="bg-white border-4 border-black p-8 max-w-lg w-full shadow-neo-lg space-y-6 animate-in fade-in zoom-in duration-200">
-            <div className="flex justify-between items-start border-b-4 border-black pb-4">
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-3 sm:p-4">
+          <div className="bg-white border-3 sm:border-4 border-black p-5 sm:p-8 max-w-lg w-full shadow-neo-lg space-y-4 sm:space-y-6 animate-in fade-in zoom-in duration-200 max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-start border-b-3 sm:border-b-4 border-black pb-3 sm:pb-4">
               <div>
-                <h3 className="font-serif text-3xl font-black">Request to Rent Note</h3>
-                <p className="text-sm font-bold text-gray-600 mt-1">{note.title}</p>
+                <h3 className="font-serif text-2xl sm:text-3xl font-black">Request to Rent Note</h3>
+                <p className="text-xs sm:text-sm font-bold text-gray-600 mt-1">{note.title}</p>
               </div>
               <button 
                 onClick={() => setIsRentModalOpen(false)}
-                className="border-2 border-black px-3 py-1 font-black text-lg bg-gray-200 hover:bg-gray-300"
+                className="border-2 border-black px-2.5 py-1 font-black text-base sm:text-lg bg-gray-200 hover:bg-gray-300"
               >
                 ✕
               </button>
@@ -414,7 +415,7 @@ export default function NoteDetailPage() {
 
             <div className="space-y-4">
               <div>
-                <label className="block font-bold mb-2 text-base">Desired Exam Slot / Duration</label>
+                <label className="block font-bold mb-2 text-sm sm:text-base">Desired Exam Slot / Duration</label>
                 <NeoSelect
                   value={rentDuration}
                   onChange={(val) => setRentDuration(val)}
@@ -429,7 +430,7 @@ export default function NoteDetailPage() {
                       min="1"
                       value={customDays}
                       onChange={(e) => setCustomDays(parseInt(e.target.value) || 1)}
-                      className="border-4 border-black p-2 font-bold w-24 text-center focus:outline-none"
+                      className="border-3 sm:border-4 border-black p-2 font-bold w-24 text-center focus:outline-none"
                     />
                     <span className="font-bold">Days</span>
                   </div>
@@ -437,27 +438,27 @@ export default function NoteDetailPage() {
               </div>
 
               <div>
-                <label className="block font-bold mb-2 text-base">Message to Owner (Optional)</label>
+                <label className="block font-bold mb-2 text-sm sm:text-base">Message to Owner (Optional)</label>
                 <textarea 
                   value={rentalNote}
                   onChange={(e) => setRentalNote(e.target.value)}
                   placeholder="e.g. Hi! Need this note for CAT-2 revision. Can meet near SJT or Block L for handover."
-                  className="w-full border-4 border-black p-3 font-medium focus:outline-none h-24 resize-none"
+                  className="w-full border-3 sm:border-4 border-black p-3 font-medium focus:outline-none h-24 resize-none text-sm sm:text-base"
                 />
               </div>
             </div>
 
-            <div className="flex gap-4 pt-4 border-t-4 border-black">
+            <div className="flex flex-col-reverse sm:flex-row gap-3 sm:gap-4 pt-3 sm:pt-4 border-t-3 sm:border-t-4 border-black">
               <NeoButton 
                 variant="secondary" 
-                className="flex-1 bg-white"
+                className="w-full sm:flex-1 bg-white"
                 onClick={() => setIsRentModalOpen(false)}
               >
                 Cancel
               </NeoButton>
               <NeoButton 
                 variant="primary" 
-                className="flex-1 bg-neo-green"
+                className="w-full sm:flex-1 bg-neo-green"
                 onClick={() => requestRentalMutation.mutate()}
                 disabled={requestRentalMutation.isPending}
               >

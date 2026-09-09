@@ -48,15 +48,15 @@ export default function Navbar() {
   };
 
   const navLinks = [
-    { name: "Books", href: "/books", color: "hover:bg-neo-blue" },
-    { name: "Notes", href: "/notes", color: "hover:bg-neo-peach" },
-    { name: "FAQ", href: "/faq", color: "hover:bg-neo-yellow" },
+    { name: "Books", href: "/books", color: "hover:bg-neo-blue", icon: BookOpen },
+    { name: "Notes", href: "/notes", color: "hover:bg-neo-peach", icon: FileText },
+    { name: "FAQ", href: "/faq", color: "hover:bg-neo-yellow", icon: HelpCircle },
   ];
 
   if (user) {
-    navLinks.push({ name: "Your Listings", href: "/listings", color: "hover:bg-neo-yellow" });
-    navLinks.push({ name: "Dashboard", href: "/dashboard", color: "hover:bg-neo-purple" });
-    navLinks.push({ name: "Profile", href: "/profile", color: "hover:bg-neo-green" });
+    navLinks.push({ name: "Your Listings", href: "/listings", color: "hover:bg-neo-yellow", icon: LayoutDashboard });
+    navLinks.push({ name: "Dashboard", href: "/dashboard", color: "hover:bg-neo-purple", icon: LayoutDashboard });
+    navLinks.push({ name: "Profile", href: "/profile", color: "hover:bg-neo-green", icon: User });
   }
 
   useGSAP(() => {
@@ -107,11 +107,11 @@ export default function Navbar() {
   return (
     <header 
       ref={headerRef} 
-      className="flex items-center justify-between px-6 py-4 border-b-4 border-black bg-white sticky top-0 z-50 transition-shadow duration-300"
+      className="flex items-center justify-between px-3 sm:px-6 py-3 sm:py-4 border-b-4 border-black bg-white sticky top-0 z-50 transition-shadow duration-300"
     >
       {/* Brand Logo */}
       <Link href="/" onClick={() => setMobileOpen(false)}>
-        <div ref={logoRef} className="text-3xl font-serif font-black tracking-tight border-4 border-black px-4 py-2 bg-neo-yellow shadow-neo cursor-pointer select-none flex items-center gap-2">
+        <div ref={logoRef} className="text-xl sm:text-3xl font-serif font-black tracking-tight border-3 sm:border-4 border-black px-3 py-1.5 sm:px-4 sm:py-2 bg-neo-yellow shadow-neo cursor-pointer select-none flex items-center gap-1.5 sm:gap-2">
           Booklease
         </div>
       </Link>
@@ -179,40 +179,68 @@ export default function Navbar() {
         </div>
       </nav>
 
-      {/* Mobile Menu Toggle */}
-      <button 
-        className="md:hidden border-4 border-black p-2 bg-neo-yellow shadow-neo active:shadow-none active:translate-y-1 transition-all"
-        onClick={() => setMobileOpen(!mobileOpen)}
-        aria-label="Toggle Navigation Menu"
-      >
-        {mobileOpen ? <X size={24} strokeWidth={3} /> : <Menu size={24} strokeWidth={3} />}
-      </button>
+      {/* Mobile Right Quick Controls */}
+      <div className="flex md:hidden items-center gap-2">
+        {/* Mobile Quick Notifications Button */}
+        {user && (
+          <Link 
+            href="/notifications" 
+            onClick={() => setMobileOpen(false)}
+            className="relative border-3 border-black p-2 bg-white shadow-neo active:shadow-none active:translate-y-1 transition-all"
+            aria-label="Notifications"
+          >
+            <Bell size={20} />
+            {unreadCount > 0 && (
+              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] font-black w-4 h-4 rounded-full border-2 border-black flex items-center justify-center">
+                {unreadCount > 9 ? "9+" : unreadCount}
+              </span>
+            )}
+          </Link>
+        )}
+
+        {/* Mobile Menu Toggle */}
+        <button 
+          className="border-3 border-black p-2 bg-neo-yellow shadow-neo active:shadow-none active:translate-y-1 transition-all touch-target flex items-center justify-center"
+          onClick={() => setMobileOpen(!mobileOpen)}
+          aria-label="Toggle Navigation Menu"
+        >
+          {mobileOpen ? <X size={22} strokeWidth={3} /> : <Menu size={22} strokeWidth={3} />}
+        </button>
+      </div>
 
       {/* Mobile Dropdown Menu */}
       {mobileOpen && (
-        <div className="absolute top-[80px] left-0 w-full bg-white border-b-4 border-black flex flex-col p-6 gap-3 font-bold text-xl z-40 md:hidden shadow-neo-lg max-h-[85vh] overflow-y-auto">
-          {navLinks.map((link) => (
-            <Link 
-              key={link.name} 
-              href={link.href} 
-              onClick={() => setMobileOpen(false)}
-              className={`w-full border-4 border-black px-5 py-3 transition-transform active:scale-95 ${link.color} ${
-                pathname === link.href ? "bg-gray-100 shadow-neo translate-x-1 font-black" : "bg-white"
-              }`}
-            >
-              {link.name}
-            </Link>
-          ))}
+        <div className="absolute top-[64px] sm:top-[80px] left-0 w-full bg-white border-b-4 border-black flex flex-col p-4 sm:p-6 gap-2.5 font-bold text-lg z-40 md:hidden shadow-neo-lg max-h-[calc(100vh-70px)] overflow-y-auto">
+          {navLinks.map((link) => {
+            const Icon = link.icon;
+            const isActive = pathname === link.href;
+            return (
+              <Link 
+                key={link.name} 
+                href={link.href} 
+                onClick={() => setMobileOpen(false)}
+                className={`w-full border-3 border-black px-4 py-3 flex items-center gap-3 transition-transform active:scale-[0.98] ${link.color} ${
+                  isActive ? "bg-gray-100 shadow-neo font-black" : "bg-white"
+                }`}
+              >
+                <Icon size={20} />
+                <span>{link.name}</span>
+              </Link>
+            );
+          })}
 
           {user && (
             <Link 
               href="/notifications" 
               onClick={() => setMobileOpen(false)}
-              className={`w-full border-4 border-black px-5 py-3 flex justify-between items-center bg-white hover:bg-neo-yellow ${
+              className={`w-full border-3 border-black px-4 py-3 flex justify-between items-center bg-white hover:bg-neo-yellow ${
                 pathname === "/notifications" ? "bg-neo-yellow shadow-neo" : ""
               }`}
             >
-              <span>Alerts & Notifications</span>
+              <div className="flex items-center gap-3">
+                <Bell size={20} />
+                <span>Alerts & Notifications</span>
+              </div>
               {unreadCount > 0 && (
                 <span className="bg-red-500 text-white text-xs font-black px-2 py-0.5 border border-black rounded-full">
                   {unreadCount} new
@@ -225,22 +253,21 @@ export default function Navbar() {
             <Link 
               href="/admin" 
               onClick={() => setMobileOpen(false)}
-              className="w-full border-4 border-black px-5 py-3 bg-red-500 text-white font-black shadow-neo"
+              className="w-full border-3 border-black px-4 py-3 bg-red-500 text-white font-black shadow-neo flex items-center gap-3"
             >
-              <div className="flex items-center gap-2">
-                <Shield size={20} /> Admin Moderation Panel
-              </div>
+              <Shield size={20} />
+              <span>Admin Moderation Panel</span>
             </Link>
           )}
           
-          <div className="border-t-4 border-black pt-4 mt-2">
+          <div className="border-t-3 border-black pt-3 mt-1">
             {user ? (
-              <NeoButton variant="danger" size="lg" className="w-full" onClick={handleSignOut}>
+              <NeoButton variant="danger" size="lg" className="w-full text-base py-3" onClick={handleSignOut}>
                 Sign Out
               </NeoButton>
             ) : (
               <Link href="/login" onClick={() => setMobileOpen(false)}>
-                <NeoButton variant="primary" size="lg" className="w-full bg-neo-green">Sign In</NeoButton>
+                <NeoButton variant="primary" size="lg" className="w-full bg-neo-green text-base py-3">Sign In</NeoButton>
               </Link>
             )}
           </div>

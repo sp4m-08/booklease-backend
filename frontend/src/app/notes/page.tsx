@@ -136,25 +136,25 @@ export default function NotesPage() {
   };
 
   return (
-    <div ref={container} className="max-w-7xl mx-auto w-full px-8 py-12 flex-grow">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 border-b-4 border-black pb-6 gap-6">
+    <div ref={container} className="max-w-7xl mx-auto w-full px-4 sm:px-8 py-6 sm:py-12 flex-grow">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 sm:mb-8 border-b-4 border-black pb-4 sm:pb-6 gap-4 sm:gap-6">
         <div>
-          <div className="inline-flex items-center gap-1.5 border-2 border-black px-3 py-0.5 bg-neo-purple font-black text-xs uppercase mb-2 shadow-sm">
+          <div className="inline-flex items-center gap-1.5 border-2 border-black px-2.5 sm:px-3 py-0.5 bg-neo-purple font-black text-xs uppercase mb-2 shadow-sm">
             <Sparkles size={13} className="text-black" />
             <span>Exam Revision Hub</span>
           </div>
-          <h1 className="font-serif text-5xl font-black mb-2">CAT & FAT Study Notes</h1>
-          <p className="font-medium text-xl text-gray-700">Handwritten class notes, module formula sheets, and solved papers shared by VITians.</p>
+          <h1 className="font-serif text-3xl sm:text-5xl font-black mb-2">CAT & FAT Study Notes</h1>
+          <p className="font-medium text-sm sm:text-lg text-gray-700">Handwritten class notes, module formula sheets, and solved papers shared by VITians.</p>
         </div>
-        <div className="flex flex-wrap items-center gap-3">
-          <Link href="/books">
-            <NeoButton variant="secondary" size="lg" className="bg-neo-green text-black flex items-center gap-2 hover:scale-105 transition-transform">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3 w-full sm:w-auto">
+          <Link href="/books" className="w-full sm:w-auto">
+            <NeoButton variant="secondary" size="lg" className="w-full bg-neo-green text-black flex items-center justify-center gap-2 hover:scale-105 transition-transform text-sm sm:text-base py-2.5 sm:py-3">
               <BookOpen size={18} />
               Browse Books
             </NeoButton>
           </Link>
-          <Link href="/notes/upload">
-            <NeoButton variant="primary" size="lg" className="bg-neo-purple text-black hover:scale-105 transition-transform">
+          <Link href="/notes/upload" className="w-full sm:w-auto">
+            <NeoButton variant="primary" size="lg" className="w-full bg-neo-purple text-black hover:scale-105 transition-transform text-sm sm:text-base py-2.5 sm:py-3">
               Share Study Notes
             </NeoButton>
           </Link>
@@ -162,7 +162,7 @@ export default function NotesPage() {
       </div>
 
       {/* Discovery / Filter Bar */}
-      <div className="mb-10 space-y-4 border-4 border-black bg-white p-5 shadow-neo">
+      <div className="mb-8 sm:mb-10 space-y-4 border-3 sm:border-4 border-black bg-white p-3.5 sm:p-5 shadow-neo">
         {/* Top Controls: Search + Dropdowns */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-3">
           {/* Main Search Input */}
@@ -318,7 +318,7 @@ export default function NotesPage() {
           </Link>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
           {filteredNotes.map((note) => (
             <Link key={note.id} href={`/notes/${note.id}`} className="note-card block group">
               <NeoCard

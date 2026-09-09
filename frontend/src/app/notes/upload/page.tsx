@@ -129,28 +129,28 @@ export default function NoteUploadPage() {
   };
 
   return (
-    <div className="max-w-3xl mx-auto w-full px-8 py-12 flex-grow">
-      <div className="mb-8 border-b-4 border-black pb-4">
-        <div className="inline-flex items-center gap-1.5 border-2 border-black px-3 py-0.5 bg-neo-purple font-black text-xs uppercase mb-2 shadow-sm">
+    <div className="max-w-3xl mx-auto w-full px-4 sm:px-8 py-6 sm:py-12 flex-grow">
+      <div className="mb-6 sm:mb-8 border-b-4 border-black pb-3 sm:pb-4">
+        <div className="inline-flex items-center gap-1.5 border-2 border-black px-2.5 sm:px-3 py-0.5 bg-neo-purple font-black text-xs uppercase mb-2 shadow-sm">
           <Sparkles size={13} className="text-black" />
           <span>VIT Exam Revision Hub</span>
         </div>
-        <h1 className="font-serif text-5xl font-black mb-1">Share Exam Study Notes</h1>
-        <p className="font-medium text-lg text-gray-700">Upload handwritten notes, module formula sheets, and solved CAT/FAT question banks for fellow VITians.</p>
+        <h1 className="font-serif text-3xl sm:text-5xl font-black mb-1">Share Exam Study Notes</h1>
+        <p className="font-medium text-sm sm:text-lg text-gray-700">Upload handwritten notes, module formula sheets, and solved CAT/FAT question banks for fellow VITians.</p>
       </div>
       
       {!hasPhone && (
-        <div className="mb-8 border-4 border-black bg-neo-yellow p-6 shadow-neo animate-in fade-in">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div className="mb-6 sm:mb-8 border-3 sm:border-4 border-black bg-neo-yellow p-4 sm:p-6 shadow-neo animate-in fade-in">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
             <div className="flex items-start gap-3">
-              <div className="p-2 border-2 border-black bg-white shadow-sm shrink-0 mt-0.5">
-                <AlertTriangle className="h-6 w-6 text-black" />
+              <div className="p-1.5 sm:p-2 border-2 border-black bg-white shadow-sm shrink-0 mt-0.5">
+                <AlertTriangle className="h-5 w-5 sm:h-6 sm:w-6 text-black" />
               </div>
               <div>
-                <h3 className="font-black text-xl flex items-center gap-2 text-black">
+                <h3 className="font-black text-lg sm:text-xl flex items-center gap-2 text-black">
                   Phone Number Required
                 </h3>
-                <p className="font-medium text-sm mt-1 text-black/90">
+                <p className="font-medium text-xs sm:text-sm mt-1 text-black/90">
                   You must add your mobile number in your profile before sharing notes so students can reach you directly for study queries and revisions.
                 </p>
               </div>
@@ -158,7 +158,7 @@ export default function NoteUploadPage() {
             <NeoButton
               type="button"
               variant="primary"
-              className="whitespace-nowrap shrink-0 flex items-center gap-2 bg-white text-black hover:bg-black hover:text-white"
+              className="w-full sm:w-auto whitespace-nowrap shrink-0 flex items-center justify-center gap-2 bg-white text-black hover:bg-black hover:text-white text-xs sm:text-sm py-2 sm:py-2.5"
               onClick={() => router.push("/profile")}
             >
               <PhoneCall className="h-4 w-4" />
@@ -169,11 +169,11 @@ export default function NoteUploadPage() {
         </div>
       )}
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 border-4 border-black bg-neo-blue p-8 shadow-neo">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 sm:space-y-6 border-3 sm:border-4 border-black bg-neo-blue p-4 sm:p-8 shadow-neo">
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="space-y-2">
-            <label className="font-bold text-xl block">Note Title *</label>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+          <div className="space-y-1.5 sm:space-y-2">
+            <label className="font-bold text-base sm:text-xl block">Note Title *</label>
             <NeoInput 
               {...register("title")}
               placeholder="e.g. OS CAT-2 Module 1-3 Cheatsheet"

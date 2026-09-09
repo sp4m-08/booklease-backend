@@ -260,7 +260,7 @@ export default function Home() {
     <div ref={container} className="flex flex-col overflow-hidden bg-[#FAFAF8] min-h-screen">
 
       {/* 1. HERO SECTION */}
-      <main className="relative min-h-[92vh] flex flex-col items-center justify-center px-6 py-20 text-center w-full bg-[radial-gradient(#000000_1.3px,transparent_1.3px)] [background-size:26px_26px] overflow-hidden">
+      <main className="relative min-h-[90vh] flex flex-col items-center justify-center px-4 sm:px-6 py-12 sm:py-20 text-center w-full bg-[radial-gradient(#000000_1.3px,transparent_1.3px)] [background-size:26px_26px] overflow-hidden">
         
         {/* Floating Neo Stickers & Starbursts in Hero */}
         <div className="neo-sticker float-sticker-1 absolute top-24 left-[6%] hidden lg:block select-none z-0">
@@ -296,54 +296,54 @@ export default function Home() {
         <div className="hero-shape absolute top-32 left-[8%] w-20 h-20 bg-neo-peach border-4 border-black rounded-full hidden md:block opacity-75 shadow-neo" />
         <div className="hero-shape absolute bottom-28 right-[7%] w-24 h-24 bg-neo-green border-4 border-black rotate-12 hidden md:block opacity-75 shadow-neo" />
 
-        <div className="flex flex-col items-center text-center w-full max-w-5xl mx-auto space-y-6 z-10">
+        <div className="flex flex-col items-center text-center w-full max-w-5xl mx-auto space-y-4 sm:space-y-6 z-10">
           <div className="hero-text flex flex-wrap gap-2 justify-center items-center">
-            <span className="flex items-center gap-1 border-2 border-black rounded-full px-4 py-1 font-black bg-neo-yellow shadow-neo text-xs uppercase">
+            <span className="flex items-center gap-1 border-2 border-black rounded-full px-3 sm:px-4 py-1 font-black bg-neo-yellow shadow-neo text-[11px] sm:text-xs uppercase">
               <GraduationCap size={14} className="jiggle-icon" /> For VIT Vellore Students
             </span>
-            <span className="flex items-center gap-1 border-2 border-black rounded-full px-4 py-1 font-black bg-neo-green shadow-neo text-xs uppercase">
+            <span className="flex items-center gap-1 border-2 border-black rounded-full px-3 sm:px-4 py-1 font-black bg-neo-green shadow-neo text-[11px] sm:text-xs uppercase">
               <Sparkles size={14} className="pulse-icon" /> CAT-2 • FAT Prep
             </span>
           </div>
 
-          <h1 className="hero-text font-serif text-5xl sm:text-7xl md:text-8xl font-black leading-[1.1] tracking-tight">
+          <h1 className="hero-text font-serif text-3xl sm:text-6xl md:text-7xl lg:text-8xl font-black leading-[1.15] sm:leading-[1.1] tracking-tight">
             Rent textbooks.
           </h1>
-          <h1 className="hero-text font-serif text-5xl sm:text-7xl md:text-8xl font-black leading-[1.1] tracking-tight">
-            Ace your <span className="bg-neo-yellow px-3 border-4 border-black shadow-neo inline-block transform -rotate-1">CAT & FAT</span>.
+          <h1 className="hero-text font-serif text-3xl sm:text-6xl md:text-7xl lg:text-8xl font-black leading-[1.15] sm:leading-[1.1] tracking-tight">
+            Ace your <span className="bg-neo-yellow px-2 sm:px-3 border-3 sm:border-4 border-black shadow-neo inline-block transform -rotate-1">CAT & FAT</span>.
           </h1>
-          <h1 className="hero-text font-serif text-5xl sm:text-7xl md:text-8xl font-black leading-[1.1] tracking-tight">
-            <span className="bg-neo-purple px-4 inline-block border-4 border-black shadow-neo transform rotate-1 mt-2 text-black">
+          <h1 className="hero-text font-serif text-3xl sm:text-6xl md:text-7xl lg:text-8xl font-black leading-[1.15] sm:leading-[1.1] tracking-tight">
+            <span className="bg-neo-purple px-3 sm:px-4 inline-block border-3 sm:border-4 border-black shadow-neo transform rotate-1 mt-1 sm:mt-2 text-black">
               Share handwritten notes.
             </span>
           </h1>
 
-          <p className="hero-desc text-lg sm:text-xl md:text-2xl font-medium max-w-3xl leading-relaxed text-gray-800 mt-6">
+          <p className="hero-desc text-base sm:text-xl md:text-2xl font-medium max-w-3xl leading-relaxed text-gray-800 mt-4 sm:mt-6 px-2">
             Couldn&apos;t find your book at the library? Borrow course textbooks and module notes directly from your peers across VIT Vellore hostels & academic blocks.
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-5 pt-6 pb-8">
-            <div className="hero-btn">
-              <Link href="/books">
-                <NeoButton variant="primary" size="lg" className="hover-animate-btn flex items-center justify-center gap-2 w-full sm:w-auto bg-neo-green text-black text-xl px-8">
-                  Find Books for Rent <BookOpen size={24} className="btn-icon" />
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-5 pt-4 sm:pt-6 pb-6 sm:pb-8 w-full sm:w-auto px-4 sm:px-0">
+            <div className="hero-btn w-full sm:w-auto">
+              <Link href="/books" className="w-full block">
+                <NeoButton variant="primary" size="lg" className="hover-animate-btn flex items-center justify-center gap-2 w-full bg-neo-green text-black text-lg sm:text-xl px-6 sm:px-8 py-3.5 sm:py-4">
+                  Find Books for Rent <BookOpen size={22} className="btn-icon" />
                 </NeoButton>
               </Link>
             </div>
-            <div className="hero-btn">
-              <Link href="/notes">
-                <NeoButton variant="secondary" size="lg" className="hover-animate-btn flex items-center justify-center gap-2 w-full sm:w-auto bg-white text-black text-xl px-8">
-                  Browse Exam Notes <FileText size={24} className="btn-icon" />
+            <div className="hero-btn w-full sm:w-auto">
+              <Link href="/notes" className="w-full block">
+                <NeoButton variant="secondary" size="lg" className="hover-animate-btn flex items-center justify-center gap-2 w-full bg-white text-black text-lg sm:text-xl px-6 sm:px-8 py-3.5 sm:py-4">
+                  Browse Exam Notes <FileText size={22} className="btn-icon" />
                 </NeoButton>
               </Link>
             </div>
           </div>
 
-          <div className="hero-text flex flex-wrap gap-4 justify-center text-xs font-black uppercase text-gray-700 pt-2">
+          <div className="hero-text flex flex-wrap gap-2 sm:gap-4 justify-center text-[11px] sm:text-xs font-black uppercase text-gray-700 pt-1 px-2">
             <span className="flex items-center gap-1"><Check size={14} className="text-neo-green drop-shadow-[1px_1px_0px_rgba(0,0,0,1)]" /> Verified @vitstudent.ac.in Only</span>
-            <span>•</span>
+            <span className="hidden sm:inline">•</span>
             <span className="flex items-center gap-1"><Check size={14} className="text-neo-green drop-shadow-[1px_1px_0px_rgba(0,0,0,1)]" /> Central Library & Hostel Handover</span>
-            <span>•</span>
+            <span className="hidden sm:inline">•</span>
             <span className="flex items-center gap-1"><Check size={14} className="text-neo-green drop-shadow-[1px_1px_0px_rgba(0,0,0,1)]" /> Zero Late Fees</span>
           </div>
         </div>
@@ -364,8 +364,8 @@ export default function Home() {
         </div>
       </div>
 
-      {/* 3. HOW IT WORKS SECTION (Plain Background - No Grid) */}
-      <section className="how-it-works-section w-full bg-[#FAFAF8] py-28 px-6 relative">
+      {/* 3. HOW IT WORKS SECTION */}
+      <section className="how-it-works-section w-full bg-[#FAFAF8] py-16 sm:py-28 px-4 sm:px-6 relative">
         <div className="max-w-5xl mx-auto">
           {/* Background Subtle Stickers */}
           <div className="absolute top-20 right-8 hidden md:block select-none float-sticker-1 z-0">
@@ -375,22 +375,22 @@ export default function Home() {
             <Starburst color="#F472B6" size={48} className="pulse-starburst" />
           </div>
 
-          <div className="text-center mb-20 relative z-10">
+          <div className="text-center mb-12 sm:mb-20 relative z-10">
             <span className="text-xs font-black uppercase tracking-wider bg-black text-white px-3 py-1 border border-black inline-block mb-3">
               Campus Workflow
             </span>
             <br />
-            <h2 className="font-serif text-5xl md:text-6xl font-black inline-block bg-neo-green px-6 py-2 border-4 border-black shadow-neo transform -rotate-1">
+            <h2 className="font-serif text-3xl sm:text-5xl md:text-6xl font-black inline-block bg-neo-green px-4 sm:px-6 py-2 border-3 sm:border-4 border-black shadow-neo transform -rotate-1">
               How Booklease Works
             </h2>
-            <p className="font-medium text-lg text-gray-700 mt-4 max-w-xl mx-auto">
+            <p className="font-medium text-base sm:text-lg text-gray-700 mt-4 max-w-xl mx-auto">
               From discovering a reference book to campus meetup in simple steps.
             </p>
           </div>
 
-          <div className="relative flex flex-col gap-24">
-            {/* The Drawing Line (Rope) */}
-            <div className="absolute left-8 md:left-1/2 top-0 bottom-0 w-2 md:-ml-1 border-r-4 border-dashed border-gray-300">
+          <div className="relative flex flex-col gap-6 sm:gap-12 md:gap-24">
+            {/* The Drawing Line (Rope) - Visible on md+ screens */}
+            <div className="hidden md:block absolute left-8 md:left-1/2 top-0 bottom-0 w-2 md:-ml-1 border-r-4 border-dashed border-gray-300">
               <div className="connecting-line w-full border-r-4 border-dashed border-black h-0" />
               <div className="traveling-knot absolute -left-3 md:-left-3 w-8 h-8 bg-neo-yellow border-4 border-black rounded-full shadow-neo z-30 flex items-center justify-center transform -translate-y-1/2">
                 <span className="block w-2 h-2 bg-black rounded-full" />
@@ -441,12 +441,17 @@ export default function Home() {
                   style={{ [i % 2 === 0 ? 'right' : 'left']: '-3rem' }}>
                   {step.num}
                 </div>
-                <NeoCard color={step.color as any} className="w-full relative z-20">
-                  <span className="inline-block border-2 border-black bg-black text-white px-2 py-0.5 text-xs font-black uppercase mb-2">
-                    {step.tag}
-                  </span>
-                  <h3 className="font-serif text-2xl md:text-3xl font-black mb-3">{step.title}</h3>
-                  <p className="font-medium text-base text-gray-800 leading-relaxed">{step.desc}</p>
+                <NeoCard color={step.color as any} className="w-full relative z-20 p-5 sm:p-6">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="md:hidden border-2 border-black bg-neo-yellow text-black px-2 py-0.5 text-xs font-black">
+                      Step {step.num}
+                    </span>
+                    <span className="inline-block border-2 border-black bg-black text-white px-2 py-0.5 text-xs font-black uppercase">
+                      {step.tag}
+                    </span>
+                  </div>
+                  <h3 className="font-serif text-xl sm:text-2xl md:text-3xl font-black mb-2 sm:mb-3 leading-tight">{step.title}</h3>
+                  <p className="font-medium text-sm sm:text-base text-gray-800 leading-relaxed">{step.desc}</p>
                 </NeoCard>
               </div>
             ))}
@@ -457,7 +462,7 @@ export default function Home() {
       {/* SEAMLESS DOTTED WRAPPER FOR FEATURES & FINAL CTA */}
       <div className="w-full border-t-4 border-black bg-[radial-gradient(#000000_1.3px,transparent_1.3px)] [background-size:26px_26px]">
         {/* 4. FEATURES SECTION */}
-        <section id="features" className="features-section w-full py-28 px-6 relative overflow-hidden">
+        <section id="features" className="features-section w-full py-16 sm:py-28 px-4 sm:px-6 relative overflow-hidden">
         
         {/* Background Floating Neo-Brutalist Stickers */}
         <div className="feature-bg-sticker float-sticker-1 absolute top-12 left-[4%] hidden lg:block select-none pointer-events-none z-0">
@@ -490,50 +495,50 @@ export default function Home() {
         </div>
 
         <div className="max-w-6xl mx-auto relative z-10">
-          <div className="text-center mb-16">
+          <div className="text-center mb-10 sm:mb-16">
             <span className="text-xs font-black uppercase bg-neo-yellow px-3 py-1 border-2 border-black inline-block mb-3 shadow-neo">
               Built for VITians
             </span>
-            <h2 className="font-serif text-5xl md:text-6xl font-black tracking-tight">Everything You Need for Exam Week</h2>
+            <h2 className="font-serif text-3xl sm:text-5xl md:text-6xl font-black tracking-tight">Everything You Need for Exam Week</h2>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            <NeoCard color="purple" className="feature-card hover:-translate-y-2 transition-transform duration-300">
-              <div className="h-14 w-14 bg-white border-4 border-black rounded-full flex items-center justify-center mb-5 shadow-neo text-2xl text-neo-purple drop-shadow-[1px_1px_0px_rgba(0,0,0,1)]">
-                <Clock size={28} className="jiggle-icon" />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+            <NeoCard color="purple" className="feature-card p-5 sm:p-6 hover:-translate-y-2 transition-transform duration-300">
+              <div className="h-12 w-12 sm:h-14 sm:w-14 bg-white border-3 sm:border-4 border-black rounded-full flex items-center justify-center mb-4 sm:mb-5 shadow-neo text-xl sm:text-2xl text-neo-purple drop-shadow-[1px_1px_0px_rgba(0,0,0,1)]">
+                <Clock size={24} className="jiggle-icon" />
               </div>
-              <h3 className="font-serif text-2xl font-black mb-2">CAT-2 & FAT Sprints</h3>
-              <p className="font-medium text-sm text-gray-900 leading-relaxed">
+              <h3 className="font-serif text-xl sm:text-2xl font-black mb-2">CAT-2 & FAT Sprints</h3>
+              <p className="font-medium text-xs sm:text-sm text-gray-900 leading-relaxed">
                 Rent standard syllabus reference books for flexible exam durations. Save money and pass the book along to the next student once exams finish.
               </p>
             </NeoCard>
 
-            <NeoCard color="blue" className="feature-card hover:-translate-y-2 transition-transform duration-300">
-              <div className="h-14 w-14 bg-white border-4 border-black rounded-full flex items-center justify-center mb-5 shadow-neo text-2xl text-blue-300 drop-shadow-[1px_1px_0px_rgba(0,0,0,1)]">
-                <FileText size={28} className="jiggle-icon" />
+            <NeoCard color="blue" className="feature-card p-5 sm:p-6 hover:-translate-y-2 transition-transform duration-300">
+              <div className="h-12 w-12 sm:h-14 sm:w-14 bg-white border-3 sm:border-4 border-black rounded-full flex items-center justify-center mb-4 sm:mb-5 shadow-neo text-xl sm:text-2xl text-blue-300 drop-shadow-[1px_1px_0px_rgba(0,0,0,1)]">
+                <FileText size={24} className="jiggle-icon" />
               </div>
-              <h3 className="font-serif text-2xl font-black mb-2">Notes & Solved Papers</h3>
-              <p className="font-medium text-sm text-gray-900 leading-relaxed">
+              <h3 className="font-serif text-xl sm:text-2xl font-black mb-2">Notes & Solved Papers</h3>
+              <p className="font-medium text-xs sm:text-sm text-gray-900 leading-relaxed">
                 Download handwritten class notes, module formula sheets, and solved CAT question papers uploaded by fellow students in your branch.
               </p>
             </NeoCard>
 
-            <NeoCard color="yellow" className="feature-card hover:-translate-y-2 transition-transform duration-300">
-              <div className="h-14 w-14 bg-white border-4 border-black rounded-full flex items-center justify-center mb-5 shadow-neo text-2xl text-yellow-600 drop-shadow-[1px_1px_0px_rgba(0,0,0,1)]">
-                <BookOpen size={28} className="jiggle-icon" />
+            <NeoCard color="yellow" className="feature-card p-5 sm:p-6 hover:-translate-y-2 transition-transform duration-300">
+              <div className="h-12 w-12 sm:h-14 sm:w-14 bg-white border-3 sm:border-4 border-black rounded-full flex items-center justify-center mb-4 sm:mb-5 shadow-neo text-xl sm:text-2xl text-yellow-600 drop-shadow-[1px_1px_0px_rgba(0,0,0,1)]">
+                <BookOpen size={24} className="jiggle-icon" />
               </div>
-              <h3 className="font-serif text-2xl font-black mb-2">Ebook Printouts Hub</h3>
-              <p className="font-medium text-sm text-gray-900 leading-relaxed">
+              <h3 className="font-serif text-xl sm:text-2xl font-black mb-2">Ebook Printouts Hub</h3>
+              <p className="font-medium text-xs sm:text-sm text-gray-900 leading-relaxed">
                 Turn your spiral-bound ebook prints and module xerox booklets into cash instead of throwing them into the trash bin.
               </p>
             </NeoCard>
 
-            <NeoCard color="peach" className="feature-card hover:-translate-y-2 transition-transform duration-300">
-              <div className="h-14 w-14 bg-white border-4 border-black rounded-full flex items-center justify-center mb-5 shadow-neo text-2xl text-neo-peach drop-shadow-[1px_1px_0px_rgba(0,0,0,1)]">
-                <MapPin size={28} className="jiggle-icon" />
+            <NeoCard color="peach" className="feature-card p-5 sm:p-6 hover:-translate-y-2 transition-transform duration-300">
+              <div className="h-12 w-12 sm:h-14 sm:w-14 bg-white border-3 sm:border-4 border-black rounded-full flex items-center justify-center mb-4 sm:mb-5 shadow-neo text-xl sm:text-2xl text-neo-peach drop-shadow-[1px_1px_0px_rgba(0,0,0,1)]">
+                <MapPin size={24} className="jiggle-icon" />
               </div>
-              <h3 className="font-serif text-2xl font-black mb-2">Campus Handovers</h3>
-              <p className="font-medium text-sm text-gray-900 leading-relaxed">
+              <h3 className="font-serif text-xl sm:text-2xl font-black mb-2">Campus Handovers</h3>
+              <p className="font-medium text-xs sm:text-sm text-gray-900 leading-relaxed">
                 Coordinate fast handovers at any location across campus convenient for you and the owner.
               </p>
             </NeoCard>
@@ -542,7 +547,7 @@ export default function Home() {
       </section>
 
       {/* 5. FINAL CTA */}
-      <section className="final-cta-wrapper w-full pb-28 pt-8 px-4 md:px-8 relative overflow-hidden">
+      <section className="final-cta-wrapper w-full pb-16 sm:pb-28 pt-6 sm:pt-8 px-4 sm:px-8 relative overflow-hidden">
         {/* Floating stickers in CTA */}
         <div className="float-sticker-1 absolute top-6 left-10 hidden lg:block select-none z-0">
           <Starburst color="#C084FC" size={50} className="pulse-starburst" />
@@ -551,25 +556,25 @@ export default function Home() {
           <Starburst color="#FACC15" size={56} className="pulse-starburst" />
         </div>
 
-        <div className="final-cta max-w-5xl mx-auto border-4 border-black bg-neo-yellow p-12 md:p-24 text-center shadow-neo-lg relative z-10">
-          <div className="inline-block border-2 border-black bg-white px-4 py-1 text-sm font-black uppercase mb-6 shadow-neo">
-            <span className="flex items-center gap-1 justify-center"><Sparkles size={16} className="text-yellow-400 drop-shadow-[1px_1px_0px_rgba(0,0,0,1)] pulse-icon" /> Free & Instant for All VIT Students</span>
+        <div className="final-cta max-w-5xl mx-auto border-3 sm:border-4 border-black bg-neo-yellow p-6 sm:p-12 md:p-24 text-center shadow-neo-lg relative z-10">
+          <div className="inline-block border-2 border-black bg-white px-3 sm:px-4 py-1 text-xs sm:text-sm font-black uppercase mb-4 sm:mb-6 shadow-neo">
+            <span className="flex items-center gap-1 justify-center"><Sparkles size={14} className="text-yellow-400 drop-shadow-[1px_1px_0px_rgba(0,0,0,1)] pulse-icon" /> Free & Instant for All VIT Students</span>
           </div>
-          <h2 className="font-serif text-4xl sm:text-6xl md:text-7xl font-black mb-6 leading-tight">
+          <h2 className="font-serif text-2xl sm:text-5xl md:text-7xl font-black mb-4 sm:mb-6 leading-tight">
             Ready to ace your next CAT or FAT exam?
           </h2>
-          <p className="font-medium text-xl text-gray-800 max-w-2xl mx-auto mb-8">
+          <p className="font-medium text-base sm:text-xl text-gray-800 max-w-2xl mx-auto mb-6 sm:mb-8">
             Join hundreds of VIT students saving money and acing their semesters with Booklease.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/login">
-              <NeoButton variant="primary" size="lg" className="hover-animate-btn flex items-center justify-center gap-2 bg-neo-purple text-2xl px-10 py-5">
-                Sign In with VIT Email <Rocket size={24} className="btn-icon" />
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center w-full sm:w-auto">
+            <Link href="/login" className="w-full sm:w-auto">
+              <NeoButton variant="primary" size="lg" className="hover-animate-btn flex items-center justify-center gap-2 w-full bg-neo-purple text-lg sm:text-2xl px-6 sm:px-10 py-4 sm:py-5">
+                Sign In with VIT Email <Rocket size={22} className="btn-icon" />
               </NeoButton>
             </Link>
-            <Link href="/books">
-              <NeoButton variant="secondary" size="lg" className="hover-animate-btn flex items-center justify-center gap-2 bg-white text-2xl px-10 py-5">
-                Browse Campus Books <BookOpen size={24} className="btn-icon" />
+            <Link href="/books" className="w-full sm:w-auto">
+              <NeoButton variant="secondary" size="lg" className="hover-animate-btn flex items-center justify-center gap-2 w-full bg-white text-lg sm:text-2xl px-6 sm:px-10 py-4 sm:py-5">
+                Browse Campus Books <BookOpen size={22} className="btn-icon" />
               </NeoButton>
             </Link>
           </div>
