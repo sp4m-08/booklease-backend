@@ -14,7 +14,7 @@ import { NeoInput } from "@/components/ui/NeoInput";
 import { BookCover } from "@/components/BookCover";
 import { SlotBadges } from "@/components/SlotBadges";
 import { NeoSelect } from "@/components/ui/NeoSelect";
-import { GraduationCap, Filter, Award, Tag, X, CheckCircle2, Flame, Clock, BookOpen } from "lucide-react";
+import { GraduationCap, Filter, Award, Tag, X, CheckCircle2, Flame, Clock, BookOpen, FileText, ArrowRight } from "lucide-react";
 
 interface Book {
   id: number;
@@ -153,9 +153,19 @@ export default function BooksPage() {
           <h1 className="font-serif text-5xl font-black mb-2">Course Reference Books</h1>
           <p className="font-medium text-xl text-gray-700">Find and rent syllabus textbooks and spiral printouts for your CAT-2 and FAT exam preparation.</p>
         </div>
-        <Link href="/books/upload">
-          <NeoButton variant="primary" size="lg" className="bg-neo-green text-black">List a Book or Printout</NeoButton>
-        </Link>
+        <div className="flex flex-wrap items-center gap-3">
+          <Link href="/notes">
+            <NeoButton variant="secondary" size="lg" className="bg-neo-purple text-black flex items-center gap-2 hover:scale-105 transition-transform">
+              <FileText size={18} />
+              Browse Notes
+            </NeoButton>
+          </Link>
+          <Link href="/books/upload">
+            <NeoButton variant="primary" size="lg" className="bg-neo-green text-black hover:scale-105 transition-transform">
+              List a Book or Printout
+            </NeoButton>
+          </Link>
+        </div>
       </div>
 
       {/* Discovery / Filter Bar */}
@@ -331,8 +341,14 @@ export default function BooksPage() {
           No textbooks or printouts listed for rent right now. Be the first VITian to list one!
         </div>
       ) : filteredBooks.length === 0 ? (
-        <div className="p-12 text-center font-bold text-xl border-4 border-black bg-neo-yellow shadow-neo">
-          No books or printouts found matching your search.
+        <div className="p-12 text-center border-4 border-black bg-neo-yellow shadow-neo space-y-4">
+          <p className="font-black text-2xl">No books or printouts found matching your search.</p>
+          <p className="font-bold text-gray-800">Looking for handwritten study notes or formula sheets instead?</p>
+          <Link href="/notes" className="inline-block">
+            <NeoButton variant="secondary" className="bg-white hover:bg-neo-purple flex items-center gap-2 mx-auto">
+              <FileText size={18} /> Browse Notes & Materials <ArrowRight size={16} />
+            </NeoButton>
+          </Link>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">

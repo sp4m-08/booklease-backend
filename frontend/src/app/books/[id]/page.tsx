@@ -104,6 +104,7 @@ export default function BookDetailsPage() {
       queryClient.invalidateQueries({ queryKey: ["book", id] });
       queryClient.invalidateQueries({ queryKey: ["rentals"] });
       toast.success("Rental request submitted! The owner has been notified.");
+      router.push("/dashboard?tab=borrowed");
     },
     onError: (err: any) => {
       toast.error(err.response?.data?.error || "Failed to send rental request.");

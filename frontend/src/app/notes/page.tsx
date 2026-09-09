@@ -13,7 +13,7 @@ import { NeoInput } from "@/components/ui/NeoInput";
 import { NeoSelect } from "@/components/ui/NeoSelect";
 import { SlotBadges } from "@/components/SlotBadges";
 import { NoteCover } from "@/components/NoteCover";
-import { ThumbsUp, Filter, Sparkles, X, ArrowUpDown, Tag, Flame, Clock, Award } from "lucide-react";
+import { ThumbsUp, Filter, Sparkles, X, ArrowUpDown, Tag, Flame, Clock, Award, BookOpen, ArrowRight } from "lucide-react";
 import { formatStudentName } from "@/lib/utils";
 
 interface Note {
@@ -146,9 +146,19 @@ export default function NotesPage() {
           <h1 className="font-serif text-5xl font-black mb-2">CAT & FAT Study Notes</h1>
           <p className="font-medium text-xl text-gray-700">Handwritten class notes, module formula sheets, and solved papers shared by VITians.</p>
         </div>
-        <Link href="/notes/upload">
-          <NeoButton variant="primary" size="lg" className="bg-neo-purple">Share Study Notes</NeoButton>
-        </Link>
+        <div className="flex flex-wrap items-center gap-3">
+          <Link href="/books">
+            <NeoButton variant="secondary" size="lg" className="bg-neo-green text-black flex items-center gap-2 hover:scale-105 transition-transform">
+              <BookOpen size={18} />
+              Browse Books
+            </NeoButton>
+          </Link>
+          <Link href="/notes/upload">
+            <NeoButton variant="primary" size="lg" className="bg-neo-purple text-black hover:scale-105 transition-transform">
+              Share Study Notes
+            </NeoButton>
+          </Link>
+        </div>
       </div>
 
       {/* Discovery / Filter Bar */}
@@ -298,8 +308,14 @@ export default function NotesPage() {
           No notes available right now. Share yours!
         </div>
       ) : filteredNotes.length === 0 ? (
-        <div className="p-12 text-center font-bold text-xl border-4 border-black bg-neo-yellow shadow-neo">
-          No notes found matching your search.
+        <div className="p-12 text-center border-4 border-black bg-neo-yellow shadow-neo space-y-4">
+          <p className="font-black text-2xl">No notes found matching your search.</p>
+          <p className="font-bold text-gray-800">Looking for course reference books or printouts instead?</p>
+          <Link href="/books" className="inline-block">
+            <NeoButton variant="secondary" className="bg-white hover:bg-neo-green flex items-center gap-2 mx-auto">
+              <BookOpen size={18} /> Browse Reference Books <ArrowRight size={16} />
+            </NeoButton>
+          </Link>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
