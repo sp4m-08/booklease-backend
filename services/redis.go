@@ -2,11 +2,14 @@ package services
 
 import (
 	"context"
+	"crypto/tls"
 	"encoding/json"
 	"log"
 	"os"
+	"strings"
 	"time"
 
+	"github.com/joho/godotenv"
 	"github.com/redis/go-redis/v9"
 )
 
@@ -14,9 +17,15 @@ var RedisClient *redis.Client
 
 // InitRedis initializes connection to Redis with graceful fallback
 func InitRedis() {
+	_ = godotenv.Load()
 	redisURL := os.Getenv("REDIS_URL")
 	if redisURL == "" {
 		redisURL = "redis://localhost:6379"
+	}
+
+	// Auto-upgrade Upstash URLs to rediss:// if needed for TLS
+	if strings.Contains(redisURL, "upstash.io") && strings.HasPrefix(redisURL, "redis://") {
+		redisURL = "rediss://" + strings.TrimPrefix(redisURL, "redis://")
 	}
 
 	opt, err := redis.ParseURL(redisURL)
@@ -26,13 +35,21 @@ func InitRedis() {
 		return
 	}
 
+	// Ensure TLS is configured for Upstash endpoints
+	if strings.Contains(opt.Addr, "upstash.io") && opt.TLSConfig == nil {
+		host := strings.Split(opt.Addr, ":")[0]
+		opt.TLSConfig = &tls.Config{
+			ServerName: host,
+		}
+	}
+
 	client := redis.NewClient(opt)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
 	if err := client.Ping(ctx).Err(); err != nil {
-		log.Printf("⚠️ Redis ping failed: %v. Running in fail-soft mode (DB only).\n", err)
+		log.Printf("⚠️ Redis ping failed (%s): %v. Running in fail-soft mode (DB only).\n", opt.Addr, err)
 		RedisClient = nil
 		return
 	}
