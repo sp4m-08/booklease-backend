@@ -145,18 +145,29 @@ export default function ProfilePage() {
     );
   }
 
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+
   if (profileError || (!profile && !loadingProfile)) {
     return (
       <div className="max-w-xl mx-auto my-12 p-8 border-4 border-black bg-neo-yellow shadow-neo text-center space-y-4">
-        <h2 className="font-serif text-3xl font-black">Backend Server Offline</h2>
+        <h2 className="font-serif text-3xl font-black">Connection Error</h2>
         <p className="font-medium text-gray-800">
-          Cannot connect to the Go API backend on <code className="bg-white px-2 py-0.5 border border-black font-bold">http://localhost:8080</code>.
+          Unable to fetch your student profile from the backend on <code className="bg-white px-2 py-0.5 border border-black font-bold break-all">{apiUrl}</code>.
         </p>
         <p className="text-sm text-gray-700">
-          Please make sure your Go server is running (<code className="bg-white px-1 border border-black">go run main.go</code> in the backend terminal).
+          If you recently reset your database, click the button below to initialize your profile.
         </p>
-        <NeoButton variant="primary" onClick={() => queryClient.invalidateQueries({ queryKey: ["profile"] })}>
-          Retry Connection 🔄
+        <NeoButton
+          variant="primary"
+          onClick={async () => {
+            try {
+              await api.post("/user/signup");
+            } catch {}
+            queryClient.invalidateQueries({ queryKey: ["profile"] });
+            refreshProfile();
+          }}
+        >
+          Initialize & Reconnect Profile 🔄
         </NeoButton>
       </div>
     );

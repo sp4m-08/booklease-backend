@@ -8,6 +8,7 @@ import (
 	"log"
 	"math/rand"
 	"net/http"
+	"os"
 	"regexp"
 	"strings"
 
@@ -26,9 +27,23 @@ func CreateOrFetchUser(c *gin.Context) {
 		return
 	}
 
-	if !strings.HasSuffix(email, "@vitstudent.ac.in") {
-		c.JSON(http.StatusForbidden, gin.H{"error": "Only @vitstudent.ac.in emails are allowed"})
-		return
+	allowedEnv := os.Getenv("ALLOWED_EMAIL_DOMAINS")
+	if allowedEnv == "" {
+		allowedEnv = "vitstudent.ac.in"
+	}
+	if allowedEnv != "*" {
+		allowed := false
+		for _, domain := range strings.Split(allowedEnv, ",") {
+			d := strings.TrimSpace(domain)
+			if d != "" && strings.HasSuffix(strings.ToLower(email), "@"+strings.ToLower(d)) {
+				allowed = true
+				break
+			}
+		}
+		if !allowed {
+			c.JSON(http.StatusForbidden, gin.H{"error": "Unauthorized email domain"})
+			return
+		}
 	}
 	if name == "" {
 		parts := strings.Split(email, "@")
