@@ -12,7 +12,6 @@ import { uploadFile } from "@/lib/upload";
 import { toast } from "sonner";
 import { NeoInput } from "@/components/ui/NeoInput";
 import { NeoSelect } from "@/components/ui/NeoSelect";
-import { NeoMultiSelect } from "@/components/ui/NeoMultiSelect";
 import { NeoButton } from "@/components/ui/NeoButton";
 import { SlotSelector, VIT_INDIVIDUAL_SLOTS } from "@/components/SlotSelector";
 import { AlertTriangle, PhoneCall, ArrowRight, Sparkles } from "lucide-react";
@@ -20,7 +19,6 @@ import { AlertTriangle, PhoneCall, ArrowRight, Sparkles } from "lucide-react";
 const noteSchema = z.object({
   title: z.string().min(3, "Title must be at least 3 characters").max(100),
   subject: z.string().min(2, "Subject is required"),
-  slot: z.string().optional(),
   condition: z.string().min(2, "Condition is required"),
   price: z.string().optional(),
   description: z.string().max(500, "Description cannot exceed 500 characters").optional(),
@@ -45,10 +43,6 @@ export const BOOK_CONDITIONS = [
   "Good",
   "Highlighted / Notated",
   "Acceptable (Torn Pages)",
-] as const;
-
-export const VIT_SLOTS = [
-  "A1", "A2", "B1", "B2", "C1", "C2", "D1", "D2", "E1", "E2", "F1", "F2", "G1", "G2"
 ] as const;
 
 export default function NoteUploadPage() {
@@ -197,24 +191,10 @@ export default function NoteUploadPage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="space-y-2">
-            <label className="font-bold text-xl block">Slot (Optional)</label>
-            <Controller
-              name="slot"
-              control={control}
-              render={({ field }) => (
-                <NeoMultiSelect
-                  value={field.value ? field.value.split(',').map(s => s.trim()).filter(Boolean) : []}
-                  onChange={(arr) => field.onChange(arr.join(', '))}
-                  options={VIT_SLOTS.map(s => ({ label: s, value: s }))}
-                  placeholder="Select Slots (Multiple)"
-                />
-              )}
-            />
-          </div>
-          <div className="space-y-2">
-            <label className="font-bold text-xl block">Condition *</label>
+        {/* Condition & Price */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+          <div className="space-y-1.5 sm:space-y-2">
+            <label className="font-bold text-base sm:text-xl block">Condition *</label>
             <Controller
               name="condition"
               control={control}
@@ -228,8 +208,8 @@ export default function NoteUploadPage() {
             />
             {errors.condition && <span className="text-red-900 font-bold bg-white px-2 border-2 border-black inline-block mt-2 shadow-sm">{errors.condition.message}</span>}
           </div>
-          <div className="space-y-2">
-            <label className="font-bold text-lg block">Price (₹)</label>
+          <div className="space-y-1.5 sm:space-y-2">
+            <label className="font-bold text-base sm:text-lg block">Price (₹)</label>
             <NeoInput 
               type="number"
               min="0"
