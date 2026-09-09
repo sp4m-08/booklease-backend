@@ -35,7 +35,6 @@ export default function BooksPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [selectedSlot, setSelectedSlot] = useState("All");
-  const [selectedExam, setSelectedExam] = useState("All");
   const [selectedType, setSelectedType] = useState<"All" | "Textbook" | "Printout">("All");
   const [availability, setAvailability] = useState<"All" | "available" | "rented">("All");
   const [sortBy, setSortBy] = useState<"popular" | "price_asc" | "price_desc" | "newest">("popular");
@@ -52,7 +51,6 @@ export default function BooksPage() {
 
   const branches = ["All", "CSE", "ECE", "EEE", "Mechanical", "Biotech", "Civil", "Common"];
   const slots = ["All", "A1", "A2", "B1", "B2", "C1", "C2", "D1", "D2", "E1", "E2", "F1", "F2", "G1", "G2"];
-  const examOptions = ["All", "CAT-2", "FAT"];
 
   const filteredBooks = useMemo(() => {
     if (!books) return [];
@@ -75,10 +73,6 @@ export default function BooksPage() {
           book.slot.split(",").map((s) => s.trim().toLowerCase()).includes(selectedSlot.toLowerCase())
         ));
 
-      const matchesExam = selectedExam === "All" ||
-        book.title.toLowerCase().includes(selectedExam.toLowerCase()) ||
-        (book.slot || "").toLowerCase().includes(selectedExam.toLowerCase());
-
       const matchesType = 
         selectedType === "All" ||
         (selectedType === "Textbook" && (!book.type || book.type.toLowerCase().includes("textbook"))) ||
@@ -89,7 +83,7 @@ export default function BooksPage() {
         (availability === "available" && book.available) ||
         (availability === "rented" && !book.available);
 
-      return matchesSearch && matchesCategory && matchesSlot && matchesExam && matchesType && matchesAvailability;
+      return matchesSearch && matchesCategory && matchesSlot && matchesType && matchesAvailability;
     });
 
     // Sort items
@@ -109,7 +103,7 @@ export default function BooksPage() {
       }
       return (b.id || 0) - (a.id || 0);
     });
-  }, [books, searchTerm, selectedCategory, selectedSlot, selectedExam, selectedType, availability, sortBy]);
+  }, [books, searchTerm, selectedCategory, selectedSlot, selectedType, availability, sortBy]);
 
   useGSAP(() => {
     if (filteredBooks.length > 0) {
@@ -127,7 +121,6 @@ export default function BooksPage() {
     searchTerm !== "" || 
     selectedCategory !== "All" || 
     selectedSlot !== "All" || 
-    selectedExam !== "All" || 
     selectedType !== "All" ||
     availability !== "All" || 
     sortBy !== "popular";
@@ -136,7 +129,6 @@ export default function BooksPage() {
     setSearchTerm("");
     setSelectedCategory("All");
     setSelectedSlot("All");
-    setSelectedExam("All");
     setSelectedType("All");
     setAvailability("All");
     setSortBy("popular");
@@ -246,26 +238,6 @@ export default function BooksPage() {
                   }`}
                 >
                   {fmt.label}
-                </button>
-              ))}
-            </div>
-
-            {/* Exam Filter Pills */}
-            <div className="flex flex-wrap items-center gap-1.5">
-              <span className="text-xs font-black uppercase text-gray-700 mr-1 flex items-center gap-1">
-                <Award size={13} /> Exam:
-              </span>
-              {examOptions.map((exam) => (
-                <button
-                  key={exam}
-                  onClick={() => setSelectedExam(exam)}
-                  className={`border-2 border-black px-2.5 py-1 font-black text-xs transition-all ${
-                    selectedExam === exam 
-                      ? "bg-neo-yellow text-black shadow-neo" 
-                      : "bg-white text-black hover:bg-neo-yellow"
-                  }`}
-                >
-                  {exam}
                 </button>
               ))}
             </div>

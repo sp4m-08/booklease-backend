@@ -40,7 +40,6 @@ export default function NotesPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedSubject, setSelectedSubject] = useState("All");
   const [selectedSlot, setSelectedSlot] = useState("All");
-  const [selectedExam, setSelectedExam] = useState("All");
   const [priceType, setPriceType] = useState<"All" | "free" | "paid">("All");
   const [sortBy, setSortBy] = useState<"upvotes" | "price_asc" | "price_desc" | "newest">("upvotes");
 
@@ -56,7 +55,6 @@ export default function NotesPage() {
 
   const branches = ["All", "CSE", "ECE", "EEE", "Mechanical", "Biotech", "Civil", "Common"];
   const slots = ["All", "A1", "A2", "B1", "B2", "C1", "C2", "D1", "D2", "E1", "E2", "F1", "F2", "G1", "G2"];
-  const examOptions = ["All", "CAT-2", "FAT", "Lab FAT"];
 
   const filteredNotes = useMemo(() => {
     if (!notes) return [];
@@ -78,16 +76,12 @@ export default function NotesPage() {
           note.slot.split(",").map((s) => s.trim().toLowerCase()).includes(selectedSlot.toLowerCase())
         ));
 
-      const matchesExam = selectedExam === "All" ||
-        note.title.toLowerCase().includes(selectedExam.toLowerCase()) ||
-        (note.description || "").toLowerCase().includes(selectedExam.toLowerCase());
-
       const matchesPrice = 
         priceType === "All" ||
         (priceType === "free" && (!note.price || Number(note.price) === 0)) ||
         (priceType === "paid" && note.price && Number(note.price) > 0);
 
-      return matchesSearch && matchesSubject && matchesSlot && matchesExam && matchesPrice;
+      return matchesSearch && matchesSubject && matchesSlot && matchesPrice;
     });
 
     // Sort items
@@ -104,7 +98,7 @@ export default function NotesPage() {
       // default: most upvotes
       return (b.upvotes || 0) - (a.upvotes || 0);
     });
-  }, [notes, searchTerm, selectedSubject, selectedSlot, selectedExam, priceType, sortBy]);
+  }, [notes, searchTerm, selectedSubject, selectedSlot, priceType, sortBy]);
 
   useGSAP(() => {
     if (filteredNotes.length > 0) {
@@ -122,7 +116,6 @@ export default function NotesPage() {
     searchTerm !== "" || 
     selectedSubject !== "All" || 
     selectedSlot !== "All" || 
-    selectedExam !== "All" || 
     priceType !== "All" || 
     sortBy !== "upvotes";
 
@@ -130,7 +123,6 @@ export default function NotesPage() {
     setSearchTerm("");
     setSelectedSubject("All");
     setSelectedSlot("All");
-    setSelectedExam("All");
     setPriceType("All");
     setSortBy("upvotes");
   };
@@ -216,28 +208,8 @@ export default function NotesPage() {
           </div>
         </div>
 
-        {/* Second Row: Exam & Price Quick Filters */}
+        {/* Second Row: Price Quick Filters */}
         <div className="flex flex-wrap items-center justify-between gap-4 pt-3 border-t-2 border-dashed border-black">
-          {/* Exam Filter Pills */}
-          <div className="flex flex-wrap items-center gap-1.5">
-            <span className="text-xs font-black uppercase text-gray-700 mr-1 flex items-center gap-1">
-              <Award size={13} /> Exam:
-            </span>
-            {examOptions.map((exam) => (
-              <button
-                key={exam}
-                onClick={() => setSelectedExam(exam)}
-                className={`border-2 border-black px-2.5 py-1 font-black text-xs transition-all ${
-                  selectedExam === exam 
-                    ? "bg-neo-purple text-black shadow-neo" 
-                    : "bg-white text-black hover:bg-neo-yellow"
-                }`}
-              >
-                {exam}
-              </button>
-            ))}
-          </div>
-
           {/* Price Filter Pills */}
           <div className="flex flex-wrap items-center gap-1.5">
             <span className="text-xs font-black uppercase text-gray-700 mr-1 flex items-center gap-1">
