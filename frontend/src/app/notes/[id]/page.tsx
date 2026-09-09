@@ -7,7 +7,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
 import { NeoCard } from "@/components/ui/NeoCard";
 import { NeoButton } from "@/components/ui/NeoButton";
-import { getImageUrl } from "@/lib/utils";
+import { getImageUrl, formatStudentName } from "@/lib/utils";
 import Link from "next/link";
 import { toast } from "sonner";
 import { ArrowLeft, Download, ExternalLink, FileText, Trash2, UserCheck, MessageSquare, ThumbsUp, Edit3, Bell } from "lucide-react";
@@ -308,7 +308,7 @@ export default function NoteDetailPage() {
               <div>
                 <span className="text-xs font-black uppercase text-gray-700 block">Uploaded By</span>
                 <span className="font-bold text-lg">
-                  {note.uploader?.username ? note.uploader.username.replace(/\b\d{2}[A-Z]{3}\d{4}\b/gi, '').trim() : "Campus Student"}
+                  {formatStudentName(note.uploader?.username, "Campus Student")}
                 </span>
               </div>
 

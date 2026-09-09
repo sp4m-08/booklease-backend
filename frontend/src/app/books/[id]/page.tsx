@@ -17,6 +17,7 @@ import { ArrowLeft, Heart, MessageSquare, Trash2, Calendar, UserCheck, BookOpen,
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { useRef } from "react";
+import { formatStudentName } from "@/lib/utils";
 
 const EditListingModal = dynamic(
   () => import("@/components/EditListingModal").then((mod) => mod.EditListingModal),
@@ -299,7 +300,7 @@ export default function BookDetailsPage() {
               <div>
                 <span className="text-xs font-black uppercase text-gray-700 block">Student Name</span>
                 <span className="font-bold text-base">
-                  {book.uploader?.username ? book.uploader.username.replace(/\b\d{2}[A-Z]{3}\d{4}\b/gi, '').trim() : "Verified Student"}
+                  {formatStudentName(book.uploader?.username, "Verified Student")}
                 </span>
               </div>
             </div>

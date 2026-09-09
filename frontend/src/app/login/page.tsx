@@ -69,7 +69,7 @@ export default function LoginPage() {
 
         <div className="bg-white border-2 border-black p-3 mb-6 text-xs font-bold text-gray-800 text-left space-y-1">
           <div>✓ Use your official <code className="bg-gray-100 px-1 border border-black font-black">@vitstudent.ac.in</code> email</div>
-          <div>✓ Connects directly with your VIT registration number</div>
+          <div>✓ Connects directly with your verified VIT student account</div>
         </div>
         
         {error && (

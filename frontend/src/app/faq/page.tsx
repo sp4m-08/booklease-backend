@@ -44,7 +44,7 @@ const defaultVITFAQs: FAQItem[] = [
   {
     id: 6,
     question: "Why is authentication restricted to @vitstudent.ac.in emails?",
-    answer: "To ensure a 100% verified, trusted, and safe student-to-student community. Every user is authenticated with their official VIT email and verified registration number (e.g. 23BCE0255), eliminating spam and lost books."
+    answer: "To ensure a 100% verified, trusted, and safe student-to-student community. Every user is authenticated with their official VIT email, eliminating spam and lost books."
   },
   {
     id: 7,

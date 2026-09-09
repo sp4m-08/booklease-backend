@@ -15,6 +15,7 @@ import { NoteCover } from "@/components/NoteCover";
 import { BookOpen, FileText, Heart, User as UserIcon, Trash2, ExternalLink, Edit3, ShieldCheck } from "lucide-react";
 import { EditListingModal } from "@/components/EditListingModal";
 import { SlotBadges } from "@/components/SlotBadges";
+import { formatStudentName } from "@/lib/utils";
 
 export default function ProfilePage() {
   const { user, loading, refreshProfile } = useAuth();
@@ -200,10 +201,10 @@ export default function ProfilePage() {
           <NeoCard color="purple" className="flex flex-col space-y-6">
             <div className="flex items-center gap-3 border-b-4 border-black pb-4">
               <div className="w-12 h-12 border-3 border-black bg-neo-yellow flex items-center justify-center font-black text-2xl shadow-neo">
-                {profile.username?.charAt(0).toUpperCase() || "U"}
+                {formatStudentName(profile.username, "Student").charAt(0).toUpperCase() || "U"}
               </div>
               <div>
-                <h2 className="font-serif text-2xl font-black">{profile.username}</h2>
+                <h2 className="font-serif text-2xl font-black">{formatStudentName(profile.username, "Student")}</h2>
                 <span className="text-xs font-bold bg-white px-2 py-0.5 border-2 border-black inline-block">
                   {profile.is_admin ? "Administrator" : "Verified Student"}
                 </span>
@@ -214,10 +215,6 @@ export default function ProfilePage() {
               <div>
                 <span className="text-xs font-black uppercase text-gray-700 block">Email Address</span>
                 <span className="font-bold break-all">{profile.email}</span>
-              </div>
-              <div>
-                <span className="text-xs font-black uppercase text-gray-700 block">Registration Number</span>
-                <span className="font-bold">{profile.registration_no || "N/A"}</span>
               </div>
               <div>
                 <span className="text-xs font-black uppercase text-gray-700 block">WhatsApp / Phone</span>

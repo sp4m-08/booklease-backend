@@ -16,6 +16,7 @@ import { toast } from "sonner";
 import { BookOpen, RefreshCw, CheckCircle, XCircle, ArrowUpRight, Clock, Trash2, GraduationCap, MessageSquare, Phone } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
+import { formatStudentName } from "@/lib/utils";
 
 function DashboardContent() {
   const { user, loading } = useAuth();
@@ -185,7 +186,7 @@ function DashboardContent() {
               const item = isNote ? rental.note : rental.book;
               const title = item?.title || (isNote ? "Study Note" : "Textbook");
               const owner = item?.uploader;
-              const ownerName = owner?.username || "Student";
+              const ownerName = formatStudentName(owner?.username, "Student");
               const coverSrc = isNote ? item?.file_path : item?.cover_image;
               const ownerPhone = owner?.phone_number;
 
@@ -211,7 +212,7 @@ function DashboardContent() {
                         </div>
                         <h3 className="font-serif text-3xl font-black truncate mb-1">{title}</h3>
                         <p className="text-sm font-bold text-gray-800 bg-gray-100 border border-black inline-block px-2 py-1 shadow-sm mb-2">
-                          Owner: {ownerName.replace(/\b\d{2}[A-Z]{3}\d{4}\b/gi, '').trim()}
+                          Owner: {ownerName}
                         </p>
                         {rental.description && (
                           <p className="text-sm font-medium text-gray-700 italic truncate border-l-4 border-black pl-2">"{rental.description}"</p>
@@ -308,9 +309,7 @@ function DashboardContent() {
               const title = item?.title || (isNote ? "Study Note" : "Textbook");
               const coverSrc = isNote ? item?.file_path : item?.cover_image;
               const requester = rental.user;
-              const requesterName = requester?.username 
-                ? requester.username.replace(/\b\d{2}[A-Z]{3}\d{4}\b/gi, '').trim() 
-                : `Student #${rental.user_id}`;
+              const requesterName = formatStudentName(requester?.username, `Student #${rental.user_id}`);
               const requesterPhone = requester?.phone_number;
 
               return (
@@ -336,9 +335,6 @@ function DashboardContent() {
                         <h3 className="font-serif text-3xl font-black truncate mb-1">{title}</h3>
                         <p className="text-sm font-bold text-gray-800 bg-gray-100 border border-black inline-block px-2 py-1 shadow-sm mb-2">
                           Requested by: <span className="underline font-black">{requesterName}</span>
-                          {requester?.registration_no && (
-                            <span className="ml-1 text-xs text-gray-600 font-semibold">({requester.registration_no})</span>
-                          )}
                         </p>
                         {rental.description && (
                           <p className="text-sm font-medium text-gray-700 italic truncate border-l-4 border-black pl-2">"{rental.description}"</p>
