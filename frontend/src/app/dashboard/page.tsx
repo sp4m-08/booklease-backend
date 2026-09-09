@@ -13,7 +13,7 @@ import { BookCover } from "@/components/BookCover";
 import { NoteCover } from "@/components/NoteCover";
 import Link from "next/link";
 import { toast } from "sonner";
-import { BookOpen, RefreshCw, CheckCircle, XCircle, ArrowUpRight, Clock, Trash2, GraduationCap } from "lucide-react";
+import { BookOpen, RefreshCw, CheckCircle, XCircle, ArrowUpRight, Clock, Trash2, GraduationCap, MessageSquare, Phone } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 
@@ -121,6 +121,13 @@ function DashboardContent() {
 
   if (!user) return null;
 
+  const formatWhatsAppLink = (phone: string, text: string) => {
+    if (!phone) return "";
+    const cleaned = phone.replace(/\D/g, "");
+    const fullNumber = cleaned.length === 10 ? `91${cleaned}` : cleaned;
+    return `https://wa.me/${fullNumber}?text=${encodeURIComponent(text)}`;
+  };
+
   return (
     <div ref={container} className="max-w-6xl mx-auto w-full px-6 py-12 flex-grow">
       {/* Header */}
@@ -140,7 +147,7 @@ function DashboardContent() {
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-4 mb-8">
+      <div className="flex flex-wrap gap-4 mb-8">
         <button
           onClick={() => setActiveTab("borrowed")}
           className={`flex items-center gap-2 border-4 border-black px-6 py-3 font-serif font-black text-xl transition-all ${
@@ -177,16 +184,18 @@ function DashboardContent() {
               const isNote = !!rental.notes_id;
               const item = isNote ? rental.note : rental.book;
               const title = item?.title || (isNote ? "Study Note" : "Textbook");
-              const ownerName = item?.uploader?.username || "Student";
+              const owner = item?.uploader;
+              const ownerName = owner?.username || "Student";
               const coverSrc = isNote ? item?.file_path : item?.cover_image;
+              const ownerPhone = owner?.phone_number;
 
               return (
                 <div key={rental.id} className="dash-card">
                   <NeoCard 
                     color="white" 
-                    className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-neo-hover"
+                    className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-neo-hover"
                   >
-                    <div className="flex gap-5 items-center overflow-hidden w-full md:w-auto">
+                    <div className="flex gap-5 items-center overflow-hidden w-full lg:w-auto">
                       <div className="w-24 h-32 border-4 border-black flex-shrink-0 overflow-hidden shadow-sm">
                         {isNote ? (
                           <NoteCover src={coverSrc} title={title} subject={item?.subject} />
@@ -210,29 +219,51 @@ function DashboardContent() {
                       </div>
                     </div>
 
-                    <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto justify-between md:justify-end">
+                    <div className="flex flex-wrap items-center gap-3 w-full lg:w-auto justify-between lg:justify-end">
                       {/* Status Badge */}
-                      <div className={`border-4 border-black px-5 py-3 font-black text-base shadow-neo flex items-center gap-2 ${
+                      <div className={`border-4 border-black px-4 py-2 font-black text-sm shadow-neo flex items-center gap-2 ${
                         rental.is_returned ? "bg-gray-200 text-gray-800" :
                         rental.status === null ? "bg-neo-yellow text-black" : 
                         rental.status === true ? "bg-neo-green text-black" : "bg-red-500 text-white"
                       }`}>
-                        {rental.is_returned ? <><CheckCircle size={20} /> Returned</> :
-                         rental.status === null ? <><Clock size={20} /> Pending Approval</> : 
-                         rental.status === true ? <><CheckCircle size={20} /> Active Lease</> : <><XCircle size={20} /> Rejected</>}
+                        {rental.is_returned ? <><CheckCircle size={18} /> Returned</> :
+                         rental.status === null ? <><Clock size={18} /> Pending Approval</> : 
+                         rental.status === true ? <><CheckCircle size={18} /> Active Lease</> : <><XCircle size={18} /> Rejected</>}
                       </div>
+
+                      {/* WhatsApp Chat Button with Owner */}
+                      {ownerPhone && (
+                        <a
+                          href={formatWhatsAppLink(
+                            ownerPhone,
+                            `Hi, I requested "${title}" on BookLease! When and where on campus would you like to meet for the handover?`
+                          )}
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          <NeoButton 
+                            variant="primary" 
+                            size="sm"
+                            className="bg-[#25D366] text-white border-4 border-black flex items-center gap-1.5 hover:scale-105 transition-transform"
+                          >
+                            <MessageSquare size={16} />
+                            WhatsApp Owner
+                          </NeoButton>
+                        </a>
+                      )}
 
                       {/* Actions */}
                       {rental.status === true && !rental.is_returned && (
                         <NeoButton 
                           variant="primary" 
+                          size="sm"
                           className="bg-neo-purple flex items-center gap-2 group hover:scale-105 transition-transform"
                           onClick={() => returnMutation.mutate(rental.id)}
                           disabled={returnMutation.isPending}
                         >
                           {returnMutation.isPending ? "Returning..." : (
                             <>
-                              Return Item <RefreshCw size={16} className="group-hover:rotate-180 transition-transform duration-500" />
+                              Return Item <RefreshCw size={14} className="group-hover:rotate-180 transition-transform duration-500" />
                             </>
                           )}
                         </NeoButton>
@@ -242,7 +273,7 @@ function DashboardContent() {
                         <NeoButton 
                           variant="secondary" 
                           size="sm"
-                          className="bg-white text-red-600"
+                          className="bg-white text-red-600 border-2"
                           onClick={() => {
                             if (confirm("Are you sure you want to cancel this rental request?")) {
                               cancelRentalMutation.mutate(rental.id);
@@ -250,7 +281,7 @@ function DashboardContent() {
                           }}
                           disabled={cancelRentalMutation.isPending}
                         >
-                          Cancel Request
+                          Cancel
                         </NeoButton>
                       )}
                     </div>
@@ -276,14 +307,19 @@ function DashboardContent() {
               const item = isNote ? rental.note : rental.book;
               const title = item?.title || (isNote ? "Study Note" : "Textbook");
               const coverSrc = isNote ? item?.file_path : item?.cover_image;
+              const requester = rental.user;
+              const requesterName = requester?.username 
+                ? requester.username.replace(/\b\d{2}[A-Z]{3}\d{4}\b/gi, '').trim() 
+                : `Student #${rental.user_id}`;
+              const requesterPhone = requester?.phone_number;
 
               return (
                 <div key={rental.id} className="dash-card">
                   <NeoCard 
                     color="white" 
-                    className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-neo-hover"
+                    className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-neo-hover"
                   >
-                    <div className="flex gap-5 items-center overflow-hidden w-full md:w-auto">
+                    <div className="flex gap-5 items-center overflow-hidden w-full lg:w-auto">
                       <div className="w-24 h-32 border-4 border-black flex-shrink-0 overflow-hidden shadow-sm">
                         {isNote ? (
                           <NoteCover src={coverSrc} title={title} subject={item?.subject} />
@@ -299,9 +335,10 @@ function DashboardContent() {
                         </div>
                         <h3 className="font-serif text-3xl font-black truncate mb-1">{title}</h3>
                         <p className="text-sm font-bold text-gray-800 bg-gray-100 border border-black inline-block px-2 py-1 shadow-sm mb-2">
-                          Requested by: <span className="underline">
-                            {rental.user?.username ? rental.user.username.replace(/\b\d{2}[A-Z]{3}\d{4}\b/gi, '').trim() : `User #${rental.user_id}`}
-                          </span>
+                          Requested by: <span className="underline font-black">{requesterName}</span>
+                          {requester?.registration_no && (
+                            <span className="ml-1 text-xs text-gray-600 font-semibold">({requester.registration_no})</span>
+                          )}
                         </p>
                         {rental.description && (
                           <p className="text-sm font-medium text-gray-700 italic truncate border-l-4 border-black pl-2">"{rental.description}"</p>
@@ -309,40 +346,63 @@ function DashboardContent() {
                       </div>
                     </div>
 
-                  <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto justify-between md:justify-end">
-                    {rental.status === null ? (
-                      <div className="flex gap-3 w-full md:w-auto">
-                        <NeoButton 
-                          variant="primary"
-                          className="bg-neo-green flex-1 md:flex-none border-4"
-                          onClick={() => decideMutation.mutate({ id: rental.id, accept: true })}
-                          disabled={decideMutation.isPending}
+                    <div className="flex flex-wrap items-center gap-3 w-full lg:w-auto justify-between lg:justify-end">
+                      {/* WhatsApp Chat Button with Requester for Owner */}
+                      {requesterPhone && (
+                        <a
+                          href={formatWhatsAppLink(
+                            requesterPhone,
+                            `Hi ${requesterName}, I saw your request for "${title}" on BookLease! When and where on campus would you like to meet for the handover?`
+                          )}
+                          target="_blank"
+                          rel="noreferrer"
                         >
-                          Approve Request
-                        </NeoButton>
-                        <NeoButton 
-                          variant="danger"
-                          className="flex-1 md:flex-none border-4"
-                          onClick={() => decideMutation.mutate({ id: rental.id, accept: false })}
-                          disabled={decideMutation.isPending}
-                        >
-                          Reject
-                        </NeoButton>
-                      </div>
-                    ) : (
-                      <div className={`border-4 border-black px-5 py-3 font-black text-base shadow-neo flex items-center gap-2 ${
-                        rental.is_returned ? "bg-gray-200 text-gray-800" :
-                        rental.status === true ? "bg-neo-green text-black" : "bg-red-500 text-white"
-                      }`}>
-                        {rental.is_returned ? <><CheckCircle size={20} /> Returned by Student</> :
-                         rental.status === true ? <><CheckCircle size={20} /> You Approved</> : <><XCircle size={20} /> You Rejected</>}
-                      </div>
-                    )}
-                  </div>
-                </NeoCard>
-              </div>
-            );
-          })
+                          <NeoButton 
+                            variant="primary" 
+                            size="sm"
+                            className="bg-[#25D366] text-white border-4 border-black flex items-center gap-1.5 hover:scale-105 transition-transform shadow-neo"
+                          >
+                            <MessageSquare size={16} />
+                            WhatsApp Requester
+                          </NeoButton>
+                        </a>
+                      )}
+
+                      {rental.status === null ? (
+                        <div className="flex gap-2 w-full sm:w-auto">
+                          <NeoButton 
+                            variant="primary"
+                            size="sm"
+                            className="bg-neo-green flex-1 sm:flex-none border-4"
+                            onClick={() => decideMutation.mutate({ id: rental.id, accept: true })}
+                            disabled={decideMutation.isPending}
+                          >
+                            Approve
+                          </NeoButton>
+                          <NeoButton 
+                            variant="danger"
+                            size="sm"
+                            className="flex-1 sm:flex-none border-4"
+                            onClick={() => decideMutation.mutate({ id: rental.id, accept: false })}
+                            disabled={decideMutation.isPending}
+                          >
+                            Reject
+                          </NeoButton>
+                        </div>
+                      ) : (
+                        <div className={`border-4 border-black px-4 py-2 font-black text-sm shadow-neo flex items-center gap-2 ${
+                          rental.is_returned ? "bg-gray-200 text-gray-800" :
+                          rental.status === true ? "bg-neo-green text-black" : "bg-red-500 text-white"
+                        }`}>
+                          {rental.is_returned ? <><CheckCircle size={18} /> Returned</> :
+                           rental.status === true ? <><CheckCircle size={18} /> You Approved</> : <><XCircle size={18} /> You Rejected</>}
+                        </div>
+                      )}
+                    </div>
+                  </NeoCard>
+                </div>
+              );
+            })
           )}
         </div>
       )}
