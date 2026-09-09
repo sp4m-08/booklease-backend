@@ -15,13 +15,47 @@ import {
   BookOpen,
   FileText,
   Check,
-  Zap,
   Rocket,
-  Star
+  Star,
+  Award,
+  BookmarkCheck,
+  Compass,
+  MessageCircle
 } from "lucide-react";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
+}
+
+// Reusable Neo Starburst SVG
+function Starburst({ color = "#FACC15", size = 48, className = "" }: { color?: string; size?: number; className?: string }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 100 100"
+      className={`drop-shadow-[3px_3px_0px_rgba(0,0,0,1)] ${className}`}
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M50 0 C50 35 65 50 100 50 C65 50 50 65 50 100 C50 65 35 50 0 50 C35 50 50 35 50 0 Z"
+        fill={color}
+        stroke="#000000"
+        strokeWidth="6"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+// Reusable Crosshair SVG
+function Crosshair({ className = "" }: { className?: string }) {
+  return (
+    <div className={`text-black font-black text-2xl select-none opacity-40 hover:opacity-100 transition-opacity ${className}`}>
+      ✚
+    </div>
+  );
 }
 
 export default function Home() {
@@ -52,19 +86,48 @@ export default function Home() {
         stagger: 0.1,
         ease: "back.out(2)"
       }, "-=0.2")
-      .from(".hero-shape", {
-        y: 50,
+      .from(".hero-shape, .neo-sticker", {
+        scale: 0,
         opacity: 0,
         rotate: 45,
         duration: 0.8,
-        stagger: 0.2,
-        ease: "back.out(1.5)"
+        stagger: 0.1,
+        ease: "back.out(1.8)"
       }, "-=0.8");
 
-    // Continuous floating animation for shapes
-    gsap.to(".hero-shape", {
-      y: "-=20",
-      duration: 2,
+    // Continuous floating animation for stickers & shapes (Group 1)
+    gsap.to(".float-sticker-1", {
+      y: "-=18",
+      rotate: "+=12",
+      duration: 2.8,
+      yoyo: true,
+      repeat: -1,
+      ease: "sine.inOut",
+      stagger: {
+        each: 0.3,
+        from: "random"
+      }
+    });
+
+    // Continuous floating animation (Group 2 - opposite phase)
+    gsap.to(".float-sticker-2", {
+      y: "+=16",
+      rotate: "-=15",
+      duration: 3.4,
+      yoyo: true,
+      repeat: -1,
+      ease: "sine.inOut",
+      stagger: {
+        each: 0.4,
+        from: "random"
+      }
+    });
+
+    // Gentle pulsing for starbursts
+    gsap.to(".pulse-starburst", {
+      scale: 1.15,
+      rotate: "+=45",
+      duration: 3,
       yoyo: true,
       repeat: -1,
       ease: "sine.inOut",
@@ -73,7 +136,7 @@ export default function Home() {
 
     // Icon subtle animations
     gsap.to(".jiggle-icon", {
-      rotate: 10,
+      rotate: 12,
       duration: 2,
       yoyo: true,
       repeat: -1,
@@ -82,7 +145,7 @@ export default function Home() {
     });
 
     gsap.to(".pulse-icon", {
-      scale: 1.1,
+      scale: 1.15,
       duration: 1.5,
       yoyo: true,
       repeat: -1,
@@ -96,7 +159,7 @@ export default function Home() {
       const icon = btn.querySelector(".btn-icon");
       if (icon) {
         btn.addEventListener("mouseenter", () => {
-          gsap.to(icon, { x: 5, scale: 1.1, duration: 0.3, ease: "back.out(2)" });
+          gsap.to(icon, { x: 5, scale: 1.15, duration: 0.3, ease: "back.out(2)" });
         });
         btn.addEventListener("mouseleave", () => {
           gsap.to(icon, { x: 0, scale: 1, duration: 0.3, ease: "back.out(2)" });
@@ -153,17 +216,29 @@ export default function Home() {
       }
     });
 
-    // 4. Feature Cards Stagger
+    // 4. Feature Cards Stagger & Floating Stickers in Features Section
     gsap.from(".feature-card", {
       scrollTrigger: {
         trigger: ".features-section",
-        start: "top 70%",
+        start: "top 75%",
       },
-      y: 100,
+      y: 80,
       opacity: 0,
       duration: 0.8,
-      stagger: 0.2,
-      ease: "back.out(1.5)"
+      stagger: 0.15,
+      ease: "back.out(1.4)"
+    });
+
+    // Parallax on scroll for background feature stickers
+    gsap.to(".feature-bg-sticker", {
+      scrollTrigger: {
+        trigger: ".features-section",
+        start: "top bottom",
+        end: "bottom top",
+        scrub: 1.5,
+      },
+      y: -60,
+      ease: "none"
     });
 
     // 5. Final CTA Parallax/Grow
@@ -174,7 +249,7 @@ export default function Home() {
         end: "bottom bottom",
         scrub: true,
       },
-      scale: 0.8,
+      scale: 0.85,
       borderRadius: "100px",
       ease: "none"
     });
@@ -182,14 +257,44 @@ export default function Home() {
   }, { scope: container });
 
   return (
-    <div ref={container} className="flex flex-col overflow-hidden">
+    <div ref={container} className="flex flex-col overflow-hidden bg-[#FAFAF8] min-h-screen">
 
       {/* 1. HERO SECTION */}
-      <main className="relative min-h-[92vh] flex flex-col items-center justify-center px-6 py-20 text-center w-full">
+      <main className="relative min-h-[92vh] flex flex-col items-center justify-center px-6 py-20 text-center w-full bg-[radial-gradient(#000000_1.3px,transparent_1.3px)] [background-size:26px_26px] overflow-hidden">
+        
+        {/* Floating Neo Stickers & Starbursts in Hero */}
+        <div className="neo-sticker float-sticker-1 absolute top-24 left-[6%] hidden lg:block select-none z-0">
+          <Starburst color="#FACC15" size={54} className="pulse-starburst" />
+        </div>
+        
+        <div className="neo-sticker float-sticker-2 absolute top-36 right-[8%] hidden lg:block select-none z-0">
+          <Starburst color="#C084FC" size={60} className="pulse-starburst" />
+        </div>
+
+        <div className="neo-sticker float-sticker-1 absolute bottom-28 left-[10%] hidden md:block select-none z-0">
+          <div className="border-3 border-black bg-white px-3 py-1.5 font-black text-xs uppercase tracking-wider rounded-lg shadow-neo rotate-[-8deg] flex items-center gap-1.5">
+            <Award size={16} className="text-neo-yellow drop-shadow-[1px_1px_0px_rgba(0,0,0,1)]" />
+            <span>Grade A+ Prep</span>
+          </div>
+        </div>
+
+        <div className="neo-sticker float-sticker-2 absolute bottom-36 right-[12%] hidden md:block select-none z-0">
+          <div className="border-3 border-black bg-neo-yellow px-3.5 py-1.5 font-black text-xs uppercase tracking-wider rounded-lg shadow-neo rotate-[6deg] flex items-center gap-1.5">
+            <BookmarkCheck size={16} className="text-black" />
+            <span>100% Peer Verified</span>
+          </div>
+        </div>
+
+        <div className="neo-sticker float-sticker-1 absolute top-1/2 left-[3%] hidden xl:block select-none opacity-60">
+          <Crosshair />
+        </div>
+        <div className="neo-sticker float-sticker-2 absolute top-1/3 right-[4%] hidden xl:block select-none opacity-60">
+          <Crosshair />
+        </div>
+
         {/* Decorative Floating Shapes */}
-        <div className="hero-shape absolute top-32 left-[8%] w-24 h-24 bg-neo-peach border-4 border-black rounded-full hidden md:block" />
-        <div className="hero-shape absolute bottom-32 right-[8%] w-32 h-32 bg-neo-yellow border-4 border-black rotate-12 hidden md:block" />
-        <div className="hero-shape absolute top-48 right-[18%] w-16 h-16 bg-neo-green border-4 border-black rotate-45 hidden md:block" />
+        <div className="hero-shape absolute top-32 left-[8%] w-20 h-20 bg-neo-peach border-4 border-black rounded-full hidden md:block opacity-75 shadow-neo" />
+        <div className="hero-shape absolute bottom-28 right-[7%] w-24 h-24 bg-neo-green border-4 border-black rotate-12 hidden md:block opacity-75 shadow-neo" />
 
         <div className="flex flex-col items-center text-center w-full max-w-5xl mx-auto space-y-6 z-10">
           <div className="hero-text flex flex-wrap gap-2 justify-center items-center">
@@ -197,7 +302,7 @@ export default function Home() {
               <GraduationCap size={14} className="jiggle-icon" /> For VIT Vellore Students
             </span>
             <span className="flex items-center gap-1 border-2 border-black rounded-full px-4 py-1 font-black bg-neo-green shadow-neo text-xs uppercase">
-              <Zap size={14} className="pulse-icon" /> CAT-2 • FAT Prep
+              <Sparkles size={14} className="pulse-icon" /> CAT-2 • FAT Prep
             </span>
           </div>
 
@@ -214,7 +319,7 @@ export default function Home() {
           </h1>
 
           <p className="hero-desc text-lg sm:text-xl md:text-2xl font-medium max-w-3xl leading-relaxed text-gray-800 mt-6">
-            Couldn't find your book at the library? Borrow course textbooks and module notes directly from your peers across VIT Vellore hostels & academic blocks.
+            Couldn&apos;t find your book at the library? Borrow course textbooks and module notes directly from your peers across VIT Vellore hostels & academic blocks.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-5 pt-6 pb-8">
@@ -245,14 +350,13 @@ export default function Home() {
       </main>
 
       {/* 2. INFINITE MARQUEE */}
-      <div className="w-full overflow-hidden border-y-4 border-black bg-neo-yellow py-4 flex whitespace-nowrap">
+      <div className="w-full overflow-hidden border-y-4 border-black bg-neo-yellow py-4 flex whitespace-nowrap z-10">
         <div className="marquee-content flex gap-8 font-black text-2xl md:text-3xl font-serif">
           {[...Array(3)].map((_, i) => (
             <div key={i} className="flex gap-8 items-center">
               <span className="flex items-center gap-2"><Star size={24} className="fill-black" /> BOOKS FOR CAT2</span>
               <span className="flex items-center gap-2"><Star size={24} className="fill-black" /> FAT EXAM REVISION</span>
-              {/* <span className="flex items-center gap-2"><Star size={24} className="fill-black" /> CORMEN • MORRIS MANO • SEDRA SMITH</span> */}
-              <span className="flex items-center gap-2"><Star size={24} className="fill-black" /> CONVINIENT HANDOVERS</span>
+              <span className="flex items-center gap-2"><Star size={24} className="fill-black" /> CONVENIENT HANDOVERS</span>
               <span className="flex items-center gap-2"><Star size={24} className="fill-black" /> HANDWRITTEN NOTES</span>
               <span className="flex items-center gap-2"><Star size={24} className="fill-black" /> VIT VELLORE</span>
             </div>
@@ -260,94 +364,137 @@ export default function Home() {
         </div>
       </div>
 
-      {/* 3. HOW IT WORKS SECTION */}
-      <section className="how-it-works-section w-full max-w-5xl mx-auto px-6 py-28 relative">
-        <div className="text-center mb-20">
-          <span className="text-xs font-black uppercase tracking-wider bg-black text-white px-3 py-1 border border-black inline-block mb-3">
-            Campus Workflow
-          </span>
-          <br />
-          <h2 className="font-serif text-5xl md:text-6xl font-black inline-block bg-neo-green px-6 py-2 border-4 border-black shadow-neo transform -rotate-1">
-            How Booklease Works
-          </h2>
-          <p className="font-medium text-lg text-gray-700 mt-4 max-w-xl mx-auto">
-            From discovering a reference book to campus meetup in simple steps.
-          </p>
-        </div>
-
-        <div className="relative flex flex-col gap-24">
-          {/* The Drawing Line (Rope) */}
-          <div className="absolute left-8 md:left-1/2 top-0 bottom-0 w-2 md:-ml-1 border-r-4 border-dashed border-gray-300">
-            <div className="connecting-line w-full border-r-4 border-dashed border-black h-0" />
-            <div className="traveling-knot absolute -left-3 md:-left-3 w-8 h-8 bg-neo-yellow border-4 border-black rounded-full shadow-neo z-30 flex items-center justify-center transform -translate-y-1/2">
-              <span className="block w-2 h-2 bg-black rounded-full" />
-            </div>
+      {/* 3. HOW IT WORKS SECTION (Plain Background - No Grid) */}
+      <section className="how-it-works-section w-full bg-[#FAFAF8] py-28 px-6 relative">
+        <div className="max-w-5xl mx-auto">
+          {/* Background Subtle Stickers */}
+          <div className="absolute top-20 right-8 hidden md:block select-none float-sticker-1 z-0">
+            <Starburst color="#38BDF8" size={44} className="pulse-starburst" />
+          </div>
+          <div className="absolute bottom-20 left-8 hidden md:block select-none float-sticker-2 z-0">
+            <Starburst color="#F472B6" size={48} className="pulse-starburst" />
           </div>
 
-          {/* Steps */}
-          {[
-            {
-              num: "01",
-              tag: "CAT-2 & FAT Exam Prep",
-              title: "Worried About CAT-2?",
-              desc: "Find syllabus reference textbooks, handwritten formula sheets, and solved question papers uploaded by peers in your own campus blocks.",
-              color: "white"
-            },
-            {
-              num: "02",
-              tag: "Slot-Based Rentals",
-              title: "Request & Connect on WhatsApp",
-              desc: "Choose durations tailored to your exam slot (A1–G2) or custom days. Chat directly with student owners on WhatsApp and coordinate a quick handover wherever you like across campus.",
-              color: "blue"
-            },
-            {
-              num: "03",
-              tag: "Exclusive Student Feature",
-              title: "Sell or Rent Your Ebook Printouts",
-              desc: "Took spiral printouts of 200-page ebooks or module PPT slides? Don't throw them in the dustbin after exams! List your spiral printouts and xerox booklets to recover your printing costs.",
-              color: "yellow"
-            },
-            {
-              num: "04",
-              tag: "Zero Late Fees",
-              title: "Ace Exams & 1-Click Return",
-              desc: "Complete your exam revision without spending thousands on new textbooks. Return the book or pass materials to the next student with a single click on your dashboard.",
-              color: "peach"
-            },
-          ].map((step, i) => (
-            <div key={step.num} className={`step-card w-full md:w-[45%] flex relative z-10 ${i % 2 === 0 ? "md:self-start" : "md:self-end"}`}>
-              <div
-                className="horizontal-line hidden md:block absolute top-1/2 h-1 border-b-4 border-dashed border-black z-10"
-                style={{
-                  [i % 2 === 0 ? 'right' : 'left']: '-10%',
-                  width: '10%',
-                  marginTop: '-2px'
-                }}
-              />
-              <div className="hidden md:flex absolute top-1/2 -mt-6 w-12 h-12 rounded-full border-4 border-black bg-white items-center justify-center font-black z-20 shadow-neo"
-                style={{ [i % 2 === 0 ? 'right' : 'left']: '-3rem' }}>
-                {step.num}
+          <div className="text-center mb-20 relative z-10">
+            <span className="text-xs font-black uppercase tracking-wider bg-black text-white px-3 py-1 border border-black inline-block mb-3">
+              Campus Workflow
+            </span>
+            <br />
+            <h2 className="font-serif text-5xl md:text-6xl font-black inline-block bg-neo-green px-6 py-2 border-4 border-black shadow-neo transform -rotate-1">
+              How Booklease Works
+            </h2>
+            <p className="font-medium text-lg text-gray-700 mt-4 max-w-xl mx-auto">
+              From discovering a reference book to campus meetup in simple steps.
+            </p>
+          </div>
+
+          <div className="relative flex flex-col gap-24">
+            {/* The Drawing Line (Rope) */}
+            <div className="absolute left-8 md:left-1/2 top-0 bottom-0 w-2 md:-ml-1 border-r-4 border-dashed border-gray-300">
+              <div className="connecting-line w-full border-r-4 border-dashed border-black h-0" />
+              <div className="traveling-knot absolute -left-3 md:-left-3 w-8 h-8 bg-neo-yellow border-4 border-black rounded-full shadow-neo z-30 flex items-center justify-center transform -translate-y-1/2">
+                <span className="block w-2 h-2 bg-black rounded-full" />
               </div>
-              <NeoCard color={step.color as any} className="w-full relative z-20">
-                <span className="inline-block border-2 border-black bg-black text-white px-2 py-0.5 text-xs font-black uppercase mb-2">
-                  {step.tag}
-                </span>
-                <h3 className="font-serif text-2xl md:text-3xl font-black mb-3">{step.title}</h3>
-                <p className="font-medium text-base text-gray-800 leading-relaxed">{step.desc}</p>
-              </NeoCard>
             </div>
-          ))}
+
+            {/* Steps */}
+            {[
+              {
+                num: "01",
+                tag: "CAT-2 & FAT Exam Prep",
+                title: "Worried About CAT-2?",
+                desc: "Find syllabus reference textbooks, handwritten formula sheets, and solved question papers uploaded by peers in your own campus blocks.",
+                color: "white"
+              },
+              {
+                num: "02",
+                tag: "Slot-Based Rentals",
+                title: "Request & Connect on WhatsApp",
+                desc: "Choose durations tailored to your exam slot (A1–G2) or custom days. Chat directly with student owners on WhatsApp and coordinate a quick handover wherever you like across campus.",
+                color: "blue"
+              },
+              {
+                num: "03",
+                tag: "Exclusive Student Feature",
+                title: "Sell or Rent Your Ebook Printouts",
+                desc: "Took spiral printouts of 200-page ebooks or module PPT slides? Don't throw them in the dustbin after exams! List your spiral printouts and xerox booklets to recover your printing costs.",
+                color: "yellow"
+              },
+              {
+                num: "04",
+                tag: "Zero Late Fees",
+                title: "Ace Exams & 1-Click Return",
+                desc: "Complete your exam revision without spending thousands on new textbooks. Return the book or pass materials to the next student with a single click on your dashboard.",
+                color: "peach"
+              },
+            ].map((step, i) => (
+              <div key={step.num} className={`step-card w-full md:w-[45%] flex relative z-10 ${i % 2 === 0 ? "md:self-start" : "md:self-end"}`}>
+                <div
+                  className="horizontal-line hidden md:block absolute top-1/2 h-1 border-b-4 border-dashed border-black z-10"
+                  style={{
+                    [i % 2 === 0 ? 'right' : 'left']: '-10%',
+                    width: '10%',
+                    marginTop: '-2px'
+                  }}
+                />
+                <div className="hidden md:flex absolute top-1/2 -mt-6 w-12 h-12 rounded-full border-4 border-black bg-white items-center justify-center font-black z-20 shadow-neo"
+                  style={{ [i % 2 === 0 ? 'right' : 'left']: '-3rem' }}>
+                  {step.num}
+                </div>
+                <NeoCard color={step.color as any} className="w-full relative z-20">
+                  <span className="inline-block border-2 border-black bg-black text-white px-2 py-0.5 text-xs font-black uppercase mb-2">
+                    {step.tag}
+                  </span>
+                  <h3 className="font-serif text-2xl md:text-3xl font-black mb-3">{step.title}</h3>
+                  <p className="font-medium text-base text-gray-800 leading-relaxed">{step.desc}</p>
+                </NeoCard>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
-      {/* 4. FEATURES SECTION */}
-      <section id="features" className="features-section w-full bg-gray-100 border-y-4 border-black py-28 px-6">
-        <div className="max-w-6xl mx-auto">
+      {/* SEAMLESS DOTTED WRAPPER FOR FEATURES & FINAL CTA */}
+      <div className="w-full border-t-4 border-black bg-[radial-gradient(#000000_1.3px,transparent_1.3px)] [background-size:26px_26px]">
+        {/* 4. FEATURES SECTION */}
+        <section id="features" className="features-section w-full py-28 px-6 relative overflow-hidden">
+        
+        {/* Background Floating Neo-Brutalist Stickers */}
+        <div className="feature-bg-sticker float-sticker-1 absolute top-12 left-[4%] hidden lg:block select-none pointer-events-none z-0">
+          <Starburst color="#FACC15" size={50} className="pulse-starburst" />
+        </div>
+
+        <div className="feature-bg-sticker float-sticker-2 absolute top-10 right-[4%] hidden lg:block select-none pointer-events-none z-0">
+          <Starburst color="#C084FC" size={54} className="pulse-starburst" />
+        </div>
+
+        <div className="feature-bg-sticker float-sticker-1 absolute top-36 left-4 xl:left-8 hidden xl:block select-none pointer-events-none z-0">
+          <div className="border-3 border-black bg-neo-green px-3.5 py-1.5 font-black text-xs uppercase tracking-wider rounded-lg shadow-neo rotate-[-5deg] flex items-center gap-1.5">
+            <FileText size={15} className="text-black" />
+            <span>Handwritten Notes</span>
+          </div>
+        </div>
+
+        <div className="feature-bg-sticker float-sticker-2 absolute top-36 right-4 xl:right-8 hidden xl:block select-none pointer-events-none z-0">
+          <div className="border-3 border-black bg-neo-yellow px-3.5 py-1.5 font-black text-xs uppercase tracking-wider rounded-lg shadow-neo rotate-[5deg] flex items-center gap-1.5">
+            <MessageCircle size={15} className="text-black" />
+            <span>1-Click WhatsApp Handovers</span>
+          </div>
+        </div>
+
+        <div className="feature-bg-sticker float-sticker-2 absolute top-1/2 left-[2%] hidden 2xl:block select-none opacity-40">
+          <Crosshair />
+        </div>
+        <div className="feature-bg-sticker float-sticker-1 absolute top-1/2 right-[2%] hidden 2xl:block select-none opacity-40">
+          <Crosshair />
+        </div>
+
+        <div className="max-w-6xl mx-auto relative z-10">
           <div className="text-center mb-16">
             <span className="text-xs font-black uppercase bg-neo-yellow px-3 py-1 border-2 border-black inline-block mb-3 shadow-neo">
               Built for VITians
             </span>
-            <h2 className="font-serif text-5xl md:text-6xl font-black">Everything You Need for Exam Week</h2>
+            <h2 className="font-serif text-5xl md:text-6xl font-black tracking-tight">Everything You Need for Exam Week</h2>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -395,8 +542,16 @@ export default function Home() {
       </section>
 
       {/* 5. FINAL CTA */}
-      <section className="final-cta-wrapper w-full py-28 px-4 md:px-8 bg-white overflow-hidden">
-        <div className="final-cta max-w-5xl mx-auto border-4 border-black bg-neo-yellow p-12 md:p-24 text-center shadow-neo-lg">
+      <section className="final-cta-wrapper w-full pb-28 pt-8 px-4 md:px-8 relative overflow-hidden">
+        {/* Floating stickers in CTA */}
+        <div className="float-sticker-1 absolute top-6 left-10 hidden lg:block select-none z-0">
+          <Starburst color="#C084FC" size={50} className="pulse-starburst" />
+        </div>
+        <div className="float-sticker-2 absolute bottom-12 right-10 hidden lg:block select-none z-0">
+          <Starburst color="#FACC15" size={56} className="pulse-starburst" />
+        </div>
+
+        <div className="final-cta max-w-5xl mx-auto border-4 border-black bg-neo-yellow p-12 md:p-24 text-center shadow-neo-lg relative z-10">
           <div className="inline-block border-2 border-black bg-white px-4 py-1 text-sm font-black uppercase mb-6 shadow-neo">
             <span className="flex items-center gap-1 justify-center"><Sparkles size={16} className="text-yellow-400 drop-shadow-[1px_1px_0px_rgba(0,0,0,1)] pulse-icon" /> Free & Instant for All VIT Students</span>
           </div>
@@ -420,6 +575,7 @@ export default function Home() {
           </div>
         </div>
       </section>
+      </div>
 
     </div>
   );
