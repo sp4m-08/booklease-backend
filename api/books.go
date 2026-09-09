@@ -12,6 +12,7 @@ import (
 	"bookapi/services"
 
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 // GetBooks returns all books, optionally filtered by category or search term
@@ -191,8 +192,26 @@ func DeleteBook(c *gin.Context) {
 		return
 	}
 
-	if err := services.DB.Delete(&book).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete book"})
+	// Clean up related records (wishlist, waitlist, rentals) inside a transaction to prevent FK constraint violations
+	err = services.DB.Transaction(func(tx *gorm.DB) error {
+		if err := tx.Where("book_id = ?", book.ID).Delete(&models.Wishlist{}).Error; err != nil {
+			return err
+		}
+		if err := tx.Where("book_id = ?", book.ID).Delete(&models.BookWaitlist{}).Error; err != nil {
+			return err
+		}
+		if err := tx.Where("book_id = ?", book.ID).Delete(&models.Rental{}).Error; err != nil {
+			return err
+		}
+		if err := tx.Delete(&book).Error; err != nil {
+			return err
+		}
+		return nil
+	})
+
+	if err != nil {
+		log.Printf("❌ DeleteBook error: %v", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete book: " + err.Error()})
 		return
 	}
 

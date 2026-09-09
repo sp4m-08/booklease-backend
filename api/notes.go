@@ -11,6 +11,7 @@ import (
 	"bookapi/services"
 
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 // GetNotes returns all public notes
@@ -152,8 +153,25 @@ func DeleteNote(c *gin.Context) {
 		return
 	}
 
-	if err := services.DB.Delete(&note).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete note"})
+	// Clean up related records (upvotes, waitlists, rentals) inside a transaction to prevent FK constraint violations
+	err = services.DB.Transaction(func(tx *gorm.DB) error {
+		if err := tx.Where("note_id = ?", note.ID).Delete(&models.NoteUpvote{}).Error; err != nil {
+			return err
+		}
+		if err := tx.Where("note_id = ?", note.ID).Delete(&models.NoteWaitlist{}).Error; err != nil {
+			return err
+		}
+		if err := tx.Where("notes_id = ?", note.ID).Delete(&models.Rental{}).Error; err != nil {
+			return err
+		}
+		if err := tx.Delete(&note).Error; err != nil {
+			return err
+		}
+		return nil
+	})
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete note: " + err.Error()})
 		return
 	}
 
