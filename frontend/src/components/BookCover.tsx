@@ -117,9 +117,9 @@ export function BookCover({ src, title, author, category, className = "", priori
     );
   }
 
-  // 4. Next.js Optimized Image with Blur Placeholder
+  // 4. Direct High-Speed Image Rendering
   return (
-    <div className={`relative w-full h-full overflow-hidden ${className}`}>
+    <div className={`relative w-full h-full overflow-hidden bg-gray-100 ${className}`}>
       <Image
         src={imageUrl}
         alt={title}
@@ -128,7 +128,10 @@ export function BookCover({ src, title, author, category, className = "", priori
         placeholder="blur"
         blurDataURL={SHIMMER_BLUR_DATA_URL}
         onError={() => setHasError(true)}
-        className="object-cover transition-opacity duration-300"
+        className="object-cover"
+        unoptimized
+        loading="eager"
+        decoding="async"
         priority={priority}
       />
     </div>

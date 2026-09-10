@@ -32,7 +32,7 @@ export function NoteCover({ src, title, subject, className = "", priority = fals
 
   if (isImage && imageUrl && !hasError) {
     return (
-      <div className={`relative w-full h-full overflow-hidden ${className}`}>
+      <div className={`relative w-full h-full overflow-hidden bg-gray-100 ${className}`}>
         <Image
           src={imageUrl}
           alt={title}
@@ -41,7 +41,10 @@ export function NoteCover({ src, title, subject, className = "", priority = fals
           placeholder="blur"
           blurDataURL={SHIMMER_BLUR_DATA_URL}
           onError={() => setHasError(true)}
-          className="object-cover transition-opacity duration-300"
+          className="object-cover"
+          unoptimized
+          loading="eager"
+          decoding="async"
           priority={priority}
         />
       </div>

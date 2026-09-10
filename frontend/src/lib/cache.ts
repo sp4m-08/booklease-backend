@@ -26,3 +26,21 @@ export function setStoredCache<T>(key: string, data: T): void {
     // Gracefully handle storage quota issues
   }
 }
+
+/**
+ * Pre-warms the browser's native memory/disk image cache in the background.
+ */
+export function preloadImages(urls: (string | undefined | null)[]): void {
+  if (typeof window === "undefined") return;
+  urls.forEach((url) => {
+    if (!url) return;
+    if (url.startsWith("http://") || url.startsWith("https://")) {
+      const ext = url.split("?")[0].split(".").pop()?.toLowerCase();
+      if (!ext || ["jpg", "jpeg", "png", "webp", "gif", "avif"].includes(ext)) {
+        const img = new window.Image();
+        img.src = url;
+      }
+    }
+  });
+}
+

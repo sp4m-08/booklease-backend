@@ -4,7 +4,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AuthProvider } from "@/context/AuthContext";
 import { useState, useEffect } from "react";
 import api from "@/lib/api";
-import { getStoredCache, setStoredCache } from "@/lib/cache";
+import { getStoredCache, setStoredCache, preloadImages } from "@/lib/cache";
 
 export default function Providers({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(() => {
@@ -22,13 +22,15 @@ export default function Providers({ children }: { children: React.ReactNode }) {
 
     // Seed query cache synchronously on client from localStorage if available
     if (typeof window !== "undefined") {
-      const cachedBooks = getStoredCache("books");
+      const cachedBooks = getStoredCache<any[]>("books");
       if (cachedBooks) {
         client.setQueryData(["books"], cachedBooks);
+        preloadImages(cachedBooks.map(b => b.cover_image));
       }
-      const cachedNotes = getStoredCache("notes");
+      const cachedNotes = getStoredCache<any[]>("notes");
       if (cachedNotes) {
         client.setQueryData(["notes"], cachedNotes);
+        preloadImages(cachedNotes.map(n => n.file_path));
       }
     }
 
@@ -46,7 +48,10 @@ export default function Providers({ children }: { children: React.ReactNode }) {
         queryKey: ["books"],
         queryFn: async () => {
           const res = await api.get("/book/");
-          if (res.data) setStoredCache("books", res.data);
+          if (Array.isArray(res.data)) {
+            setStoredCache("books", res.data);
+            preloadImages(res.data.map(b => b.cover_image));
+          }
           return res.data;
         },
       })
@@ -58,7 +63,10 @@ export default function Providers({ children }: { children: React.ReactNode }) {
         queryKey: ["notes"],
         queryFn: async () => {
           const res = await api.get("/notes/");
-          if (res.data) setStoredCache("notes", res.data);
+          if (Array.isArray(res.data)) {
+            setStoredCache("notes", res.data);
+            preloadImages(res.data.map(n => n.file_path));
+          }
           return res.data;
         },
       })
