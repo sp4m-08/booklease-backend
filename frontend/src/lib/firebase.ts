@@ -1,5 +1,5 @@
 import { initializeApp, getApps, getApp } from "firebase/app";
-import { getAuth, GoogleAuthProvider, Auth } from "firebase/auth";
+import { getAuth, GoogleAuthProvider, Auth, browserLocalPersistence, setPersistence } from "firebase/auth";
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -17,9 +17,13 @@ let googleProvider: GoogleAuthProvider | any = null;
 if (firebaseConfig.apiKey) {
   app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
   auth = getAuth(app);
+  if (typeof window !== "undefined") {
+    setPersistence(auth, browserLocalPersistence).catch(() => {});
+  }
   googleProvider = new GoogleAuthProvider();
   googleProvider.setCustomParameters({
     hd: "vitstudent.ac.in",
+    prompt: "select_account",
   });
 } else {
   console.warn("Firebase config is missing. Please add it to .env.local");
