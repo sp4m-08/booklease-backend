@@ -35,6 +35,8 @@ interface Note {
   created_at: string;
 }
 
+import { getStoredCache, setStoredCache } from "@/lib/cache";
+
 export default function NotesPage() {
   const container = useRef<HTMLDivElement>(null);
   const [searchTerm, setSearchTerm] = useState("");
@@ -47,10 +49,13 @@ export default function NotesPage() {
     queryKey: ["notes"],
     queryFn: async () => {
       const response = await api.get("/notes/");
+      if (response.data) {
+        setStoredCache("notes", response.data);
+      }
       return response.data;
     },
-    refetchOnMount: "always",
-    staleTime: 0,
+    placeholderData: () => getStoredCache<Note[]>("notes") || [],
+    staleTime: 1000 * 60 * 3, // 3 minutes fresh
   });
 
   const branches = ["All", "CSE", "ECE", "EEE", "Mechanical", "Biotech", "Civil", "Common"];

@@ -16,6 +16,8 @@ import { SlotBadges } from "@/components/SlotBadges";
 import { NeoSelect } from "@/components/ui/NeoSelect";
 import { GraduationCap, Filter, Award, Tag, X, CheckCircle2, Flame, Clock, BookOpen, FileText, ArrowRight } from "lucide-react";
 
+import { getStoredCache, setStoredCache } from "@/lib/cache";
+
 interface Book {
   id: number;
   title: string;
@@ -43,10 +45,13 @@ export default function BooksPage() {
     queryKey: ["books"],
     queryFn: async () => {
       const response = await api.get("/book/");
+      if (response.data) {
+        setStoredCache("books", response.data);
+      }
       return response.data;
     },
-    refetchOnMount: "always",
-    staleTime: 0,
+    placeholderData: () => getStoredCache<Book[]>("books") || [],
+    staleTime: 1000 * 60 * 3, // 3 minutes fresh
   });
 
   const branches = ["All", "CSE", "ECE", "EEE", "Mechanical", "Biotech", "Civil", "Common"];
