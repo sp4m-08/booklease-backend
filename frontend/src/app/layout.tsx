@@ -19,7 +19,7 @@ const merriweather = Merriweather({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://booklease.netlify.app"),
+  metadataBase: new URL("https://booklease.vercel.app"),
   title: "Booklease | VIT Vellore Peer Textbook Rental & CAT/FAT Notes Hub",
   description: "Exclusively for VIT Vellore University students. Rent course textbooks for CAT-2 & FAT exams, share handwritten module notes, and coordinate handovers across campus.",
   keywords: ["VIT Vellore", "Booklease", "VIT CAT exams", "VIT FAT exams", "Textbook rental VIT", "VIT notes sharing", "FFCS reference books", "SJT", "TT", "VIT Vellore library"],
