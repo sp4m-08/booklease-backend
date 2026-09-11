@@ -31,7 +31,7 @@ const bookSchema = z.object({
 
 type BookFormData = z.infer<typeof bookSchema>;
 
-export const VIT_BRANCHES = [
+const VIT_BRANCHES = [
   "CSE",
   "ECE",
   "EEE",
@@ -41,14 +41,14 @@ export const VIT_BRANCHES = [
   "Common",
 ] as const;
 
-export const BOOK_TYPES = [
+const BOOK_TYPES = [
   "Original Textbook",
   "Spiral-Bound Printout",
   "Xerox / Printed Booklet",
   "Loose Module Printout",
 ] as const;
 
-export const BOOK_CONDITIONS = [
+const BOOK_CONDITIONS = [
   "Brand New",
   "Like New",
   "Good",
@@ -56,7 +56,7 @@ export const BOOK_CONDITIONS = [
   "Acceptable (Torn Pages)",
 ] as const;
 
-export const VIT_SLOTS = [
+const VIT_SLOTS = [
   "A1", "A2", "B1", "B2", "C1", "C2", "D1", "D2", "E1", "E2", "F1", "F2", "G1", "G2"
 ] as const;
 

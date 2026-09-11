@@ -465,7 +465,7 @@ export default function Home() {
       {/* SEAMLESS DOTTED WRAPPER FOR FEATURES & FINAL CTA */}
       <div className="w-full border-t-4 border-black bg-[radial-gradient(#000000_1.3px,transparent_1.3px)] [background-size:26px_26px]">
         {/* 4. FEATURES SECTION */}
-        <section id="features" className="features-section w-full py-16 sm:py-28 px-4 sm:px-6 relative overflow-hidden">
+        <section id="features" className="features-section w-full py-10 sm:py-24 px-3 sm:px-6 relative overflow-hidden">
         
         {/* Background Floating Neo-Brutalist Stickers */}
         <div className="feature-bg-sticker float-sticker-1 absolute top-12 left-[4%] hidden lg:block select-none pointer-events-none z-0">
@@ -498,52 +498,60 @@ export default function Home() {
         </div>
 
         <div className="max-w-6xl mx-auto relative z-10">
-          <div className="text-center mb-10 sm:mb-16">
-            <span className="text-xs font-black uppercase bg-neo-yellow px-3 py-1 border-2 border-black inline-block mb-3 shadow-neo">
+          <div className="text-center mb-8 sm:mb-16">
+            <span className="text-xs font-black uppercase bg-neo-yellow px-3 py-1 border-2 border-black inline-block mb-2 sm:mb-3 shadow-neo">
               Built for VITians
             </span>
-            <h2 className="font-serif text-3xl sm:text-5xl md:text-6xl font-black tracking-tight">Everything You Need for Exam Week</h2>
+            <h2 className="font-serif text-2xl sm:text-5xl md:text-6xl font-black tracking-tight">Everything You Need for Exam Week</h2>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-            <NeoCard color="purple" className="feature-card p-5 sm:p-6 hover:-translate-y-2 transition-transform duration-300">
-              <div className="h-12 w-12 sm:h-14 sm:w-14 bg-white border-3 sm:border-4 border-black rounded-full flex items-center justify-center mb-4 sm:mb-5 shadow-neo text-xl sm:text-2xl text-neo-purple drop-shadow-[1px_1px_0px_rgba(0,0,0,1)]">
-                <Clock size={24} className="jiggle-icon" />
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-6">
+            <NeoCard color="purple" className="feature-card p-3 sm:p-6 hover:-translate-y-1 sm:hover:-translate-y-2 transition-transform duration-300 flex flex-col justify-between">
+              <div>
+                <div className="h-9 w-9 sm:h-14 sm:w-14 bg-white border-2 sm:border-4 border-black rounded-full flex items-center justify-center mb-2.5 sm:mb-5 shadow-neo text-neo-purple drop-shadow-[1px_1px_0px_rgba(0,0,0,1)]">
+                  <Clock className="w-5 h-5 sm:w-6 sm:h-6 jiggle-icon" />
+                </div>
+                <h3 className="font-serif text-sm sm:text-2xl font-black mb-1 sm:mb-2 leading-tight">CAT-2 & FAT Sprints</h3>
+                <p className="font-medium text-[11px] sm:text-sm text-gray-900 leading-snug sm:leading-relaxed">
+                  Rent syllabus textbooks for flexible exam durations. Pass books to juniors when done.
+                </p>
               </div>
-              <h3 className="font-serif text-xl sm:text-2xl font-black mb-2">CAT-2 & FAT Sprints</h3>
-              <p className="font-medium text-xs sm:text-sm text-gray-900 leading-relaxed">
-                Rent standard syllabus reference books for flexible exam durations. Save money and pass the book along to the next student once exams finish.
-              </p>
             </NeoCard>
 
-            <NeoCard color="blue" className="feature-card p-5 sm:p-6 hover:-translate-y-2 transition-transform duration-300">
-              <div className="h-12 w-12 sm:h-14 sm:w-14 bg-white border-3 sm:border-4 border-black rounded-full flex items-center justify-center mb-4 sm:mb-5 shadow-neo text-xl sm:text-2xl text-blue-300 drop-shadow-[1px_1px_0px_rgba(0,0,0,1)]">
-                <FileText size={24} className="jiggle-icon" />
+            <NeoCard color="blue" className="feature-card p-3 sm:p-6 hover:-translate-y-1 sm:hover:-translate-y-2 transition-transform duration-300 flex flex-col justify-between">
+              <div>
+                <div className="h-9 w-9 sm:h-14 sm:w-14 bg-white border-2 sm:border-4 border-black rounded-full flex items-center justify-center mb-2.5 sm:mb-5 shadow-neo text-blue-300 drop-shadow-[1px_1px_0px_rgba(0,0,0,1)]">
+                  <FileText className="w-5 h-5 sm:w-6 sm:h-6 jiggle-icon" />
+                </div>
+                <h3 className="font-serif text-sm sm:text-2xl font-black mb-1 sm:mb-2 leading-tight">Notes & Solved Papers</h3>
+                <p className="font-medium text-[11px] sm:text-sm text-gray-900 leading-snug sm:leading-relaxed">
+                  Handwritten class notes, module formula sheets, and solved CAT papers from your peers.
+                </p>
               </div>
-              <h3 className="font-serif text-xl sm:text-2xl font-black mb-2">Notes & Solved Papers</h3>
-              <p className="font-medium text-xs sm:text-sm text-gray-900 leading-relaxed">
-                Download handwritten class notes, module formula sheets, and solved CAT question papers uploaded by fellow students in your branch.
-              </p>
             </NeoCard>
 
-            <NeoCard color="yellow" className="feature-card p-5 sm:p-6 hover:-translate-y-2 transition-transform duration-300">
-              <div className="h-12 w-12 sm:h-14 sm:w-14 bg-white border-3 sm:border-4 border-black rounded-full flex items-center justify-center mb-4 sm:mb-5 shadow-neo text-xl sm:text-2xl text-yellow-600 drop-shadow-[1px_1px_0px_rgba(0,0,0,1)]">
-                <BookOpen size={24} className="jiggle-icon" />
+            <NeoCard color="yellow" className="feature-card p-3 sm:p-6 hover:-translate-y-1 sm:hover:-translate-y-2 transition-transform duration-300 flex flex-col justify-between">
+              <div>
+                <div className="h-9 w-9 sm:h-14 sm:w-14 bg-white border-2 sm:border-4 border-black rounded-full flex items-center justify-center mb-2.5 sm:mb-5 shadow-neo text-yellow-600 drop-shadow-[1px_1px_0px_rgba(0,0,0,1)]">
+                  <BookOpen className="w-5 h-5 sm:w-6 sm:h-6 jiggle-icon" />
+                </div>
+                <h3 className="font-serif text-sm sm:text-2xl font-black mb-1 sm:mb-2 leading-tight">Ebook Printouts Hub</h3>
+                <p className="font-medium text-[11px] sm:text-sm text-gray-900 leading-snug sm:leading-relaxed">
+                  Turn your spiral-bound prints and module xerox booklets into cash after exams.
+                </p>
               </div>
-              <h3 className="font-serif text-xl sm:text-2xl font-black mb-2">Ebook Printouts Hub</h3>
-              <p className="font-medium text-xs sm:text-sm text-gray-900 leading-relaxed">
-                Turn your spiral-bound ebook prints and module xerox booklets into cash instead of throwing them into the trash bin.
-              </p>
             </NeoCard>
 
-            <NeoCard color="peach" className="feature-card p-5 sm:p-6 hover:-translate-y-2 transition-transform duration-300">
-              <div className="h-12 w-12 sm:h-14 sm:w-14 bg-white border-3 sm:border-4 border-black rounded-full flex items-center justify-center mb-4 sm:mb-5 shadow-neo text-xl sm:text-2xl text-neo-peach drop-shadow-[1px_1px_0px_rgba(0,0,0,1)]">
-                <MapPin size={24} className="jiggle-icon" />
+            <NeoCard color="peach" className="feature-card p-3 sm:p-6 hover:-translate-y-1 sm:hover:-translate-y-2 transition-transform duration-300 flex flex-col justify-between">
+              <div>
+                <div className="h-9 w-9 sm:h-14 sm:w-14 bg-white border-2 sm:border-4 border-black rounded-full flex items-center justify-center mb-2.5 sm:mb-5 shadow-neo text-neo-peach drop-shadow-[1px_1px_0px_rgba(0,0,0,1)]">
+                  <MapPin className="w-5 h-5 sm:w-6 sm:h-6 jiggle-icon" />
+                </div>
+                <h3 className="font-serif text-sm sm:text-2xl font-black mb-1 sm:mb-2 leading-tight">Campus Handovers</h3>
+                <p className="font-medium text-[11px] sm:text-sm text-gray-900 leading-snug sm:leading-relaxed">
+                  Coordinate fast handovers at SJT, TT, library, or hostels convenient for both.
+                </p>
               </div>
-              <h3 className="font-serif text-xl sm:text-2xl font-black mb-2">Campus Handovers</h3>
-              <p className="font-medium text-xs sm:text-sm text-gray-900 leading-relaxed">
-                Coordinate fast handovers at any location across campus convenient for you and the owner.
-              </p>
             </NeoCard>
           </div>
         </div>

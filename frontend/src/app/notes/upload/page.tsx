@@ -27,7 +27,7 @@ const noteSchema = z.object({
 
 type NoteFormData = z.infer<typeof noteSchema>;
 
-export const VIT_BRANCHES = [
+const VIT_BRANCHES = [
   "CSE",
   "ECE",
   "EEE",
@@ -37,7 +37,7 @@ export const VIT_BRANCHES = [
   "Common",
 ] as const;
 
-export const BOOK_CONDITIONS = [
+const BOOK_CONDITIONS = [
   "Brand New",
   "Like New",
   "Good",
