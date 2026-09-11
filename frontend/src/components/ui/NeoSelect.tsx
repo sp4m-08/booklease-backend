@@ -30,24 +30,24 @@ export function NeoSelect({ value, onChange, options, placeholder = "Select an o
   }, []);
 
   return (
-    <div ref={containerRef} className={`relative ${className}`}>
+    <div ref={containerRef} className={`relative ${isOpen ? "z-50" : "z-10"} ${className}`}>
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between border-4 border-black p-3 font-bold bg-white focus:outline-none shadow-neo transition-all"
+        className="w-full flex items-center justify-between border-4 border-black p-2.5 sm:p-3 font-bold bg-white focus:outline-none shadow-neo hover:bg-gray-50 active:translate-y-0.5 transition-all text-sm sm:text-base cursor-pointer"
       >
         <span className="truncate">{selectedOption ? selectedOption.label : placeholder}</span>
-        <ChevronDown size={20} className={`transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`} />
+        <ChevronDown size={18} className={`shrink-0 ml-1 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`} />
       </button>
 
       {isOpen && (
-        <div className="absolute z-[100] left-0 w-full min-w-[140px] mt-1 border-4 border-black bg-white shadow-neo max-h-60 overflow-y-auto">
+        <div className="absolute z-[100] left-0 right-0 top-full mt-1.5 border-4 border-black bg-white shadow-neo max-h-56 overflow-y-auto">
           {options.map((option) => (
             <button
               key={option.value}
               type="button"
-              className={`w-full text-left px-3.5 py-2.5 font-bold text-sm border-b-2 border-black last:border-b-0 hover:bg-neo-yellow transition-colors truncate ${
-                value === option.value ? "bg-neo-purple text-black" : "text-gray-900"
+              className={`w-full text-left px-3.5 py-2.5 font-bold text-xs sm:text-sm border-b-2 border-black last:border-b-0 hover:bg-neo-yellow transition-colors truncate cursor-pointer ${
+                value === option.value ? "bg-neo-purple text-black" : "text-gray-900 bg-white"
               }`}
               onClick={() => {
                 onChange(option.value);

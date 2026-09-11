@@ -256,7 +256,7 @@ function BrowseContent() {
         </Link>
       </div>
 
-      <NeoCard className="mb-8 p-4 sm:p-6 bg-white border-4 border-black shadow-neo">
+      <div className="mb-8 p-4 sm:p-6 bg-white border-4 border-black shadow-neo relative z-30 overflow-visible">
         <div className="flex flex-wrap items-center gap-2 mb-6 border-b-2 border-black/10 pb-4">
           {TYPE_FILTERS.map((type) => (
             <button
@@ -343,7 +343,7 @@ function BrowseContent() {
             </button>
           )}
         </div>
-      </NeoCard>
+      </div>
 
       <div ref={containerRef}>
         {isLoading ? (
