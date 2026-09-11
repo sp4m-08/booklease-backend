@@ -65,23 +65,8 @@ export default function DocumentViewer({ fileUrl, fileExt, title }: DocumentView
         )}
       </div>
 
-      {/* Adaptive File Viewer */}
-      {isPdf && primaryUrl ? (
-        <div className="relative h-[75vh] w-full bg-gray-100">
-          {iframeLoading && (
-            <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-100/90 z-10">
-              <Loader2 className="w-8 h-8 animate-spin text-black mb-2" />
-              <span className="font-bold text-xs">Rendering PDF document...</span>
-            </div>
-          )}
-          <iframe 
-            src={`${primaryUrl}#view=FitH`} 
-            className="w-full h-full border-none"
-            title={title}
-            onLoad={() => setIframeLoading(false)}
-          />
-        </div>
-      ) : isImage && currentImage ? (
+      {/* Study Material Photo Viewer */}
+      {currentImage ? (
         <div className="flex flex-col bg-gray-100 p-4 sm:p-6 space-y-4">
           {/* Main Photo Display */}
           <div className="relative w-full aspect-[4/3] max-h-[65vh] border-4 border-black shadow-neo overflow-hidden bg-white mx-auto flex items-center justify-center group">
@@ -170,16 +155,9 @@ export default function DocumentViewer({ fileUrl, fileExt, title }: DocumentView
         <div className="p-12 text-center bg-neo-yellow/20 flex flex-col items-center justify-center min-h-[350px]">
           <FileText className="w-20 h-20 text-black mb-4 stroke-1" />
           <h3 className="font-serif text-3xl font-black mb-2">{title}</h3>
-          <p className="font-bold text-gray-700 mb-6 max-w-md">
-            This document format ({effectiveExt?.toUpperCase() || "DOC"}) is ready to be viewed.
+          <p className="font-bold text-gray-700 max-w-md">
+            No preview photos available for this study material.
           </p>
-          {primaryUrl && (
-            <a href={primaryUrl} target="_blank" rel="noreferrer">
-              <NeoButton variant="primary" size="lg" className="bg-neo-blue text-black flex items-center gap-2">
-                <ExternalLink size={20} /> View Document File
-              </NeoButton>
-            </a>
-          )}
         </div>
       )}
 

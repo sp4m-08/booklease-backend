@@ -59,7 +59,6 @@ export default function NoteUploadPage() {
   const queryClient = useQueryClient();
   const [selectedSlots, setSelectedSlots] = useState<string[]>(["A1"]);
   const [imageFiles, setImageFiles] = useState<File[]>([]);
-  const [documentFile, setDocumentFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   if (loading) return <div className="p-8 text-center font-bold">Loading...</div>;
@@ -77,8 +76,8 @@ export default function NoteUploadPage() {
       return;
     }
 
-    if (imageFiles.length === 0 && !documentFile) {
-      toast.error("Please upload at least 1 preview picture or attach a document for your notes.");
+    if (imageFiles.length === 0) {
+      toast.error("Please upload at least 1 preview photo of your study material.");
       return;
     }
 
@@ -86,20 +85,11 @@ export default function NoteUploadPage() {
       setIsSubmitting(true);
       const uploadedUrls: string[] = [];
 
-      // 1. Upload preview images (1 to 4 photos)
+      // Upload preview images (1 to 4 photos)
       if (imageFiles.length > 0) {
         toast.info(`Uploading ${imageFiles.length} preview picture(s)...`);
         const imgUrls = await uploadMultipleFiles(imageFiles, "notes");
         uploadedUrls.push(...imgUrls);
-      }
-
-      // 2. Upload full document if provided
-      if (documentFile) {
-        toast.info(`Uploading document ${documentFile.name}...`);
-        const docUrl = await uploadFile(documentFile, "notes");
-        if (uploadedUrls.length === 0) {
-          uploadedUrls.push(docUrl);
-        }
       }
 
       const finalFilePath = uploadedUrls.join(",");
@@ -250,16 +240,13 @@ export default function NoteUploadPage() {
           />
         </div>
 
-        {/* Multi-Image Preview Uploader (1 to 4 pictures) & Document */}
+        {/* Multi-Image Preview Uploader (1 to 4 pictures) */}
         <MultiImageUploader
           maxImages={4}
           files={imageFiles}
           onChangeFiles={setImageFiles}
-          documentFile={documentFile}
-          onChangeDocumentFile={setDocumentFile}
-          allowDocument={true}
-          label="Preview Pictures & Notes Material (Up to 4 Photos)"
-          description="Upload 1 to 4 photo previews of your handwritten notes/formulas, or attach a full PDF/Doc file"
+          label="Preview Pictures (Up to 4 Photos)"
+          description="Upload 1 to 4 photo previews of your handwritten notes, formula sheets, or question banks"
         />
 
         <button 

@@ -75,7 +75,6 @@ export default function BookUploadPage() {
   const queryClient = useQueryClient();
   const [selectedSlots, setSelectedSlots] = useState<string[]>(["A1"]);
   const [imageFiles, setImageFiles] = useState<File[]>([]);
-  const [documentFile, setDocumentFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   if (loading) return <div className="p-8 text-center font-bold">Loading...</div>;
@@ -97,20 +96,11 @@ export default function BookUploadPage() {
       setIsSubmitting(true);
       const uploadedUrls: string[] = [];
 
-      // 1. Upload all preview images (1 to 4 images)
+      // Upload all preview images (1 to 4 images)
       if (imageFiles.length > 0) {
         toast.info(`Uploading ${imageFiles.length} preview picture(s)...`);
         const imgUrls = await uploadMultipleFiles(imageFiles, "covers");
         uploadedUrls.push(...imgUrls);
-      }
-
-      // 2. Upload optional PDF/Doc if attached
-      if (documentFile) {
-        toast.info(`Uploading document: ${documentFile.name}...`);
-        const docUrl = await uploadFile(documentFile, "covers");
-        if (uploadedUrls.length === 0) {
-          uploadedUrls.push(docUrl);
-        }
       }
 
       const finalCoverImage = uploadedUrls.join(",");
@@ -306,11 +296,8 @@ export default function BookUploadPage() {
           maxImages={4}
           files={imageFiles}
           onChangeFiles={setImageFiles}
-          documentFile={documentFile}
-          onChangeDocumentFile={setDocumentFile}
-          allowDocument={true}
           label="Preview Pictures (Upload Up to 4 Photos)"
-          description="Add up to 4 preview photos (e.g. Front Cover, Table of Contents, Inside Pages, Condition) or attach an ebook document"
+          description="Add up to 4 preview photos (e.g. Front Cover, Table of Contents, Inside Pages, Condition)"
         />
 
         <button

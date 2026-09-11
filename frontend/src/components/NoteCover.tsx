@@ -25,14 +25,9 @@ export function NoteCover({ src, title, subject, className = "", priority = fals
     setHasError(false);
   }, [src]);
 
-  const fileExt = src ? src.split("?")[0].split(".").pop()?.toLowerCase() : "";
-  const isImage = ["png", "jpg", "jpeg", "webp", "gif"].includes(fileExt || "");
-  const isPdf = fileExt === "pdf";
-  const isDoc = ["doc", "docx"].includes(fileExt || "");
-
   const imageCount = src ? src.split(",").filter((s) => s.trim()).length : 0;
 
-  if (isImage && imageUrl && !hasError) {
+  if (imageUrl && !hasError) {
     return (
       <div className={`relative w-full h-full overflow-hidden bg-gray-100 ${className}`}>
         <Image
@@ -58,7 +53,7 @@ export function NoteCover({ src, title, subject, className = "", priority = fals
     );
   }
 
-  // Graphic document preview for PDF, Doc, or fallback
+  // Clean fallback card for Notes
   return (
     <div className={`w-full h-full flex flex-col justify-between p-4 bg-neo-blue/20 border-b-4 border-black select-none ${className}`}>
       <div className="flex justify-between items-center">
@@ -66,19 +61,13 @@ export function NoteCover({ src, title, subject, className = "", priority = fals
           {subject || "Notes"}
         </span>
         <span className="text-xs font-black uppercase px-2 py-0.5 border-2 border-black bg-neo-yellow">
-          {fileExt?.toUpperCase() || "DOC"}
+          Study Material
         </span>
       </div>
 
       <div className="my-auto text-center px-2">
         <div className="w-12 h-12 mx-auto mb-2 border-2 border-black bg-white flex items-center justify-center shadow-neo">
-          {isPdf ? (
-            <span className="font-black text-red-600 text-sm">PDF</span>
-          ) : isDoc ? (
-            <span className="font-black text-blue-600 text-sm">DOC</span>
-          ) : (
-            <FileText className="w-6 h-6 text-black" />
-          )}
+          <FileText className="w-6 h-6 text-black" />
         </div>
         <div className="font-serif font-black text-lg text-black line-clamp-2 leading-tight">
           {title}
@@ -86,7 +75,7 @@ export function NoteCover({ src, title, subject, className = "", priority = fals
       </div>
 
       <div className="text-center text-xs font-bold text-gray-700 flex items-center justify-center gap-1">
-        <FileText size={14} /> Click to view & download
+        <FileText size={14} /> View Note Details
       </div>
     </div>
   );

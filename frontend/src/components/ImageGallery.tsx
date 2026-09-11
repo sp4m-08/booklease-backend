@@ -25,7 +25,7 @@ export function ImageGallery({
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isZoomOpen, setIsZoomOpen] = useState(false);
 
-  // If no images or only non-image document
+  // If no images
   if (!images || images.length === 0) {
     return (
       <div className={`border-3 sm:border-4 border-black shadow-neo-lg aspect-[3/4] overflow-hidden bg-white ${className}`}>
@@ -35,33 +35,6 @@ export function ImageGallery({
           author={author}
           category={category}
         />
-      </div>
-    );
-  }
-
-  // Check if primary is a document (pdf/doc)
-  const primaryExt = images[0].split("?")[0].split(".").pop()?.toLowerCase();
-  const isDocOrPdf = ["pdf", "doc", "docx"].includes(primaryExt || "");
-
-  if (isDocOrPdf && images.length === 1) {
-    return (
-      <div className={`space-y-3 ${className}`}>
-        <div className="border-3 sm:border-4 border-black shadow-neo-lg aspect-[3/4] overflow-hidden bg-white">
-          <BookCover
-            src={images[0]}
-            title={title}
-            author={author}
-            category={category}
-          />
-        </div>
-        <a
-          href={images[0]}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center justify-center gap-2 border-3 sm:border-4 border-black bg-neo-yellow hover:bg-yellow-300 font-black text-sm sm:text-base py-3 px-4 shadow-neo transition-all text-black"
-        >
-          <BookOpen size={18} /> Open {primaryExt?.toUpperCase()} Document
-        </a>
       </div>
     );
   }

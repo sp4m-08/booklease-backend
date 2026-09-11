@@ -24,7 +24,6 @@ export function EditListingModal({ isOpen, type, item, onClose, onSuccess }: Edi
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [newImageFiles, setNewImageFiles] = useState<File[]>([]);
   const [existingUrls, setExistingUrls] = useState<string[]>([]);
-  const [newDocumentFile, setNewDocumentFile] = useState<File | null>(null);
   const [selectedSlots, setSelectedSlots] = useState<string[]>(["A1"]);
 
   const { register, handleSubmit, reset, setValue, watch, formState: { errors } } = useForm({
@@ -51,7 +50,6 @@ export function EditListingModal({ isOpen, type, item, onClose, onSuccess }: Edi
       setValue("description", item.description || "");
       setValue("available", item.available !== undefined ? item.available : true);
       setNewImageFiles([]);
-      setNewDocumentFile(null);
 
       const rawUrl = type === "book" ? item.cover_image : item.file_path;
       if (rawUrl) {
@@ -86,14 +84,6 @@ export function EditListingModal({ isOpen, type, item, onClose, onSuccess }: Edi
         toast.info(`Uploading ${newImageFiles.length} new preview image(s)...`);
         const uploaded = await uploadMultipleFiles(newImageFiles, type === "book" ? "covers" : "notes");
         combinedUrls.push(...uploaded);
-      }
-
-      if (newDocumentFile) {
-        toast.info(`Uploading document: ${newDocumentFile.name}...`);
-        const docUrl = await uploadFile(newDocumentFile, type === "book" ? "covers" : "notes");
-        if (combinedUrls.length === 0) {
-          combinedUrls.push(docUrl);
-        }
       }
 
       const finalFileUrl = combinedUrls.join(",");
@@ -288,10 +278,7 @@ export function EditListingModal({ isOpen, type, item, onClose, onSuccess }: Edi
               onChangeFiles={setNewImageFiles}
               existingUrls={existingUrls}
               onChangeExistingUrls={setExistingUrls}
-              documentFile={newDocumentFile}
-              onChangeDocumentFile={setNewDocumentFile}
-              allowDocument={true}
-              label={`Preview Pictures & File (${existingUrls.length + newImageFiles.length} / 4)`}
+              label={`Preview Pictures (${existingUrls.length + newImageFiles.length} / 4)`}
               description={`Add or remove preview photos for this ${type === "book" ? "book / printout" : "study note"}`}
             />
           </div>

@@ -12,9 +12,6 @@ interface MultiImageUploaderProps {
   onChangeFiles: (files: File[]) => void;
   existingUrls?: string[];
   onChangeExistingUrls?: (urls: string[]) => void;
-  documentFile?: File | null;
-  onChangeDocumentFile?: (file: File | null) => void;
-  allowDocument?: boolean;
   label?: string;
   description?: string;
 }
@@ -25,15 +22,11 @@ export function MultiImageUploader({
   onChangeFiles,
   existingUrls = [],
   onChangeExistingUrls,
-  documentFile = null,
-  onChangeDocumentFile,
-  allowDocument = true,
   label = "Preview Pictures (Max 4)",
   description = "Upload 1 to 4 clear photos (e.g. Front Cover, Table of Contents, Sample Page, Condition)",
 }: MultiImageUploaderProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
-  const docInputRef = useRef<HTMLInputElement>(null);
   const [dragActive, setDragActive] = useState(false);
 
   const totalImageCount = existingUrls.length + files.length;
@@ -62,32 +55,16 @@ export function MultiImageUploader({
     const imageFiles: File[] = [];
 
     for (const file of fileArray) {
-      const isImg = file.type.startsWith("image/");
-      const isDoc = [
-        "application/pdf",
-        "application/msword",
-        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-        "text/plain",
-      ].includes(file.type) || /\.(pdf|doc|docx|txt)$/i.test(file.name);
+      const isImg = file.type.startsWith("image/") || /\.(png|jpg|jpeg|webp|gif|bmp|heic|heif)$/i.test(file.name);
 
-      if (isDoc && allowDocument && onChangeDocumentFile) {
-        if (file.size > 25 * 1024 * 1024) {
-          toast.error(`Document ${file.name} is too large (>25MB)`);
-        } else {
-          onChangeDocumentFile(file);
-          toast.success(`Attached document: ${file.name}`);
-        }
-        continue;
-      }
-
-      if (isImg || /\.(png|jpg|jpeg|webp|gif|bmp)$/i.test(file.name)) {
+      if (isImg) {
         if (file.size > 15 * 1024 * 1024) {
           toast.error(`Image ${file.name} is too large (>15MB)`);
           continue;
         }
         imageFiles.push(file);
       } else {
-        toast.error(`Unsupported file type: ${file.name}`);
+        toast.error(`Please upload photos/images only: ${file.name}`);
       }
     }
 
@@ -295,12 +272,12 @@ export function MultiImageUploader({
         </div>
       )}
 
-      {/* Hidden Multi-file Input (Gallery / Files) */}
+      {/* Hidden Multi-file Input (Gallery / Photos) */}
       <input
         ref={inputRef}
         type="file"
         multiple
-        accept="image/*,.pdf,.doc,.docx"
+        accept="image/*,.jpg,.jpeg,.png,.webp,.heic"
         onChange={(e) => {
           if (e.target.files && e.target.files.length > 0) {
             handleFilesAdded(e.target.files);
@@ -324,57 +301,6 @@ export function MultiImageUploader({
         }}
         className="hidden"
       />
-
-      {/* Optional Document Attachment indicator */}
-      {allowDocument && onChangeDocumentFile && (
-        <div className="pt-1">
-          {documentFile ? (
-            <div className="flex items-center justify-between border-2 border-black bg-white p-2.5 shadow-sm">
-              <div className="flex items-center gap-2 truncate">
-                <div className="p-1 border border-black bg-neo-yellow">
-                  <FileText size={16} />
-                </div>
-                <div className="truncate">
-                  <span className="text-xs font-black block truncate text-black">{documentFile.name}</span>
-                  <span className="text-[10px] font-bold text-gray-600">
-                    {(documentFile.size / (1024 * 1024)).toFixed(2)} MB PDF/Document
-                  </span>
-                </div>
-              </div>
-              <button
-                type="button"
-                onClick={() => onChangeDocumentFile(null)}
-                className="text-xs font-black text-red-600 hover:text-red-800 border border-black px-2 py-0.5 bg-red-50 ml-2"
-              >
-                Remove
-              </button>
-            </div>
-          ) : (
-            <div className="flex items-center justify-between text-xs font-bold text-gray-700 bg-white/60 border border-dashed border-black p-2">
-              <span>Have a full PDF / Doc for notes or ebook?</span>
-              <button
-                type="button"
-                onClick={() => docInputRef.current?.click()}
-                className="border border-black bg-neo-yellow px-2 py-0.5 font-black text-black hover:bg-yellow-300 shadow-xs cursor-pointer"
-              >
-                + Attach Document
-              </button>
-              <input
-                ref={docInputRef}
-                type="file"
-                accept=".pdf,.doc,.docx,.txt"
-                onChange={(e) => {
-                  if (e.target.files && e.target.files[0]) {
-                    onChangeDocumentFile(e.target.files[0]);
-                    e.target.value = "";
-                  }
-                }}
-                className="hidden"
-              />
-            </div>
-          )}
-        </div>
-      )}
     </div>
   );
 }
