@@ -7,6 +7,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import { NeoButton } from "@/components/ui/NeoButton";
 import { NeoCard } from "@/components/ui/NeoCard";
+import { useAuth } from "@/context/AuthContext";
 import {
   GraduationCap,
   Clock,
@@ -20,7 +21,9 @@ import {
   Award,
   BookmarkCheck,
   Compass,
-  MessageCircle
+  MessageCircle,
+  LayoutDashboard,
+  PlusCircle,
 } from "lucide-react";
 
 if (typeof window !== "undefined") {
@@ -59,6 +62,7 @@ function Crosshair({ className = "" }: { className?: string }) {
 }
 
 export default function Home() {
+  const { user } = useAuth();
   const container = useRef<HTMLDivElement>(null);
 
   useGSAP(() => {
@@ -561,22 +565,41 @@ export default function Home() {
             <span className="flex items-center gap-1 justify-center"><Sparkles size={14} className="text-yellow-400 drop-shadow-[1px_1px_0px_rgba(0,0,0,1)] pulse-icon" /> Free & Instant for All VIT Students</span>
           </div>
           <h2 className="font-serif text-2xl sm:text-5xl md:text-7xl font-black mb-4 sm:mb-6 leading-tight">
-            Ready to ace your next CAT or FAT exam?
+            {user ? "Ready for your upcoming CAT / FAT slots?" : "Ready to ace your next CAT or FAT exam?"}
           </h2>
           <p className="font-medium text-base sm:text-xl text-gray-800 max-w-2xl mx-auto mb-6 sm:mb-8">
-            Join hundreds of VIT students saving money and acing their semesters with Booklease.
+            {user
+              ? "Check your active textbook rentals, track return due dates, or list notes on your student dashboard."
+              : "Join hundreds of VIT students saving money and acing their semesters with Booklease."}
           </p>
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center w-full sm:w-auto">
-            <Link href="/login" className="w-full sm:w-auto">
-              <NeoButton variant="primary" size="lg" className="hover-animate-btn flex items-center justify-center gap-2 w-full bg-neo-purple text-lg sm:text-2xl px-6 sm:px-10 py-4 sm:py-5">
-                Sign Up / In with VIT Email <Rocket size={22} className="btn-icon" />
-              </NeoButton>
-            </Link>
-            <Link href="/books" className="w-full sm:w-auto">
-              <NeoButton variant="secondary" size="lg" className="hover-animate-btn flex items-center justify-center gap-2 w-full bg-white text-lg sm:text-2xl px-6 sm:px-10 py-4 sm:py-5">
-                Browse Campus Books <BookOpen size={22} className="btn-icon" />
-              </NeoButton>
-            </Link>
+            {user ? (
+              <>
+                <Link href="/dashboard" className="w-full sm:w-auto">
+                  <NeoButton variant="primary" size="lg" className="hover-animate-btn flex items-center justify-center gap-2 w-full bg-neo-purple text-lg sm:text-2xl px-6 sm:px-10 py-4 sm:py-5">
+                    Open Your Dashboard <LayoutDashboard size={22} className="btn-icon" />
+                  </NeoButton>
+                </Link>
+                <Link href="/books/upload" className="w-full sm:w-auto">
+                  <NeoButton variant="secondary" size="lg" className="hover-animate-btn flex items-center justify-center gap-2 w-full bg-white text-lg sm:text-2xl px-6 sm:px-10 py-4 sm:py-5">
+                    Post a Book or Note <PlusCircle size={22} className="btn-icon" />
+                  </NeoButton>
+                </Link>
+              </>
+            ) : (
+              <>
+                <Link href="/login" className="w-full sm:w-auto">
+                  <NeoButton variant="primary" size="lg" className="hover-animate-btn flex items-center justify-center gap-2 w-full bg-neo-purple text-lg sm:text-2xl px-6 sm:px-10 py-4 sm:py-5">
+                    Sign Up / In with VIT Email <Rocket size={22} className="btn-icon" />
+                  </NeoButton>
+                </Link>
+                <Link href="/books" className="w-full sm:w-auto">
+                  <NeoButton variant="secondary" size="lg" className="hover-animate-btn flex items-center justify-center gap-2 w-full bg-white text-lg sm:text-2xl px-6 sm:px-10 py-4 sm:py-5">
+                    Browse Campus Books <BookOpen size={22} className="btn-icon" />
+                  </NeoButton>
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </section>
