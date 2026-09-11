@@ -52,13 +52,7 @@ export default function BottomNav() {
       label: "Browse",
       href: "/browse",
       icon: BookOpen,
-      isActive: pathname === "/browse" || (pathname.startsWith("/books") && pathname !== "/books/upload"),
-    },
-    {
-      label: "Notes",
-      href: "/notes",
-      icon: FileText,
-      isActive: pathname.startsWith("/notes") && pathname !== "/notes/upload",
+      isActive: pathname === "/browse" || (pathname.startsWith("/books") && pathname !== "/books/upload") || (pathname.startsWith("/notes") && pathname !== "/notes/upload"),
     },
     {
       label: "Alerts",
@@ -66,6 +60,12 @@ export default function BottomNav() {
       icon: Bell,
       isActive: pathname === "/notifications",
       badge: unreadCount,
+    },
+    {
+      label: "Dashboard",
+      href: user ? "/dashboard" : "/login",
+      icon: LayoutDashboard,
+      isActive: pathname === "/dashboard",
     },
     {
       label: user ? "Profile" : "Sign In",
@@ -107,30 +107,35 @@ export default function BottomNav() {
             </span>
           </Link>
 
-          {/* 2. Notes Tab */}
+          {/* 2. Alerts Tab with Unread Badge */}
           <Link
             href={navItems[1].href}
-            className={`flex flex-col items-center justify-center flex-1 py-0.5 transition-transform active:scale-95 ${
+            className={`flex flex-col items-center justify-center flex-1 py-0.5 transition-transform active:scale-95 relative ${
               navItems[1].isActive
                 ? "text-black font-black"
                 : "text-gray-600 hover:text-black font-bold"
             }`}
           >
             <div
-              className={`p-1 rounded-sm border-2 transition-all ${
+              className={`p-1 rounded-sm border-2 relative transition-all ${
                 navItems[1].isActive
-                  ? "bg-neo-peach border-black shadow-xs"
+                  ? "bg-neo-yellow border-black shadow-xs"
                   : "border-transparent"
               }`}
             >
-              <FileText size={19} strokeWidth={navItems[1].isActive ? 2.5 : 2} />
+              <Bell size={19} strokeWidth={navItems[1].isActive ? 2.5 : 2} />
+              {unreadCount > 0 && (
+                <span className="absolute -top-1 -right-1.5 bg-red-500 text-white text-[8px] font-black w-3.5 h-3.5 rounded-full border border-black flex items-center justify-center animate-pulse">
+                  {unreadCount > 9 ? "9+" : unreadCount}
+                </span>
+              )}
             </div>
             <span className="text-[10px] font-bold leading-tight mt-0.5">
               {navItems[1].label}
             </span>
           </Link>
 
-          {/* 3. Center Elevated Quick-Post Button */}
+          {/* Center Elevated Quick-Post Button */}
           <div className="flex flex-col items-center justify-center -mt-5 px-1">
             <button
               onClick={handleCenterPlusClick}
@@ -144,35 +149,30 @@ export default function BottomNav() {
             </span>
           </div>
 
-          {/* 4. Alerts Tab with Unread Badge */}
+          {/* 3. Dashboard Tab */}
           <Link
             href={navItems[2].href}
-            className={`flex flex-col items-center justify-center flex-1 py-0.5 transition-transform active:scale-95 relative ${
+            className={`flex flex-col items-center justify-center flex-1 py-0.5 transition-transform active:scale-95 ${
               navItems[2].isActive
                 ? "text-black font-black"
                 : "text-gray-600 hover:text-black font-bold"
             }`}
           >
             <div
-              className={`p-1 rounded-sm border-2 relative transition-all ${
+              className={`p-1 rounded-sm border-2 transition-all ${
                 navItems[2].isActive
-                  ? "bg-neo-yellow border-black shadow-xs"
+                  ? "bg-neo-peach border-black shadow-xs"
                   : "border-transparent"
               }`}
             >
-              <Bell size={19} strokeWidth={navItems[2].isActive ? 2.5 : 2} />
-              {unreadCount > 0 && (
-                <span className="absolute -top-1 -right-1.5 bg-red-500 text-white text-[8px] font-black w-3.5 h-3.5 rounded-full border border-black flex items-center justify-center animate-pulse">
-                  {unreadCount > 9 ? "9+" : unreadCount}
-                </span>
-              )}
+              <LayoutDashboard size={19} strokeWidth={navItems[2].isActive ? 2.5 : 2} />
             </div>
             <span className="text-[10px] font-bold leading-tight mt-0.5">
               {navItems[2].label}
             </span>
           </Link>
 
-          {/* 5. Profile Tab */}
+          {/* 4. Profile Tab */}
           <Link
             href={navItems[3].href}
             className={`flex flex-col items-center justify-center flex-1 py-0.5 transition-transform active:scale-95 ${
