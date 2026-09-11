@@ -467,7 +467,7 @@ export default function Home() {
       {/* SEAMLESS DOTTED WRAPPER FOR FEATURES & FINAL CTA */}
       <div className="w-full border-t-4 border-black bg-[radial-gradient(#000000_1.3px,transparent_1.3px)] [background-size:26px_26px] relative overflow-hidden">
         {/* 4. FEATURES SECTION */}
-        <section id="features" className="features-section w-full pt-12 pb-12 sm:pt-20 sm:pb-20 px-4 sm:px-6 relative overflow-visible">
+        <section id="features" className="features-section w-full pt-12 pb-2 sm:pt-20 sm:pb-20 px-4 sm:px-6 relative overflow-visible">
 
           {/* Background Floating Neo-Brutalist Stickers */}
           <div className="feature-bg-sticker float-sticker-1 absolute top-12 left-[4%] hidden lg:block select-none pointer-events-none z-0">
@@ -560,7 +560,7 @@ export default function Home() {
         </section>
 
         {/* 5. FINAL CTA */}
-        <section className="final-cta-wrapper w-full pt-10 pb-32 sm:pt-16 sm:pb-24 px-4 sm:px-8 relative mt-4 sm:mt-8">
+        <section className="final-cta-wrapper w-full pt-2 pb-32 sm:pt-16 sm:pb-24 px-4 sm:px-8 relative mt-0 sm:mt-8">
           {/* Floating stickers in CTA */}
           <div className="float-sticker-1 absolute top-6 left-10 hidden lg:block select-none z-0">
             <Starburst color="#C084FC" size={50} className="pulse-starburst" />
