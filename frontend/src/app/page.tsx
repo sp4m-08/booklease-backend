@@ -253,8 +253,7 @@ export default function Home() {
         end: "bottom bottom",
         scrub: true,
       },
-      scale: 0.85,
-      borderRadius: "100px",
+      scale: 0.94,
       ease: "none"
     });
 
@@ -551,7 +550,7 @@ export default function Home() {
       </section>
 
       {/* 5. FINAL CTA */}
-      <section className="final-cta-wrapper w-full pb-28 sm:pb-28 pt-6 sm:pt-8 px-4 sm:px-8 relative overflow-hidden">
+      <section className="final-cta-wrapper w-full pb-16 sm:pb-24 pt-6 sm:pt-8 px-4 sm:px-8 relative overflow-hidden">
         {/* Floating stickers in CTA */}
         <div className="float-sticker-1 absolute top-6 left-10 hidden lg:block select-none z-0">
           <Starburst color="#C084FC" size={50} className="pulse-starburst" />
@@ -560,14 +559,14 @@ export default function Home() {
           <Starburst color="#FACC15" size={56} className="pulse-starburst" />
         </div>
 
-        <div className="final-cta max-w-5xl mx-auto border-3 sm:border-4 border-black bg-neo-yellow p-6 sm:p-12 md:p-24 text-center shadow-neo-lg relative z-10">
-          <div className="inline-block border-2 border-black bg-white px-3 sm:px-4 py-1 text-xs sm:text-sm font-black uppercase mb-4 sm:mb-6 shadow-neo">
+        <div className="final-cta max-w-5xl mx-auto border-3 sm:border-4 border-black bg-neo-yellow p-5 sm:p-12 md:p-20 text-center shadow-neo-lg relative z-10 mb-6 sm:mb-10">
+          <div className="inline-block border-2 border-black bg-white px-3 sm:px-4 py-1 text-xs sm:text-sm font-black uppercase mb-3 sm:mb-6 shadow-neo">
             <span className="flex items-center gap-1 justify-center"><Sparkles size={14} className="text-yellow-400 drop-shadow-[1px_1px_0px_rgba(0,0,0,1)] pulse-icon" /> Free & Instant for All VIT Students</span>
           </div>
-          <h2 className="font-serif text-2xl sm:text-5xl md:text-7xl font-black mb-4 sm:mb-6 leading-tight">
+          <h2 className="font-serif text-2xl sm:text-5xl md:text-7xl font-black mb-3 sm:mb-6 leading-tight">
             {user ? "Ready for your upcoming CAT / FAT slots?" : "Ready to ace your next CAT or FAT exam?"}
           </h2>
-          <p className="font-medium text-base sm:text-xl text-gray-800 max-w-2xl mx-auto mb-6 sm:mb-8">
+          <p className="font-medium text-sm sm:text-xl text-gray-800 max-w-2xl mx-auto mb-5 sm:mb-8 leading-relaxed">
             {user
               ? "Check your active textbook rentals, track return due dates, or list notes on your student dashboard."
               : "Join hundreds of VIT students saving money and acing their semesters with Booklease."}
@@ -576,26 +575,26 @@ export default function Home() {
             {user ? (
               <>
                 <Link href="/dashboard" className="w-full sm:w-auto">
-                  <NeoButton variant="primary" size="lg" className="hover-animate-btn flex items-center justify-center gap-2 w-full bg-neo-purple text-lg sm:text-2xl px-6 sm:px-10 py-4 sm:py-5">
-                    Open Your Dashboard <LayoutDashboard size={22} className="btn-icon" />
+                  <NeoButton variant="primary" size="lg" className="hover-animate-btn flex items-center justify-center gap-2 w-full bg-neo-purple text-base sm:text-2xl px-5 sm:px-10 py-3.5 sm:py-5">
+                    Open Your Dashboard <LayoutDashboard size={20} className="btn-icon" />
                   </NeoButton>
                 </Link>
                 <Link href="/books/upload" className="w-full sm:w-auto">
-                  <NeoButton variant="secondary" size="lg" className="hover-animate-btn flex items-center justify-center gap-2 w-full bg-white text-lg sm:text-2xl px-6 sm:px-10 py-4 sm:py-5">
-                    Post a Book or Note <PlusCircle size={22} className="btn-icon" />
+                  <NeoButton variant="secondary" size="lg" className="hover-animate-btn flex items-center justify-center gap-2 w-full bg-white text-base sm:text-2xl px-5 sm:px-10 py-3.5 sm:py-5">
+                    Post a Book or Note <PlusCircle size={20} className="btn-icon" />
                   </NeoButton>
                 </Link>
               </>
             ) : (
               <>
                 <Link href="/login" className="w-full sm:w-auto">
-                  <NeoButton variant="primary" size="lg" className="hover-animate-btn flex items-center justify-center gap-2 w-full bg-neo-purple text-lg sm:text-2xl px-6 sm:px-10 py-4 sm:py-5">
-                    Sign Up / In with VIT Email <Rocket size={22} className="btn-icon" />
+                  <NeoButton variant="primary" size="lg" className="hover-animate-btn flex items-center justify-center gap-2 w-full bg-neo-purple text-base sm:text-2xl px-5 sm:px-10 py-3.5 sm:py-5">
+                    Sign Up / In with VIT Email <Rocket size={20} className="btn-icon" />
                   </NeoButton>
                 </Link>
                 <Link href="/books" className="w-full sm:w-auto">
-                  <NeoButton variant="secondary" size="lg" className="hover-animate-btn flex items-center justify-center gap-2 w-full bg-white text-lg sm:text-2xl px-6 sm:px-10 py-4 sm:py-5">
-                    Browse Campus Books <BookOpen size={22} className="btn-icon" />
+                  <NeoButton variant="secondary" size="lg" className="hover-animate-btn flex items-center justify-center gap-2 w-full bg-white text-base sm:text-2xl px-5 sm:px-10 py-3.5 sm:py-5">
+                    Browse Campus Books <BookOpen size={20} className="btn-icon" />
                   </NeoButton>
                 </Link>
               </>
