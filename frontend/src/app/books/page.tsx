@@ -51,7 +51,9 @@ export default function BooksPage() {
       return response.data;
     },
     placeholderData: () => getStoredCache<Book[]>("books") || [],
-    staleTime: 1000 * 60 * 3, // 3 minutes fresh
+    staleTime: 5000,
+    refetchOnMount: "always",
+    refetchOnWindowFocus: true,
   });
 
   const branches = ["All", "CSE", "ECE", "EEE", "Mechanical", "Biotech", "Civil", "Common"];

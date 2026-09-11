@@ -13,7 +13,7 @@ export function getImageUrl(url?: string): string {
   if (firstUrl.startsWith("http://") || firstUrl.startsWith("https://") || firstUrl.startsWith("data:")) {
     return firstUrl;
   }
-  const backendUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
+  const backendUrl = process.env.NEXT_PUBLIC_API_URL || "https://booklease-backend.onrender.com";
   return `${backendUrl.replace(/\/$/, "")}/${firstUrl.replace(/^\//, "")}`;
 }
 
