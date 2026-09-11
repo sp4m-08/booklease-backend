@@ -8,12 +8,13 @@ import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import api from "@/lib/api";
-import { uploadFile } from "@/lib/upload";
+import { uploadFile, uploadMultipleFiles } from "@/lib/upload";
 import { toast } from "sonner";
 import { NeoInput } from "@/components/ui/NeoInput";
 import { NeoSelect } from "@/components/ui/NeoSelect";
 import { NeoButton } from "@/components/ui/NeoButton";
 import { SlotSelector, VIT_INDIVIDUAL_SLOTS } from "@/components/SlotSelector";
+import { MultiImageUploader } from "@/components/ui/MultiImageUploader";
 import { AlertTriangle, PhoneCall, ArrowRight, Sparkles } from "lucide-react";
 
 const noteSchema = z.object({
@@ -22,7 +23,6 @@ const noteSchema = z.object({
   condition: z.string().min(2, "Condition is required"),
   price: z.string().optional(),
   description: z.string().max(500, "Description cannot exceed 500 characters").optional(),
-  file: z.any().optional(),
 });
 
 type NoteFormData = z.infer<typeof noteSchema>;
@@ -58,6 +58,8 @@ export default function NoteUploadPage() {
   const router = useRouter();
   const queryClient = useQueryClient();
   const [selectedSlots, setSelectedSlots] = useState<string[]>(["A1"]);
+  const [imageFiles, setImageFiles] = useState<File[]>([]);
+  const [documentFile, setDocumentFile] = useState<File | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   if (loading) return <div className="p-8 text-center font-bold">Loading...</div>;
@@ -75,21 +77,32 @@ export default function NoteUploadPage() {
       return;
     }
 
+    if (imageFiles.length === 0 && !documentFile) {
+      toast.error("Please upload at least 1 preview picture or attach a document for your notes.");
+      return;
+    }
+
     try {
       setIsSubmitting(true);
-      let finalFileUrl = "";
+      const uploadedUrls: string[] = [];
 
-      if (data.file && data.file[0]) {
-        const file = data.file[0];
-        
-        if (file.size > 25 * 1024 * 1024) {
-          toast.error("File size must be less than 25MB");
-          setIsSubmitting(false);
-          return;
-        }
-
-        finalFileUrl = await uploadFile(file, "notes");
+      // 1. Upload preview images (1 to 4 photos)
+      if (imageFiles.length > 0) {
+        toast.info(`Uploading ${imageFiles.length} preview picture(s)...`);
+        const imgUrls = await uploadMultipleFiles(imageFiles, "notes");
+        uploadedUrls.push(...imgUrls);
       }
+
+      // 2. Upload full document if provided
+      if (documentFile) {
+        toast.info(`Uploading document ${documentFile.name}...`);
+        const docUrl = await uploadFile(documentFile, "notes");
+        if (uploadedUrls.length === 0) {
+          uploadedUrls.push(docUrl);
+        }
+      }
+
+      const finalFilePath = uploadedUrls.join(",");
 
       const numPrice = data.price ? parseFloat(data.price) : 0;
       const formattedSlots = selectedSlots.length === VIT_INDIVIDUAL_SLOTS.length 
@@ -103,7 +116,7 @@ export default function NoteUploadPage() {
         condition: data.condition,
         price: isNaN(numPrice) ? 0 : numPrice,
         description: data.description,
-        file_path: finalFileUrl,
+        file_path: finalFilePath,
         is_public: true,
       });
 
@@ -237,16 +250,17 @@ export default function NoteUploadPage() {
           />
         </div>
 
-        <div className="space-y-2">
-          <label className="font-bold text-xl block">Upload Document / Notes *</label>
-          <input 
-            type="file"
-            {...register("file")}
-            accept=".pdf,.doc,.docx,.txt,.png,.jpg,.jpeg,image/*"
-            className="w-full border-4 border-black bg-white p-3 font-medium focus:outline-none focus:ring-4 focus:ring-black shadow-sm file:mr-4 file:py-2 file:px-4 file:border-2 file:border-black file:bg-neo-yellow file:font-black"
-          />
-          <p className="text-xs font-bold text-gray-800">Accepted formats: PDF, DOC, DOCX, TXT, PNG, JPG (Max 25MB)</p>
-        </div>
+        {/* Multi-Image Preview Uploader (1 to 4 pictures) & Document */}
+        <MultiImageUploader
+          maxImages={4}
+          files={imageFiles}
+          onChangeFiles={setImageFiles}
+          documentFile={documentFile}
+          onChangeDocumentFile={setDocumentFile}
+          allowDocument={true}
+          label="Preview Pictures & Notes Material (Up to 4 Photos)"
+          description="Upload 1 to 4 photo previews of your handwritten notes/formulas, or attach a full PDF/Doc file"
+        />
 
         <button 
           type="submit" 

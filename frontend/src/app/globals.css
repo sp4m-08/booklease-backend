@@ -52,4 +52,9 @@ h1, h2, h3, h4, h5, h6 {
     min-height: 44px;
     min-width: 44px;
   }
+
+  /* Safe area for modern smartphone gestures */
+  .safe-area-pb {
+    padding-bottom: max(0.375rem, env(safe-area-inset-bottom, 0px));
+  }
 }

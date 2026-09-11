@@ -62,14 +62,17 @@ export default function LoginPage() {
           <GraduationCap size={13} className="text-black" />
           <span>VIT Vellore Campus</span>
         </div>
-        <h1 className="font-serif text-4xl font-black mb-2">Student Sign In</h1>
-        <p className="font-medium text-base mb-6 text-gray-900">
-          Sign in to access CAT-2 and FAT exam textbooks, revision notes, and campus rentals.
+        <h1 className="font-serif text-3xl sm:text-4xl font-black mb-2">Student Sign Up & Sign In</h1>
+        <p className="font-medium text-sm sm:text-base mb-6 text-gray-900">
+          Sign up or log in to access CAT-2 and FAT exam textbooks, revision notes, and campus rentals.
         </p>
 
-        <div className="bg-white border-2 border-black p-3 mb-6 text-xs font-bold text-gray-800 text-left space-y-1">
+        <div className="bg-white border-2 border-black p-3.5 mb-6 text-xs font-bold text-gray-800 text-left space-y-1.5 shadow-sm">
+          <div className="text-black font-extrabold flex items-center gap-1.5">
+            <span className="text-green-600 font-black">✓</span> New student? Signing in automatically creates your account!
+          </div>
           <div>✓ Use your official <code className="bg-gray-100 px-1 border border-black font-black">@vitstudent.ac.in</code> email</div>
-          <div>✓ Connects directly with your verified VIT student account</div>
+          <div>✓ Instant access — zero password setup needed</div>
         </div>
         
         {error && (
@@ -81,10 +84,10 @@ export default function LoginPage() {
         <button
           onClick={handleGoogleSignIn}
           disabled={loading}
-          className="w-full border-4 border-black bg-neo-yellow px-6 py-4 font-bold text-xl shadow-neo hover:shadow-neo-hover active:shadow-neo-active transition-all flex items-center justify-center gap-2.5 disabled:opacity-50"
+          className="w-full border-4 border-black bg-neo-yellow px-6 py-4 font-black text-lg sm:text-xl shadow-neo hover:shadow-neo-hover active:shadow-neo-active transition-all flex items-center justify-center gap-2.5 disabled:opacity-50 cursor-pointer"
         >
-          <GraduationCap size={20} className="text-black" />
-          <span>{loading ? "Signing in..." : "Sign in with Google (VIT)"}</span>
+          <GraduationCap size={22} className="text-black" />
+          <span>{loading ? "Signing in..." : "Continue with Google (VIT)"}</span>
         </button>
       </div>
     </div>

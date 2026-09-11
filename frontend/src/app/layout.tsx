@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, Merriweather } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
+import BottomNav from "@/components/BottomNav";
 import Footer from "@/components/Footer";
 import Providers from "@/components/Providers";
 import { Toaster } from "sonner";
@@ -57,10 +58,11 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning className={`${inter.variable} ${merriweather.variable} antialiased`}>
       <body className="min-h-screen flex flex-col bg-[#fffdf6] text-black font-sans selection:bg-[#ffb0b0] selection:text-black">
         <Providers>
-          <div className="flex flex-col min-h-screen">
+          <div className="flex flex-col min-h-screen pb-16 md:pb-0">
             <Navbar />
             <main className="flex-grow flex flex-col">{children}</main>
             <Footer />
+            <BottomNav />
           </div>
           <Toaster 
             position="bottom-right"

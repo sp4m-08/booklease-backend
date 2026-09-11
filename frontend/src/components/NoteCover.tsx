@@ -30,6 +30,8 @@ export function NoteCover({ src, title, subject, className = "", priority = fals
   const isPdf = fileExt === "pdf";
   const isDoc = ["doc", "docx"].includes(fileExt || "");
 
+  const imageCount = src ? src.split(",").filter((s) => s.trim()).length : 0;
+
   if (isImage && imageUrl && !hasError) {
     return (
       <div className={`relative w-full h-full overflow-hidden bg-gray-100 ${className}`}>
@@ -47,6 +49,11 @@ export function NoteCover({ src, title, subject, className = "", priority = fals
           decoding="async"
           priority={priority}
         />
+        {imageCount > 1 && (
+          <div className="absolute top-2 right-2 bg-black/85 text-white text-[10px] font-black px-1.5 py-0.5 border border-white/40 shadow-xs flex items-center gap-1 rounded-sm">
+            <span>📷 {imageCount}</span>
+          </div>
+        )}
       </div>
     );
   }

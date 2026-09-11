@@ -173,7 +173,7 @@ export default function Navbar() {
             </NeoButton>
           ) : (
             <Link href="/login">
-              <NeoButton variant="primary" size="sm" className="bg-neo-green">Sign In</NeoButton>
+              <NeoButton variant="primary" size="sm" className="bg-neo-green font-bold">Sign Up / In</NeoButton>
             </Link>
           )}
         </div>
@@ -181,6 +181,15 @@ export default function Navbar() {
 
       {/* Mobile Right Quick Controls */}
       <div className="flex md:hidden items-center gap-2">
+        {/* Quick Sign Up / In Button for Mobile visitors */}
+        {!user && (
+          <Link href="/login" onClick={() => setMobileOpen(false)}>
+            <NeoButton variant="primary" size="sm" className="bg-neo-green font-black text-xs px-3 py-1.5 shadow-neo">
+              Sign Up
+            </NeoButton>
+          </Link>
+        )}
+
         {/* Mobile Quick Notifications Button */}
         {user && (
           <Link 
@@ -266,8 +275,10 @@ export default function Navbar() {
                 Sign Out
               </NeoButton>
             ) : (
-              <Link href="/login" onClick={() => setMobileOpen(false)}>
-                <NeoButton variant="primary" size="lg" className="w-full bg-neo-green text-base py-3">Sign In</NeoButton>
+              <Link href="/login" onClick={() => setMobileOpen(false)} className="w-full block">
+                <NeoButton variant="primary" size="lg" className="w-full bg-neo-green text-base py-3.5 font-black shadow-neo flex items-center justify-center gap-2">
+                  Sign Up / Sign In
+                </NeoButton>
               </Link>
             )}
           </div>

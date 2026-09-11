@@ -4,12 +4,13 @@ import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import api from "@/lib/api";
-import { uploadFile } from "@/lib/upload";
+import { uploadFile, uploadMultipleFiles } from "@/lib/upload";
 import { NeoButton } from "@/components/ui/NeoButton";
 import { NeoInput } from "@/components/ui/NeoInput";
-import { VIT_BRANCHES, VIT_SLOTS, BOOK_TYPES } from "@/lib/constants";
+import { VIT_BRANCHES, BOOK_TYPES } from "@/lib/constants";
 import { SlotSelector, VIT_INDIVIDUAL_SLOTS } from "@/components/SlotSelector";
-import { X, UploadCloud, Check, Edit3 } from "lucide-react";
+import { MultiImageUploader } from "@/components/ui/MultiImageUploader";
+import { X, Check, Edit3 } from "lucide-react";
 
 interface EditListingModalProps {
   isOpen: boolean;
@@ -21,7 +22,9 @@ interface EditListingModalProps {
 
 export function EditListingModal({ isOpen, type, item, onClose, onSuccess }: EditListingModalProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [newImageFiles, setNewImageFiles] = useState<File[]>([]);
+  const [existingUrls, setExistingUrls] = useState<string[]>([]);
+  const [newDocumentFile, setNewDocumentFile] = useState<File | null>(null);
   const [selectedSlots, setSelectedSlots] = useState<string[]>(["A1"]);
 
   const { register, handleSubmit, reset, setValue, watch, formState: { errors } } = useForm({
@@ -47,7 +50,16 @@ export function EditListingModal({ isOpen, type, item, onClose, onSuccess }: Edi
       setValue("price", (item.price !== undefined && item.price !== null) ? String(item.price) : "0");
       setValue("description", item.description || "");
       setValue("available", item.available !== undefined ? item.available : true);
-      setSelectedFile(null);
+      setNewImageFiles([]);
+      setNewDocumentFile(null);
+
+      const rawUrl = type === "book" ? item.cover_image : item.file_path;
+      if (rawUrl) {
+        const parsed = rawUrl.split(",").map((u: string) => u.trim()).filter(Boolean);
+        setExistingUrls(parsed);
+      } else {
+        setExistingUrls([]);
+      }
 
       // Parse multi-slots from item.slot
       if (item.slot) {
@@ -61,19 +73,30 @@ export function EditListingModal({ isOpen, type, item, onClose, onSuccess }: Edi
         setSelectedSlots(["A1"]);
       }
     }
-  }, [item, isOpen, setValue]);
+  }, [item, isOpen, setValue, type]);
 
   if (!isOpen || !item) return null;
 
   const onSubmit = async (data: any) => {
     try {
       setIsSubmitting(true);
-      let newFileUrl = type === "book" ? item.cover_image : item.file_path;
+      const combinedUrls = [...existingUrls];
 
-      if (selectedFile) {
-        toast.info("Uploading replacement file...");
-        newFileUrl = await uploadFile(selectedFile, type === "book" ? "covers" : "notes");
+      if (newImageFiles.length > 0) {
+        toast.info(`Uploading ${newImageFiles.length} new preview image(s)...`);
+        const uploaded = await uploadMultipleFiles(newImageFiles, type === "book" ? "covers" : "notes");
+        combinedUrls.push(...uploaded);
       }
+
+      if (newDocumentFile) {
+        toast.info(`Uploading document: ${newDocumentFile.name}...`);
+        const docUrl = await uploadFile(newDocumentFile, type === "book" ? "covers" : "notes");
+        if (combinedUrls.length === 0) {
+          combinedUrls.push(docUrl);
+        }
+      }
+
+      const finalFileUrl = combinedUrls.join(",");
 
       const numPrice = data.price ? parseFloat(data.price) : 0;
       const formattedSlots = selectedSlots.length === VIT_INDIVIDUAL_SLOTS.length 
@@ -90,7 +113,7 @@ export function EditListingModal({ isOpen, type, item, onClose, onSuccess }: Edi
           price: isNaN(numPrice) ? 0 : numPrice,
           description: data.description,
           available: Boolean(data.available),
-          cover_image: newFileUrl,
+          cover_image: finalFileUrl,
         });
         toast.success("Textbook listing updated successfully!");
       } else {
@@ -100,7 +123,7 @@ export function EditListingModal({ isOpen, type, item, onClose, onSuccess }: Edi
           slot: formattedSlots,
           price: isNaN(numPrice) ? 0 : numPrice,
           description: data.description,
-          file_path: newFileUrl,
+          file_path: finalFileUrl,
           is_public: true,
         });
         toast.success("Study note updated successfully!");
@@ -117,8 +140,14 @@ export function EditListingModal({ isOpen, type, item, onClose, onSuccess }: Edi
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
-      <div className="bg-white border-4 border-black p-4 sm:p-8 max-w-2xl w-full shadow-neo-lg space-y-5 my-auto max-h-[90vh] overflow-y-auto animate-in fade-in zoom-in duration-200">
+    <div 
+      className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4 overflow-y-auto animate-in fade-in duration-200"
+      onClick={onClose}
+    >
+      <div 
+        className="bg-white border-t-4 sm:border-4 border-black p-4 sm:p-8 max-w-2xl w-full shadow-neo-lg space-y-5 rounded-t-2xl sm:rounded-none max-h-[85vh] sm:max-h-[90vh] overflow-y-auto animate-in slide-in-from-bottom sm:zoom-in-95 duration-200"
+        onClick={(e) => e.stopPropagation()}
+      >
         
         {/* Header */}
         <div className="flex justify-between items-start border-b-4 border-black pb-4">
@@ -251,26 +280,20 @@ export function EditListingModal({ isOpen, type, item, onClose, onSuccess }: Edi
             />
           </div>
 
-          {/* Replace Uploaded File / Cover (Optional) */}
-          <div className="space-y-1 bg-gray-50 border-2 border-black p-3">
-            <label className="font-bold text-sm block mb-1">
-              Replace {type === "book" ? "Cover Image / Document" : "Study Notes File"} (Optional)
-            </label>
-            <input 
-              type="file"
-              onChange={(e) => {
-                if (e.target.files && e.target.files[0]) {
-                  setSelectedFile(e.target.files[0]);
-                }
-              }}
-              accept={type === "book" ? ".pdf,.doc,.docx,.png,.jpg,.jpeg,image/*" : ".pdf,.doc,.docx,.txt,.png,.jpg,.jpeg,image/*"}
-              className="w-full text-xs font-bold file:mr-3 file:py-1 file:px-3 file:border-2 file:border-black file:bg-neo-yellow file:font-black"
+          {/* Multi-Image Preview Management (Up to 4 Pictures) */}
+          <div className="bg-gray-50 border-3 border-black p-3.5 shadow-sm">
+            <MultiImageUploader
+              maxImages={4}
+              files={newImageFiles}
+              onChangeFiles={setNewImageFiles}
+              existingUrls={existingUrls}
+              onChangeExistingUrls={setExistingUrls}
+              documentFile={newDocumentFile}
+              onChangeDocumentFile={setNewDocumentFile}
+              allowDocument={true}
+              label={`Preview Pictures & File (${existingUrls.length + newImageFiles.length} / 4)`}
+              description={`Add or remove preview photos for this ${type === "book" ? "book / printout" : "study note"}`}
             />
-            {selectedFile && (
-              <p className="text-xs font-bold text-green-700 mt-1">
-                ✓ New file selected: {selectedFile.name} ({(selectedFile.size / 1024).toFixed(1)} KB)
-              </p>
-            )}
           </div>
 
           {/* Actions */}

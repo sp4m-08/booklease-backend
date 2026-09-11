@@ -115,3 +115,18 @@ export async function uploadFile(
   }
 }
 
+/**
+ * Uploads up to max 4 files concurrently.
+ */
+export async function uploadMultipleFiles(
+  files: File[],
+  folder: "covers" | "notes" | "avatars" | "uploads" = "uploads"
+): Promise<string[]> {
+  if (!files || files.length === 0) return [];
+  const results = await Promise.all(
+    files.map((file) => uploadFile(file, folder))
+  );
+  return results.filter(Boolean);
+}
+
+

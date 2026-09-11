@@ -117,6 +117,8 @@ export function BookCover({ src, title, author, category, className = "", priori
     );
   }
 
+  const imageCount = src ? src.split(",").filter((s) => s.trim()).length : 0;
+
   // 4. Direct High-Speed Image Rendering
   return (
     <div className={`relative w-full h-full overflow-hidden bg-gray-100 ${className}`}>
@@ -134,6 +136,11 @@ export function BookCover({ src, title, author, category, className = "", priori
         decoding="async"
         priority={priority}
       />
+      {imageCount > 1 && (
+        <div className="absolute top-2 right-2 bg-black/85 text-white text-[10px] font-black px-1.5 py-0.5 border border-white/40 shadow-xs flex items-center gap-1 rounded-sm">
+          <span>📷 {imageCount}</span>
+        </div>
+      )}
     </div>
   );
 }

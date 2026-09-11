@@ -10,6 +10,7 @@ import { NeoCard } from "@/components/ui/NeoCard";
 import { NeoButton } from "@/components/ui/NeoButton";
 import { NeoSelect } from "@/components/ui/NeoSelect";
 import { BookCover } from "@/components/BookCover";
+import { ImageGallery } from "@/components/ImageGallery";
 import { SlotBadges } from "@/components/SlotBadges";
 import Link from "next/link";
 import dynamic from "next/dynamic";
@@ -225,16 +226,14 @@ export default function BookDetailsPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-12 items-start">
 
-        {/* Left Column: Book Cover */}
+        {/* Left Column: Book Cover & Multi-Image Gallery */}
         <div className="lg:col-span-5 animate-element">
-          <div className="border-3 sm:border-4 border-black shadow-neo-lg aspect-[3/4] overflow-hidden bg-white">
-            <BookCover
-              src={book.cover_image}
-              title={book.title}
-              author={book.author}
-              category={book.category}
-            />
-          </div>
+          <ImageGallery
+            src={book.cover_image}
+            title={book.title}
+            author={book.author}
+            category={book.category}
+          />
 
           <div className="mt-4 flex justify-between items-center p-3.5 sm:p-4 border-3 sm:border-4 border-black bg-white shadow-neo">
             <div>
@@ -405,10 +404,16 @@ export default function BookDetailsPage() {
         </div>
       </div>
 
-      {/* Rental Request Modal Dialog */}
+      {/* Rental Request Modal Dialog / Mobile Bottom Sheet */}
       {isRentModalOpen && (
-        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-3 sm:p-4">
-          <div className="bg-white border-3 sm:border-4 border-black p-5 sm:p-8 max-w-lg w-full shadow-neo-lg space-y-4 sm:space-y-6 animate-in fade-in zoom-in duration-200 max-h-[90vh] overflow-y-auto">
+        <div 
+          className="fixed inset-0 bg-black/60 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 backdrop-blur-xs animate-in fade-in duration-200"
+          onClick={() => setIsRentModalOpen(false)}
+        >
+          <div 
+            className="bg-white border-t-4 sm:border-4 border-black p-5 sm:p-8 max-w-lg w-full shadow-neo-lg space-y-4 sm:space-y-6 rounded-t-2xl sm:rounded-none animate-in slide-in-from-bottom sm:zoom-in-95 duration-200 max-h-[85vh] sm:max-h-[90vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="flex justify-between items-start border-b-3 sm:border-b-4 border-black pb-3 sm:pb-4">
               <div>
                 <h3 className="font-serif text-2xl sm:text-3xl font-black">Request to Rent</h3>
@@ -416,7 +421,7 @@ export default function BookDetailsPage() {
               </div>
               <button
                 onClick={() => setIsRentModalOpen(false)}
-                className="border-2 border-black px-2.5 py-1 font-black text-base sm:text-lg bg-gray-200 hover:bg-gray-300"
+                className="border-2 border-black px-2.5 py-1 font-black text-base sm:text-lg bg-gray-100 hover:bg-gray-200 cursor-pointer shadow-xs"
               >
                 ✕
               </button>

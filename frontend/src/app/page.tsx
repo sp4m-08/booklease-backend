@@ -569,7 +569,7 @@ export default function Home() {
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center w-full sm:w-auto">
             <Link href="/login" className="w-full sm:w-auto">
               <NeoButton variant="primary" size="lg" className="hover-animate-btn flex items-center justify-center gap-2 w-full bg-neo-purple text-lg sm:text-2xl px-6 sm:px-10 py-4 sm:py-5">
-                Sign In with VIT Email <Rocket size={22} className="btn-icon" />
+                Sign Up / In with VIT Email <Rocket size={22} className="btn-icon" />
               </NeoButton>
             </Link>
             <Link href="/books" className="w-full sm:w-auto">

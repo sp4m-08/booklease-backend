@@ -7,11 +7,30 @@ export function cn(...inputs: ClassValue[]) {
 
 export function getImageUrl(url?: string): string {
   if (!url) return "";
-  if (url.startsWith("http://") || url.startsWith("https://")) {
-    return url;
+  // If multiple comma-separated URLs, take the first primary image
+  const firstUrl = url.includes(",") ? url.split(",")[0].trim() : url.trim();
+  if (!firstUrl) return "";
+  if (firstUrl.startsWith("http://") || firstUrl.startsWith("https://") || firstUrl.startsWith("data:")) {
+    return firstUrl;
   }
   const backendUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
-  return `${backendUrl.replace(/\/$/, "")}/${url.replace(/^\//, "")}`;
+  return `${backendUrl.replace(/\/$/, "")}/${firstUrl.replace(/^\//, "")}`;
+}
+
+/**
+ * Splits comma-separated image URLs or handles array / single string
+ * and resolves each into a full URL.
+ */
+export function getImageUrls(urlOrUrls?: string | string[]): string[] {
+  if (!urlOrUrls) return [];
+  if (Array.isArray(urlOrUrls)) {
+    return urlOrUrls.map(getImageUrl).filter(Boolean);
+  }
+  return urlOrUrls
+    .split(",")
+    .map((u) => u.trim())
+    .filter(Boolean)
+    .map(getImageUrl);
 }
 
 /**
