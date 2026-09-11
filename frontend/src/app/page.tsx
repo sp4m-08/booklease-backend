@@ -467,7 +467,7 @@ export default function Home() {
       {/* SEAMLESS DOTTED WRAPPER FOR FEATURES & FINAL CTA */}
       <div className="w-full border-t-4 border-black bg-[radial-gradient(#000000_1.3px,transparent_1.3px)] [background-size:26px_26px] relative overflow-hidden">
         {/* 4. FEATURES SECTION */}
-        <section id="features" className="features-section w-full pt-12 pb-10 sm:pt-20 sm:pb-16 px-3 sm:px-6 relative">
+        <section id="features" className="features-section w-full pt-12 pb-12 sm:pt-20 sm:pb-20 px-4 sm:px-6 relative overflow-visible">
 
           {/* Background Floating Neo-Brutalist Stickers */}
           <div className="feature-bg-sticker float-sticker-1 absolute top-12 left-[4%] hidden lg:block select-none pointer-events-none z-0">
@@ -507,7 +507,7 @@ export default function Home() {
               <h2 className="font-serif text-2xl sm:text-5xl md:text-6xl font-black tracking-tight">Everything You Need for Exam Week</h2>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 pb-6 sm:pb-8">
               <NeoCard color="purple" className="feature-card p-4 sm:p-6 hover:-translate-y-1 sm:hover:-translate-y-2 transition-transform duration-300 flex flex-col justify-between">
                 <div>
                   <div className="h-10 w-10 sm:h-14 sm:w-14 bg-white border-3 sm:border-4 border-black rounded-full flex items-center justify-center mb-3 sm:mb-5 shadow-neo text-neo-purple drop-shadow-[1px_1px_0px_rgba(0,0,0,1)]">
@@ -544,13 +544,13 @@ export default function Home() {
                 </div>
               </NeoCard>
 
-              <NeoCard color="peach" className="feature-card p-4 sm:p-6 hover:-translate-y-1 sm:hover:-translate-y-2 transition-transform duration-300 flex flex-col justify-between mb-0">
+              <NeoCard color="peach" className="feature-card p-4 sm:p-6 hover:-translate-y-1 sm:hover:-translate-y-2 transition-transform duration-300 flex flex-col justify-between">
                 <div>
                   <div className="h-10 w-10 sm:h-14 sm:w-14 bg-white border-3 sm:border-4 border-black rounded-full flex items-center justify-center mb-3 sm:mb-5 shadow-neo text-neo-peach drop-shadow-[1px_1px_0px_rgba(0,0,0,1)]">
                     <MapPin className="w-5 h-5 sm:w-6 sm:h-6 jiggle-icon" />
                   </div>
                   <h3 className="font-serif text-lg sm:text-2xl font-black mb-1.5 sm:mb-2 leading-tight">Campus Handovers</h3>
-                  <p className="font-medium text-xs sm:text-sm text-gray-900 leading-snug sm:leading-relaxed">
+                  <p className="font-medium text-xs sm:text-sm text-gray-900 leading-relaxed">
                     Coordinate fast handovers at SJT, TT, library, or hostels convenient for both.
                   </p>
                 </div>
