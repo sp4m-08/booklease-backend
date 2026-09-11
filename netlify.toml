@@ -2,7 +2,6 @@
 
 [build]
   base = "frontend"
-  publish = ".next"
   command = "npm run build"
 
 # Enable Netlify Next.js Runtime
