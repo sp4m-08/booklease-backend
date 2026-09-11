@@ -48,8 +48,7 @@ export default function Navbar() {
   };
 
   const navLinks = [
-    { name: "Books", href: "/books", color: "hover:bg-neo-blue", icon: BookOpen },
-    { name: "Notes", href: "/notes", color: "hover:bg-neo-peach", icon: FileText },
+    { name: "Browse", href: "/browse", color: "hover:bg-neo-blue", icon: BookOpen },
     { name: "FAQ", href: "/faq", color: "hover:bg-neo-yellow", icon: HelpCircle },
   ];
 

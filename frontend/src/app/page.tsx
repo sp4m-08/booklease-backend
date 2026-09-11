@@ -329,14 +329,14 @@ export default function Home() {
 
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-5 pt-4 sm:pt-6 pb-6 sm:pb-8 w-full sm:w-auto px-4 sm:px-0">
             <div className="hero-btn w-full sm:w-auto">
-              <Link href="/books" className="w-full block">
+              <Link href="/browse?type=books" className="w-full block">
                 <NeoButton variant="primary" size="lg" className="hover-animate-btn flex items-center justify-center gap-2 w-full bg-neo-green text-black text-lg sm:text-xl px-6 sm:px-8 py-3.5 sm:py-4">
                   Find Books for Rent <BookOpen size={22} className="btn-icon" />
                 </NeoButton>
               </Link>
             </div>
             <div className="hero-btn w-full sm:w-auto">
-              <Link href="/notes" className="w-full block">
+              <Link href="/browse?type=notes" className="w-full block">
                 <NeoButton variant="secondary" size="lg" className="hover-animate-btn flex items-center justify-center gap-2 w-full bg-white text-black text-lg sm:text-xl px-6 sm:px-8 py-3.5 sm:py-4">
                   Browse Exam Notes <FileText size={22} className="btn-icon" />
                 </NeoButton>
@@ -602,9 +602,9 @@ export default function Home() {
                       Sign Up / In with VIT Email <Rocket size={20} className="btn-icon" />
                     </NeoButton>
                   </Link>
-                  <Link href="/books" className="w-full sm:w-auto">
+                  <Link href="/browse" className="w-full sm:w-auto">
                     <NeoButton variant="secondary" size="lg" className="hover-animate-btn flex items-center justify-center gap-2 w-full bg-white text-base sm:text-2xl px-5 sm:px-10 py-3.5 sm:py-5">
-                      Browse Campus Books <BookOpen size={20} className="btn-icon" />
+                      Browse All Listings <BookOpen size={20} className="btn-icon" />
                     </NeoButton>
                   </Link>
                 </>

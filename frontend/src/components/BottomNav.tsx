@@ -49,16 +49,10 @@ export default function BottomNav() {
 
   const navItems = [
     {
-      label: "Books",
-      href: "/books",
+      label: "Browse",
+      href: "/browse",
       icon: BookOpen,
-      isActive: pathname.startsWith("/books") && pathname !== "/books/upload",
-    },
-    {
-      label: "Notes",
-      href: "/notes",
-      icon: FileText,
-      isActive: pathname.startsWith("/notes") && pathname !== "/notes/upload",
+      isActive: pathname.startsWith("/browse") || (pathname.startsWith("/books") && pathname !== "/books/upload") || (pathname.startsWith("/notes") && pathname !== "/notes/upload"),
     },
     {
       label: "Alerts",
@@ -84,7 +78,7 @@ export default function BottomNav() {
       >
         <div className="flex items-center justify-around px-2 py-1 h-15 max-w-md mx-auto relative">
           
-          {/* 1. Books Tab */}
+          {/* 1. Browse Tab */}
           <Link
             href={navItems[0].href}
             className={`flex flex-col items-center justify-center flex-1 py-0.5 transition-transform active:scale-95 ${
@@ -107,30 +101,7 @@ export default function BottomNav() {
             </span>
           </Link>
 
-          {/* 2. Notes Tab */}
-          <Link
-            href={navItems[1].href}
-            className={`flex flex-col items-center justify-center flex-1 py-0.5 transition-transform active:scale-95 ${
-              navItems[1].isActive
-                ? "text-black font-black"
-                : "text-gray-600 hover:text-black font-bold"
-            }`}
-          >
-            <div
-              className={`p-1 rounded-sm border-2 transition-all ${
-                navItems[1].isActive
-                  ? "bg-neo-peach border-black shadow-xs"
-                  : "border-transparent"
-              }`}
-            >
-              <FileText size={19} strokeWidth={navItems[1].isActive ? 2.5 : 2} />
-            </div>
-            <span className="text-[10px] font-bold leading-tight mt-0.5">
-              {navItems[1].label}
-            </span>
-          </Link>
-
-          {/* 3. Center Elevated Quick-Post Button */}
+          {/* 2. Center Elevated Quick-Post Button */}
           <div className="flex flex-col items-center justify-center -mt-5 px-1">
             <button
               onClick={handleCenterPlusClick}
@@ -144,23 +115,23 @@ export default function BottomNav() {
             </span>
           </div>
 
-          {/* 4. Alerts Tab with Unread Badge */}
+          {/* 3. Alerts Tab with Unread Badge */}
           <Link
-            href={navItems[2].href}
+            href={navItems[1].href}
             className={`flex flex-col items-center justify-center flex-1 py-0.5 transition-transform active:scale-95 relative ${
-              navItems[2].isActive
+              navItems[1].isActive
                 ? "text-black font-black"
                 : "text-gray-600 hover:text-black font-bold"
             }`}
           >
             <div
               className={`p-1 rounded-sm border-2 relative transition-all ${
-                navItems[2].isActive
+                navItems[1].isActive
                   ? "bg-neo-yellow border-black shadow-xs"
                   : "border-transparent"
               }`}
             >
-              <Bell size={19} strokeWidth={navItems[2].isActive ? 2.5 : 2} />
+              <Bell size={19} strokeWidth={navItems[1].isActive ? 2.5 : 2} />
               {unreadCount > 0 && (
                 <span className="absolute -top-1 -right-1.5 bg-red-500 text-white text-[8px] font-black w-3.5 h-3.5 rounded-full border border-black flex items-center justify-center animate-pulse">
                   {unreadCount > 9 ? "9+" : unreadCount}
@@ -168,36 +139,37 @@ export default function BottomNav() {
               )}
             </div>
             <span className="text-[10px] font-bold leading-tight mt-0.5">
-              {navItems[2].label}
+              {navItems[1].label}
             </span>
           </Link>
 
-          {/* 5. Dashboard / User Tab */}
+          {/* 4. Dashboard / User Tab */}
           <Link
-            href={navItems[3].href}
+            href={navItems[2].href}
             className={`flex flex-col items-center justify-center flex-1 py-0.5 transition-transform active:scale-95 ${
-              navItems[3].isActive
+              navItems[2].isActive
                 ? "text-black font-black"
                 : "text-gray-600 hover:text-black font-bold"
             }`}
           >
             <div
               className={`p-1 rounded-sm border-2 transition-all ${
-                navItems[3].isActive
+                navItems[2].isActive
                   ? "bg-neo-purple border-black shadow-xs"
                   : "border-transparent"
               }`}
             >
               {user ? (
-                <LayoutDashboard size={19} strokeWidth={navItems[3].isActive ? 2.5 : 2} />
+                <LayoutDashboard size={19} strokeWidth={navItems[2].isActive ? 2.5 : 2} />
               ) : (
-                <User size={19} strokeWidth={navItems[3].isActive ? 2.5 : 2} />
+                <User size={19} strokeWidth={navItems[2].isActive ? 2.5 : 2} />
               )}
             </div>
             <span className="text-[10px] font-bold leading-tight mt-0.5">
-              {navItems[3].label}
+              {navItems[2].label}
             </span>
           </Link>
+
 
         </div>
       </nav>
