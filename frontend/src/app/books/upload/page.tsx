@@ -43,6 +43,7 @@ const VIT_BRANCHES = [
 
 const BOOK_TYPES = [
   "Original Textbook",
+  "Handwritten Notes",
   "Spiral-Bound Printout",
   "Xerox / Printed Booklet",
   "Loose Module Printout",
@@ -147,8 +148,8 @@ export default function BookUploadPage() {
           <GraduationCap size={13} className="text-black" />
           <span>VIT Vellore Campus</span>
         </div>
-        <h1 className="font-serif text-3xl sm:text-5xl font-black mb-1">List a Book or Printout</h1>
-        <p className="font-medium text-sm sm:text-lg text-gray-700">List course textbooks, spiral-bound ebook printouts, or module xerox copies for fellow VITians.</p>
+        <h1 className="font-serif text-3xl sm:text-5xl font-black mb-1">List a Book, Notes, or Printout</h1>
+        <p className="font-medium text-sm sm:text-lg text-gray-700">List course textbooks, handwritten study notes, spiral printouts, or module xerox copies for fellow VITians.</p>
       </div>
 
       {!hasPhone && (

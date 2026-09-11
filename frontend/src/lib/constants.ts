@@ -28,6 +28,7 @@ export const VIT_SLOTS = [
 
 export const BOOK_TYPES = [
   "Original Textbook",
+  "Handwritten Notes",
   "Spiral-Bound Printout",
   "Xerox / Printed Booklet",
   "Loose Module Printout",

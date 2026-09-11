@@ -152,10 +152,22 @@ function BrowseContent() {
   const filteredAndSortedListings = useMemo(() => {
     let result = [...unifiedListings];
 
+    const isNoteListing = (l: Listing) => {
+      if (l.listingType === "note") return true;
+      const typeLower = (l.bookType || "").toLowerCase();
+      const titleLower = (l.title || "").toLowerCase();
+      const authorLower = (l.author || "").toLowerCase();
+      return (
+        typeLower.includes("note") ||
+        titleLower.includes("note") ||
+        authorLower.includes("note")
+      );
+    };
+
     if (selectedType === "Books & Printouts") {
-      result = result.filter(l => l.listingType === "book");
+      result = result.filter(l => !isNoteListing(l));
     } else if (selectedType === "Study Notes") {
-      result = result.filter(l => l.listingType === "note");
+      result = result.filter(l => isNoteListing(l));
     }
 
     if (searchQuery.trim()) {
@@ -363,50 +375,62 @@ function BrowseContent() {
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
-            {filteredAndSortedListings.map((listing) => (
-              <Link 
-                key={`${listing.listingType}-${listing.id}`} 
-                href={`/${listing.listingType === "book" ? "books" : "notes"}/${listing.id}`}
-                className="listing-card group relative block"
-              >
-                <div className="absolute top-0 right-0 z-10 m-3">
-                  {listing.listingType === "book" ? (
-                    <div className="inline-flex items-center gap-1 bg-neo-yellow border-2 border-black px-2 py-1 text-[10px] font-black uppercase tracking-wider shadow-[2px_2px_0px_rgba(0,0,0,1)]">
-                      <Book size={12} /> Book
-                    </div>
-                  ) : (
-                    <div className="inline-flex items-center gap-1 bg-neo-peach border-2 border-black px-2 py-1 text-[10px] font-black uppercase tracking-wider shadow-[2px_2px_0px_rgba(0,0,0,1)]">
-                      <FileText size={12} /> Notes
-                    </div>
-                  )}
-                </div>
+            {filteredAndSortedListings.map((listing) => {
+              const isNote = listing.listingType === "note" ||
+                (listing.bookType || "").toLowerCase().includes("note") ||
+                (listing.title || "").toLowerCase().includes("note") ||
+                (listing.author || "").toLowerCase().includes("note");
 
-                <div className="h-full border-4 border-black bg-white shadow-[4px_4px_0px_rgba(0,0,0,1)] group-hover:shadow-[8px_8px_0px_rgba(0,0,0,1)] group-hover:-translate-y-1 group-hover:-translate-x-1 transition-all duration-200 overflow-hidden flex flex-col rounded-xl">
-                  {listing.listingType === "book" ? (
-                    <>
-                      <div className="h-48 w-full border-b-4 border-black relative bg-gray-100 overflow-hidden">
-                        <BookCover src={listing.coverSrc} title={listing.title} author={listing.author || ""} category={listing.branch} className="w-full h-full object-cover" />
-                        {!listing.available && (
-                          <div className="absolute inset-0 bg-black/60 flex items-center justify-center backdrop-blur-[2px]">
-                            <div className="bg-neo-red border-4 border-black px-4 py-2 transform -rotate-12 shadow-[4px_4px_0px_rgba(0,0,0,1)]">
-                              <span className="text-white font-black uppercase tracking-widest text-lg">Rented Out</span>
-                            </div>
-                          </div>
-                        )}
+              const displayFormat = listing.bookType && listing.bookType !== "Original Textbook"
+                ? listing.bookType
+                : isNote
+                ? "Handwritten Notes"
+                : "Original Textbook";
+
+              return (
+                <Link 
+                  key={`${listing.listingType}-${listing.id}`} 
+                  href={`/${listing.listingType === "book" ? "books" : "notes"}/${listing.id}`}
+                  className="listing-card group relative block"
+                >
+                  <div className="absolute top-0 right-0 z-10 m-3">
+                    {isNote ? (
+                      <div className="inline-flex items-center gap-1 bg-neo-peach border-2 border-black px-2 py-1 text-[10px] font-black uppercase tracking-wider shadow-[2px_2px_0px_rgba(0,0,0,1)]">
+                        <FileText size={12} /> Notes
                       </div>
-                      <div className="p-4 flex-grow flex flex-col">
-                        <div className="flex gap-2 mb-2 flex-wrap">
-                          <span className="bg-neo-yellow border-2 border-black px-2 py-0.5 text-xs font-bold whitespace-nowrap">
-                            {listing.branch}
-                          </span>
-                          {listing.bookType && listing.bookType !== "Textbook" && (
-                            <span className="bg-neo-blue/80 text-white border-2 border-black px-2 py-0.5 text-xs font-bold whitespace-nowrap">
-                              {listing.bookType}
-                            </span>
+                    ) : (
+                      <div className="inline-flex items-center gap-1 bg-neo-yellow border-2 border-black px-2 py-1 text-[10px] font-black uppercase tracking-wider shadow-[2px_2px_0px_rgba(0,0,0,1)]">
+                        <Book size={12} /> Book
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="h-full border-4 border-black bg-white shadow-[4px_4px_0px_rgba(0,0,0,1)] group-hover:shadow-[8px_8px_0px_rgba(0,0,0,1)] group-hover:-translate-y-1 group-hover:-translate-x-1 transition-all duration-200 overflow-hidden flex flex-col rounded-xl">
+                    {listing.listingType === "book" ? (
+                      <>
+                        <div className="h-48 w-full border-b-4 border-black relative bg-gray-100 overflow-hidden">
+                          <BookCover src={listing.coverSrc} title={listing.title} author={listing.author || ""} category={listing.branch} className="w-full h-full object-cover" />
+                          {!listing.available && (
+                            <div className="absolute inset-0 bg-black/60 flex items-center justify-center backdrop-blur-[2px]">
+                              <div className="bg-neo-red border-4 border-black px-4 py-2 transform -rotate-12 shadow-[4px_4px_0px_rgba(0,0,0,1)]">
+                                <span className="text-white font-black uppercase tracking-widest text-lg">Rented Out</span>
+                              </div>
+                            </div>
                           )}
                         </div>
-                        <h3 className="font-bold text-lg leading-tight mb-1 line-clamp-2">{listing.title}</h3>
-                        {listing.author && <p className="text-sm font-medium text-gray-600 mb-3 line-clamp-1">{listing.author}</p>}
+                        <div className="p-4 flex-grow flex flex-col">
+                          <div className="flex gap-2 mb-2 flex-wrap">
+                            <span className="bg-neo-yellow border-2 border-black px-2 py-0.5 text-xs font-bold whitespace-nowrap">
+                              {listing.branch}
+                            </span>
+                            <span className={`border-2 border-black px-2 py-0.5 text-xs font-bold whitespace-nowrap ${
+                              isNote ? "bg-neo-peach text-black" : "bg-neo-blue/80 text-white"
+                            }`}>
+                              {displayFormat}
+                            </span>
+                          </div>
+                          <h3 className="font-bold text-lg leading-tight mb-1 line-clamp-2">{listing.title}</h3>
+                          {listing.author && <p className="text-sm font-medium text-gray-600 mb-3 line-clamp-1">{listing.author}</p>}
                         
                         <div className="mt-auto pt-3 flex items-center justify-between">
                           <SlotBadges slot={listing.slot} rentedSlots={listing.rentedSlots} />
@@ -461,7 +485,8 @@ function BrowseContent() {
                   )}
                 </div>
               </Link>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>
