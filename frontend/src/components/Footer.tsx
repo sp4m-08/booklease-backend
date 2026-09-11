@@ -56,7 +56,7 @@ export default function Footer() {
   }, { scope: footerRef });
 
   return (
-    <footer ref={footerRef} className="border-t-4 border-black bg-white mt-auto overflow-hidden">
+    <footer ref={footerRef} className="border-t-4 border-black bg-white mt-auto overflow-hidden pb-16 md:pb-0">
       <div className="max-w-7xl mx-auto px-6 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
           

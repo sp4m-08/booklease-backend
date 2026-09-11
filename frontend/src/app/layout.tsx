@@ -58,9 +58,9 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning className={`${inter.variable} ${merriweather.variable} antialiased`}>
       <body className="min-h-screen flex flex-col bg-[#fffdf6] text-black font-sans selection:bg-[#ffb0b0] selection:text-black">
         <Providers>
-          <div className="flex flex-col min-h-screen pb-16 md:pb-0">
+          <div className="flex flex-col min-h-screen">
             <Navbar />
-            <main className="flex-grow flex flex-col">{children}</main>
+            <main className="flex-grow flex flex-col pb-20 md:pb-0">{children}</main>
             <Footer />
             <BottomNav />
           </div>

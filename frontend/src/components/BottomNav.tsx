@@ -80,14 +80,14 @@ export default function BottomNav() {
       {/* Sticky Bottom Bar */}
       <nav
         aria-label="Mobile Navigation"
-        className="fixed bottom-0 inset-x-0 z-40 bg-white border-t-4 border-black shadow-[0_-4px_0_0_rgba(0,0,0,1)] md:hidden safe-area-pb"
+        className="fixed bottom-0 inset-x-0 z-40 bg-white border-t-3 border-black shadow-[0_-3px_0_0_rgba(0,0,0,1)] md:hidden safe-area-pb"
       >
-        <div className="flex items-center justify-around px-2 py-1.5 h-16 max-w-lg mx-auto relative">
+        <div className="flex items-center justify-around px-2 py-1 h-15 max-w-md mx-auto relative">
           
           {/* 1. Books Tab */}
           <Link
             href={navItems[0].href}
-            className={`flex flex-col items-center justify-center flex-1 py-1 transition-transform active:scale-90 ${
+            className={`flex flex-col items-center justify-center flex-1 py-0.5 transition-transform active:scale-95 ${
               navItems[0].isActive
                 ? "text-black font-black"
                 : "text-gray-600 hover:text-black font-bold"
@@ -96,13 +96,13 @@ export default function BottomNav() {
             <div
               className={`p-1 rounded-sm border-2 transition-all ${
                 navItems[0].isActive
-                  ? "bg-neo-yellow border-black shadow-xs -translate-y-0.5"
+                  ? "bg-neo-yellow border-black shadow-xs"
                   : "border-transparent"
               }`}
             >
-              <BookOpen size={20} strokeWidth={navItems[0].isActive ? 2.5 : 2} />
+              <BookOpen size={19} strokeWidth={navItems[0].isActive ? 2.5 : 2} />
             </div>
-            <span className="text-[11px] leading-tight mt-0.5">
+            <span className="text-[10px] font-bold leading-tight mt-0.5">
               {navItems[0].label}
             </span>
           </Link>
@@ -110,7 +110,7 @@ export default function BottomNav() {
           {/* 2. Notes Tab */}
           <Link
             href={navItems[1].href}
-            className={`flex flex-col items-center justify-center flex-1 py-1 transition-transform active:scale-90 ${
+            className={`flex flex-col items-center justify-center flex-1 py-0.5 transition-transform active:scale-95 ${
               navItems[1].isActive
                 ? "text-black font-black"
                 : "text-gray-600 hover:text-black font-bold"
@@ -119,27 +119,27 @@ export default function BottomNav() {
             <div
               className={`p-1 rounded-sm border-2 transition-all ${
                 navItems[1].isActive
-                  ? "bg-neo-peach border-black shadow-xs -translate-y-0.5"
+                  ? "bg-neo-peach border-black shadow-xs"
                   : "border-transparent"
               }`}
             >
-              <FileText size={20} strokeWidth={navItems[1].isActive ? 2.5 : 2} />
+              <FileText size={19} strokeWidth={navItems[1].isActive ? 2.5 : 2} />
             </div>
-            <span className="text-[11px] leading-tight mt-0.5">
+            <span className="text-[10px] font-bold leading-tight mt-0.5">
               {navItems[1].label}
             </span>
           </Link>
 
           {/* 3. Center Elevated Quick-Post Button */}
-          <div className="flex flex-col items-center justify-center -mt-6 px-1">
+          <div className="flex flex-col items-center justify-center -mt-5 px-1">
             <button
               onClick={handleCenterPlusClick}
               aria-label="Post a Listing"
-              className="w-13 h-13 rounded-full border-3 border-black bg-neo-green text-black flex items-center justify-center shadow-neo hover:bg-green-400 active:translate-y-1 active:shadow-none transition-all cursor-pointer"
+              className="w-11 h-11 rounded-full border-2 border-black bg-neo-green text-black flex items-center justify-center shadow-[2px_2px_0px_rgba(0,0,0,1)] hover:bg-green-400 active:translate-y-0.5 active:shadow-none transition-all cursor-pointer"
             >
-              <Plus size={26} strokeWidth={3} />
+              <Plus size={22} strokeWidth={3} />
             </button>
-            <span className="text-[10px] font-black uppercase tracking-wider text-black mt-1">
+            <span className="text-[9px] font-black uppercase tracking-wider text-black mt-0.5">
               Post
             </span>
           </div>
@@ -147,7 +147,7 @@ export default function BottomNav() {
           {/* 4. Alerts Tab with Unread Badge */}
           <Link
             href={navItems[2].href}
-            className={`flex flex-col items-center justify-center flex-1 py-1 transition-transform active:scale-90 relative ${
+            className={`flex flex-col items-center justify-center flex-1 py-0.5 transition-transform active:scale-95 relative ${
               navItems[2].isActive
                 ? "text-black font-black"
                 : "text-gray-600 hover:text-black font-bold"
@@ -156,18 +156,18 @@ export default function BottomNav() {
             <div
               className={`p-1 rounded-sm border-2 relative transition-all ${
                 navItems[2].isActive
-                  ? "bg-neo-yellow border-black shadow-xs -translate-y-0.5"
+                  ? "bg-neo-yellow border-black shadow-xs"
                   : "border-transparent"
               }`}
             >
-              <Bell size={20} strokeWidth={navItems[2].isActive ? 2.5 : 2} />
+              <Bell size={19} strokeWidth={navItems[2].isActive ? 2.5 : 2} />
               {unreadCount > 0 && (
-                <span className="absolute -top-1.5 -right-2 bg-red-500 text-white text-[9px] font-black w-4 h-4 rounded-full border border-black flex items-center justify-center animate-pulse">
+                <span className="absolute -top-1 -right-1.5 bg-red-500 text-white text-[8px] font-black w-3.5 h-3.5 rounded-full border border-black flex items-center justify-center animate-pulse">
                   {unreadCount > 9 ? "9+" : unreadCount}
                 </span>
               )}
             </div>
-            <span className="text-[11px] leading-tight mt-0.5">
+            <span className="text-[10px] font-bold leading-tight mt-0.5">
               {navItems[2].label}
             </span>
           </Link>
@@ -175,7 +175,7 @@ export default function BottomNav() {
           {/* 5. Dashboard / User Tab */}
           <Link
             href={navItems[3].href}
-            className={`flex flex-col items-center justify-center flex-1 py-1 transition-transform active:scale-90 ${
+            className={`flex flex-col items-center justify-center flex-1 py-0.5 transition-transform active:scale-95 ${
               navItems[3].isActive
                 ? "text-black font-black"
                 : "text-gray-600 hover:text-black font-bold"
@@ -184,17 +184,17 @@ export default function BottomNav() {
             <div
               className={`p-1 rounded-sm border-2 transition-all ${
                 navItems[3].isActive
-                  ? "bg-neo-purple border-black shadow-xs -translate-y-0.5"
+                  ? "bg-neo-purple border-black shadow-xs"
                   : "border-transparent"
               }`}
             >
               {user ? (
-                <LayoutDashboard size={20} strokeWidth={navItems[3].isActive ? 2.5 : 2} />
+                <LayoutDashboard size={19} strokeWidth={navItems[3].isActive ? 2.5 : 2} />
               ) : (
-                <User size={20} strokeWidth={navItems[3].isActive ? 2.5 : 2} />
+                <User size={19} strokeWidth={navItems[3].isActive ? 2.5 : 2} />
               )}
             </div>
-            <span className="text-[11px] leading-tight mt-0.5">
+            <span className="text-[10px] font-bold leading-tight mt-0.5">
               {navItems[3].label}
             </span>
           </Link>

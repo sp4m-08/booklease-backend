@@ -547,7 +547,7 @@ export default function Home() {
       </section>
 
       {/* 5. FINAL CTA */}
-      <section className="final-cta-wrapper w-full pb-16 sm:pb-28 pt-6 sm:pt-8 px-4 sm:px-8 relative overflow-hidden">
+      <section className="final-cta-wrapper w-full pb-28 sm:pb-28 pt-6 sm:pt-8 px-4 sm:px-8 relative overflow-hidden">
         {/* Floating stickers in CTA */}
         <div className="float-sticker-1 absolute top-6 left-10 hidden lg:block select-none z-0">
           <Starburst color="#C084FC" size={50} className="pulse-starburst" />
