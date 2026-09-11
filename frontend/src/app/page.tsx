@@ -265,12 +265,12 @@ export default function Home() {
 
       {/* 1. HERO SECTION */}
       <main className="relative min-h-[90vh] flex flex-col items-center justify-center px-4 sm:px-6 py-12 sm:py-20 text-center w-full bg-[radial-gradient(#000000_1.3px,transparent_1.3px)] [background-size:26px_26px] overflow-hidden">
-        
+
         {/* Floating Neo Stickers & Starbursts in Hero */}
         <div className="neo-sticker float-sticker-1 absolute top-24 left-[6%] hidden lg:block select-none z-0">
           <Starburst color="#FACC15" size={54} className="pulse-starburst" />
         </div>
-        
+
         <div className="neo-sticker float-sticker-2 absolute top-36 right-[8%] hidden lg:block select-none z-0">
           <Starburst color="#C084FC" size={60} className="pulse-starburst" />
         </div>
@@ -464,153 +464,153 @@ export default function Home() {
       </section>
 
       {/* SEAMLESS DOTTED WRAPPER FOR FEATURES & FINAL CTA */}
-      <div className="w-full border-t-4 border-black bg-[radial-gradient(#000000_1.3px,transparent_1.3px)] [background-size:26px_26px]">
+      <div className="w-full border-t-4 border-black bg-[radial-gradient(#000000_1.3px,transparent_1.3px)] [background-size:26px_26px] relative overflow-hidden">
         {/* 4. FEATURES SECTION */}
-        <section id="features" className="features-section w-full py-12 sm:py-24 px-4 sm:px-6 relative overflow-visible">
-        
-        {/* Background Floating Neo-Brutalist Stickers */}
-        <div className="feature-bg-sticker float-sticker-1 absolute top-12 left-[4%] hidden lg:block select-none pointer-events-none z-0">
-          <Starburst color="#FACC15" size={50} className="pulse-starburst" />
-        </div>
+        <section id="features" className="features-section w-full pt-12 pb-10 sm:pt-20 sm:pb-16 px-3 sm:px-6 relative">
 
-        <div className="feature-bg-sticker float-sticker-2 absolute top-10 right-[4%] hidden lg:block select-none pointer-events-none z-0">
-          <Starburst color="#C084FC" size={54} className="pulse-starburst" />
-        </div>
-
-        <div className="feature-bg-sticker float-sticker-1 absolute top-36 left-4 xl:left-8 hidden xl:block select-none pointer-events-none z-0">
-          <div className="border-3 border-black bg-neo-green px-3.5 py-1.5 font-black text-xs uppercase tracking-wider rounded-lg shadow-neo rotate-[-5deg] flex items-center gap-1.5">
-            <FileText size={15} className="text-black" />
-            <span>Handwritten Notes</span>
-          </div>
-        </div>
-
-        <div className="feature-bg-sticker float-sticker-2 absolute top-36 right-4 xl:right-8 hidden xl:block select-none pointer-events-none z-0">
-          <div className="border-3 border-black bg-neo-yellow px-3.5 py-1.5 font-black text-xs uppercase tracking-wider rounded-lg shadow-neo rotate-[5deg] flex items-center gap-1.5">
-            <MessageCircle size={15} className="text-black" />
-            <span>1-Click WhatsApp Handovers</span>
-          </div>
-        </div>
-
-        <div className="feature-bg-sticker float-sticker-2 absolute top-1/2 left-[2%] hidden 2xl:block select-none opacity-40">
-          <Crosshair />
-        </div>
-        <div className="feature-bg-sticker float-sticker-1 absolute top-1/2 right-[2%] hidden 2xl:block select-none opacity-40">
-          <Crosshair />
-        </div>
-
-        <div className="max-w-6xl mx-auto relative z-10">
-          <div className="text-center mb-8 sm:mb-16">
-            <span className="text-xs font-black uppercase bg-neo-yellow px-3 py-1 border-2 border-black inline-block mb-2 sm:mb-3 shadow-neo">
-              Built for VITians
-            </span>
-            <h2 className="font-serif text-2xl sm:text-5xl md:text-6xl font-black tracking-tight">Everything You Need for Exam Week</h2>
+          {/* Background Floating Neo-Brutalist Stickers */}
+          <div className="feature-bg-sticker float-sticker-1 absolute top-12 left-[4%] hidden lg:block select-none pointer-events-none z-0">
+            <Starburst color="#FACC15" size={50} className="pulse-starburst" />
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 pb-6">
-            <NeoCard color="purple" className="feature-card p-4 sm:p-6 hover:-translate-y-1 sm:hover:-translate-y-2 transition-transform duration-300 flex flex-col justify-between border-4 border-black shadow-neo">
-              <div>
-                <div className="h-10 w-10 sm:h-14 sm:w-14 bg-white border-3 sm:border-4 border-black rounded-full flex items-center justify-center mb-3 sm:mb-5 shadow-neo text-neo-purple drop-shadow-[1px_1px_0px_rgba(0,0,0,1)]">
-                  <Clock className="w-5 h-5 sm:w-6 sm:h-6 jiggle-icon" />
+          <div className="feature-bg-sticker float-sticker-2 absolute top-10 right-[4%] hidden lg:block select-none pointer-events-none z-0">
+            <Starburst color="#C084FC" size={54} className="pulse-starburst" />
+          </div>
+
+          <div className="feature-bg-sticker float-sticker-1 absolute top-36 left-4 xl:left-8 hidden xl:block select-none pointer-events-none z-0">
+            <div className="border-3 border-black bg-neo-green px-3.5 py-1.5 font-black text-xs uppercase tracking-wider rounded-lg shadow-neo rotate-[-5deg] flex items-center gap-1.5">
+              <FileText size={15} className="text-black" />
+              <span>Handwritten Notes</span>
+            </div>
+          </div>
+
+          <div className="feature-bg-sticker float-sticker-2 absolute top-36 right-4 xl:right-8 hidden xl:block select-none pointer-events-none z-0">
+            <div className="border-3 border-black bg-neo-yellow px-3.5 py-1.5 font-black text-xs uppercase tracking-wider rounded-lg shadow-neo rotate-[5deg] flex items-center gap-1.5">
+              <MessageCircle size={15} className="text-black" />
+              <span>1-Click WhatsApp Handovers</span>
+            </div>
+          </div>
+
+          <div className="feature-bg-sticker float-sticker-2 absolute top-1/2 left-[2%] hidden 2xl:block select-none opacity-40">
+            <Crosshair />
+          </div>
+          <div className="feature-bg-sticker float-sticker-1 absolute top-1/2 right-[2%] hidden 2xl:block select-none opacity-40">
+            <Crosshair />
+          </div>
+
+          <div className="max-w-6xl mx-auto relative z-10">
+            <div className="text-center mb-8 sm:mb-16">
+              <span className="text-xs font-black uppercase bg-neo-yellow px-3 py-1 border-2 border-black inline-block mb-2 sm:mb-3 shadow-neo">
+                Built for VITians
+              </span>
+              <h2 className="font-serif text-2xl sm:text-5xl md:text-6xl font-black tracking-tight">Everything You Need for Exam Week</h2>
+            </div>
+
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-6">
+              <NeoCard color="purple" className="feature-card p-3 sm:p-6 hover:-translate-y-1 sm:hover:-translate-y-2 transition-transform duration-300 flex flex-col justify-between">
+                <div>
+                  <div className="h-9 w-9 sm:h-14 sm:w-14 bg-white border-2 sm:border-4 border-black rounded-full flex items-center justify-center mb-2.5 sm:mb-5 shadow-neo text-neo-purple drop-shadow-[1px_1px_0px_rgba(0,0,0,1)]">
+                    <Clock className="w-5 h-5 sm:w-6 sm:h-6 jiggle-icon" />
+                  </div>
+                  <h3 className="font-serif text-sm sm:text-2xl font-black mb-1 sm:mb-2 leading-tight">CAT-2 & FAT Sprints</h3>
+                  <p className="font-medium text-[11px] sm:text-sm text-gray-900 leading-snug sm:leading-relaxed">
+                    Rent syllabus textbooks for flexible exam durations. Pass books to juniors when done.
+                  </p>
                 </div>
-                <h3 className="font-serif text-lg sm:text-2xl font-black mb-1.5 sm:mb-2 leading-tight">CAT-2 & FAT Sprints</h3>
-                <p className="font-medium text-xs sm:text-sm text-gray-900 leading-relaxed">
-                  Rent syllabus textbooks for flexible exam durations. Pass books to juniors when done.
-                </p>
-              </div>
-            </NeoCard>
+              </NeoCard>
 
-            <NeoCard color="blue" className="feature-card p-4 sm:p-6 hover:-translate-y-1 sm:hover:-translate-y-2 transition-transform duration-300 flex flex-col justify-between border-4 border-black shadow-neo">
-              <div>
-                <div className="h-10 w-10 sm:h-14 sm:w-14 bg-white border-3 sm:border-4 border-black rounded-full flex items-center justify-center mb-3 sm:mb-5 shadow-neo text-blue-300 drop-shadow-[1px_1px_0px_rgba(0,0,0,1)]">
-                  <FileText className="w-5 h-5 sm:w-6 sm:h-6 jiggle-icon" />
+              <NeoCard color="blue" className="feature-card p-3 sm:p-6 hover:-translate-y-1 sm:hover:-translate-y-2 transition-transform duration-300 flex flex-col justify-between">
+                <div>
+                  <div className="h-9 w-9 sm:h-14 sm:w-14 bg-white border-2 sm:border-4 border-black rounded-full flex items-center justify-center mb-2.5 sm:mb-5 shadow-neo text-blue-300 drop-shadow-[1px_1px_0px_rgba(0,0,0,1)]">
+                    <FileText className="w-5 h-5 sm:w-6 sm:h-6 jiggle-icon" />
+                  </div>
+                  <h3 className="font-serif text-sm sm:text-2xl font-black mb-1 sm:mb-2 leading-tight">Notes & Solved Papers</h3>
+                  <p className="font-medium text-[11px] sm:text-sm text-gray-900 leading-snug sm:leading-relaxed">
+                    Handwritten class notes, module formula sheets, and solved CAT papers from your peers.
+                  </p>
                 </div>
-                <h3 className="font-serif text-lg sm:text-2xl font-black mb-1.5 sm:mb-2 leading-tight">Notes & Solved Papers</h3>
-                <p className="font-medium text-xs sm:text-sm text-gray-900 leading-relaxed">
-                  Handwritten class notes, module formula sheets, and solved CAT papers from your peers.
-                </p>
-              </div>
-            </NeoCard>
+              </NeoCard>
 
-            <NeoCard color="yellow" className="feature-card p-4 sm:p-6 hover:-translate-y-1 sm:hover:-translate-y-2 transition-transform duration-300 flex flex-col justify-between border-4 border-black shadow-neo">
-              <div>
-                <div className="h-10 w-10 sm:h-14 sm:w-14 bg-white border-3 sm:border-4 border-black rounded-full flex items-center justify-center mb-3 sm:mb-5 shadow-neo text-yellow-600 drop-shadow-[1px_1px_0px_rgba(0,0,0,1)]">
-                  <BookOpen className="w-5 h-5 sm:w-6 sm:h-6 jiggle-icon" />
+              <NeoCard color="yellow" className="feature-card p-3 sm:p-6 hover:-translate-y-1 sm:hover:-translate-y-2 transition-transform duration-300 flex flex-col justify-between">
+                <div>
+                  <div className="h-9 w-9 sm:h-14 sm:w-14 bg-white border-2 sm:border-4 border-black rounded-full flex items-center justify-center mb-2.5 sm:mb-5 shadow-neo text-yellow-600 drop-shadow-[1px_1px_0px_rgba(0,0,0,1)]">
+                    <BookOpen className="w-5 h-5 sm:w-6 sm:h-6 jiggle-icon" />
+                  </div>
+                  <h3 className="font-serif text-sm sm:text-2xl font-black mb-1 sm:mb-2 leading-tight">Ebook Printouts Hub</h3>
+                  <p className="font-medium text-[11px] sm:text-sm text-gray-900 leading-snug sm:leading-relaxed">
+                    Turn your spiral-bound prints and module xerox booklets into cash after exams.
+                  </p>
                 </div>
-                <h3 className="font-serif text-lg sm:text-2xl font-black mb-1.5 sm:mb-2 leading-tight">Ebook Printouts Hub</h3>
-                <p className="font-medium text-xs sm:text-sm text-gray-900 leading-relaxed">
-                  Turn your spiral-bound prints and module xerox booklets into cash after exams.
-                </p>
-              </div>
-            </NeoCard>
+              </NeoCard>
 
-            <NeoCard color="peach" className="feature-card p-4 sm:p-6 hover:-translate-y-1 sm:hover:-translate-y-2 transition-transform duration-300 flex flex-col justify-between border-4 border-black shadow-neo mb-2 sm:mb-0">
-              <div>
-                <div className="h-10 w-10 sm:h-14 sm:w-14 bg-white border-3 sm:border-4 border-black rounded-full flex items-center justify-center mb-3 sm:mb-5 shadow-neo text-neo-peach drop-shadow-[1px_1px_0px_rgba(0,0,0,1)]">
-                  <MapPin className="w-5 h-5 sm:w-6 sm:h-6 jiggle-icon" />
+              <NeoCard color="peach" className="feature-card p-3 sm:p-6 hover:-translate-y-1 sm:hover:-translate-y-2 transition-transform duration-300 flex flex-col justify-between mb-0">
+                <div>
+                  <div className="h-9 w-9 sm:h-14 sm:w-14 bg-white border-2 sm:border-4 border-black rounded-full flex items-center justify-center mb-2.5 sm:mb-5 shadow-neo text-neo-peach drop-shadow-[1px_1px_0px_rgba(0,0,0,1)]">
+                    <MapPin className="w-5 h-5 sm:w-6 sm:h-6 jiggle-icon" />
+                  </div>
+                  <h3 className="font-serif text-sm sm:text-2xl font-black mb-1 sm:mb-2 leading-tight">Campus Handovers</h3>
+                  <p className="font-medium text-[11px] sm:text-sm text-gray-900 leading-snug sm:leading-relaxed">
+                    Coordinate fast handovers at SJT, TT, library, or hostels convenient for both.
+                  </p>
                 </div>
-                <h3 className="font-serif text-lg sm:text-2xl font-black mb-1.5 sm:mb-2 leading-tight">Campus Handovers</h3>
-                <p className="font-medium text-xs sm:text-sm text-gray-900 leading-relaxed">
-                  Coordinate fast handovers at SJT, TT, library, or hostels convenient for both.
-                </p>
-              </div>
-            </NeoCard>
+              </NeoCard>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* 5. FINAL CTA */}
-      <section className="final-cta-wrapper w-full pb-16 sm:pb-24 pt-6 sm:pt-8 px-4 sm:px-8 relative overflow-hidden">
-        {/* Floating stickers in CTA */}
-        <div className="float-sticker-1 absolute top-6 left-10 hidden lg:block select-none z-0">
-          <Starburst color="#C084FC" size={50} className="pulse-starburst" />
-        </div>
-        <div className="float-sticker-2 absolute bottom-12 right-10 hidden lg:block select-none z-0">
-          <Starburst color="#FACC15" size={56} className="pulse-starburst" />
-        </div>
+        {/* 5. FINAL CTA */}
+        <section className="final-cta-wrapper w-full pt-10 pb-16 sm:pt-16 sm:pb-24 px-4 sm:px-8 relative mt-4 sm:mt-8">
+          {/* Floating stickers in CTA */}
+          <div className="float-sticker-1 absolute top-6 left-10 hidden lg:block select-none z-0">
+            <Starburst color="#C084FC" size={50} className="pulse-starburst" />
+          </div>
+          <div className="float-sticker-2 absolute bottom-12 right-10 hidden lg:block select-none z-0">
+            <Starburst color="#FACC15" size={56} className="pulse-starburst" />
+          </div>
 
-        <div className="final-cta max-w-5xl mx-auto border-3 sm:border-4 border-black bg-neo-yellow p-5 sm:p-12 md:p-20 text-center shadow-neo-lg relative z-10 mb-6 sm:mb-10">
-          <div className="inline-block border-2 border-black bg-white px-3 sm:px-4 py-1 text-xs sm:text-sm font-black uppercase mb-3 sm:mb-6 shadow-neo">
-            <span className="flex items-center gap-1 justify-center"><Sparkles size={14} className="text-yellow-400 drop-shadow-[1px_1px_0px_rgba(0,0,0,1)] pulse-icon" /> Free & Instant for All VIT Students</span>
+          <div className="final-cta max-w-5xl mx-auto border-3 sm:border-4 border-black bg-neo-yellow p-5 sm:p-12 md:p-20 text-center shadow-neo-lg relative z-10 mb-6 sm:mb-10">
+            <div className="inline-block border-2 border-black bg-white px-3 sm:px-4 py-1 text-xs sm:text-sm font-black uppercase mb-3 sm:mb-6 shadow-neo">
+              <span className="flex items-center gap-1 justify-center"><Sparkles size={14} className="text-yellow-400 drop-shadow-[1px_1px_0px_rgba(0,0,0,1)] pulse-icon" /> Free & Instant for All VIT Students</span>
+            </div>
+            <h2 className="font-serif text-2xl sm:text-5xl md:text-7xl font-black mb-3 sm:mb-6 leading-tight">
+              {user ? "Ready for your upcoming CAT / FAT slots?" : "Ready to ace your next CAT or FAT exam?"}
+            </h2>
+            <p className="font-medium text-sm sm:text-xl text-gray-800 max-w-2xl mx-auto mb-5 sm:mb-8 leading-relaxed">
+              {user
+                ? "Check your active textbook rentals, track return due dates, or list notes on your student dashboard."
+                : "Join hundreds of VIT students saving money and acing their semesters with Booklease."}
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center w-full sm:w-auto">
+              {user ? (
+                <>
+                  <Link href="/dashboard" className="w-full sm:w-auto">
+                    <NeoButton variant="primary" size="lg" className="hover-animate-btn flex items-center justify-center gap-2 w-full bg-neo-purple text-base sm:text-2xl px-5 sm:px-10 py-3.5 sm:py-5">
+                      Open Your Dashboard <LayoutDashboard size={20} className="btn-icon" />
+                    </NeoButton>
+                  </Link>
+                  <Link href="/books/upload" className="w-full sm:w-auto">
+                    <NeoButton variant="secondary" size="lg" className="hover-animate-btn flex items-center justify-center gap-2 w-full bg-white text-base sm:text-2xl px-5 sm:px-10 py-3.5 sm:py-5">
+                      Post a Book or Note <PlusCircle size={20} className="btn-icon" />
+                    </NeoButton>
+                  </Link>
+                </>
+              ) : (
+                <>
+                  <Link href="/login" className="w-full sm:w-auto">
+                    <NeoButton variant="primary" size="lg" className="hover-animate-btn flex items-center justify-center gap-2 w-full bg-neo-purple text-base sm:text-2xl px-5 sm:px-10 py-3.5 sm:py-5">
+                      Sign Up / In with VIT Email <Rocket size={20} className="btn-icon" />
+                    </NeoButton>
+                  </Link>
+                  <Link href="/books" className="w-full sm:w-auto">
+                    <NeoButton variant="secondary" size="lg" className="hover-animate-btn flex items-center justify-center gap-2 w-full bg-white text-base sm:text-2xl px-5 sm:px-10 py-3.5 sm:py-5">
+                      Browse Campus Books <BookOpen size={20} className="btn-icon" />
+                    </NeoButton>
+                  </Link>
+                </>
+              )}
+            </div>
           </div>
-          <h2 className="font-serif text-2xl sm:text-5xl md:text-7xl font-black mb-3 sm:mb-6 leading-tight">
-            {user ? "Ready for your upcoming CAT / FAT slots?" : "Ready to ace your next CAT or FAT exam?"}
-          </h2>
-          <p className="font-medium text-sm sm:text-xl text-gray-800 max-w-2xl mx-auto mb-5 sm:mb-8 leading-relaxed">
-            {user
-              ? "Check your active textbook rentals, track return due dates, or list notes on your student dashboard."
-              : "Join hundreds of VIT students saving money and acing their semesters with Booklease."}
-          </p>
-          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center w-full sm:w-auto">
-            {user ? (
-              <>
-                <Link href="/dashboard" className="w-full sm:w-auto">
-                  <NeoButton variant="primary" size="lg" className="hover-animate-btn flex items-center justify-center gap-2 w-full bg-neo-purple text-base sm:text-2xl px-5 sm:px-10 py-3.5 sm:py-5">
-                    Open Your Dashboard <LayoutDashboard size={20} className="btn-icon" />
-                  </NeoButton>
-                </Link>
-                <Link href="/books/upload" className="w-full sm:w-auto">
-                  <NeoButton variant="secondary" size="lg" className="hover-animate-btn flex items-center justify-center gap-2 w-full bg-white text-base sm:text-2xl px-5 sm:px-10 py-3.5 sm:py-5">
-                    Post a Book or Note <PlusCircle size={20} className="btn-icon" />
-                  </NeoButton>
-                </Link>
-              </>
-            ) : (
-              <>
-                <Link href="/login" className="w-full sm:w-auto">
-                  <NeoButton variant="primary" size="lg" className="hover-animate-btn flex items-center justify-center gap-2 w-full bg-neo-purple text-base sm:text-2xl px-5 sm:px-10 py-3.5 sm:py-5">
-                    Sign Up / In with VIT Email <Rocket size={20} className="btn-icon" />
-                  </NeoButton>
-                </Link>
-                <Link href="/books" className="w-full sm:w-auto">
-                  <NeoButton variant="secondary" size="lg" className="hover-animate-btn flex items-center justify-center gap-2 w-full bg-white text-base sm:text-2xl px-5 sm:px-10 py-3.5 sm:py-5">
-                    Browse Campus Books <BookOpen size={20} className="btn-icon" />
-                  </NeoButton>
-                </Link>
-              </>
-            )}
-          </div>
-        </div>
-      </section>
+        </section>
       </div>
 
     </div>
