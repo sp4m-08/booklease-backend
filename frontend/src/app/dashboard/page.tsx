@@ -13,7 +13,7 @@ import { BookCover } from "@/components/BookCover";
 import { NoteCover } from "@/components/NoteCover";
 import Link from "next/link";
 import { toast } from "sonner";
-import { BookOpen, RefreshCw, CheckCircle, XCircle, ArrowUpRight, Clock, Trash2, GraduationCap, MessageSquare, Phone } from "lucide-react";
+import { BookOpen, RefreshCw, CheckCircle, XCircle, ArrowUpRight, Clock, Trash2, GraduationCap, MessageSquare, Phone, Package, ArrowRight } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 import { formatStudentName } from "@/lib/utils";
@@ -132,7 +132,7 @@ function DashboardContent() {
   return (
     <div ref={container} className="max-w-6xl mx-auto w-full px-4 sm:px-6 py-6 sm:py-12 flex-grow">
       {/* Header */}
-      <div className="mb-6 sm:mb-10 border-b-4 border-black pb-4 sm:pb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+      <div className="mb-6 sm:mb-8 border-b-4 border-black pb-4 sm:pb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <div className="inline-flex items-center gap-1 border-2 border-black px-2.5 sm:px-3 py-0.5 bg-neo-yellow font-black text-xs uppercase mb-2 shadow-sm">
             <GraduationCap size={14} /> VIT Vellore Campus
@@ -140,9 +140,35 @@ function DashboardContent() {
           <h1 className="font-serif text-3xl sm:text-5xl font-black mb-1">Rental Hub</h1>
           <p className="font-medium text-sm sm:text-lg text-gray-700">Track and manage textbook requests for your CAT and FAT exam cycles.</p>
         </div>
-        <Link href="/books" className="w-full sm:w-auto">
-          <NeoButton variant="primary" className="w-full sm:w-auto bg-neo-green flex items-center justify-center gap-2 group hover:scale-105 transition-transform text-sm sm:text-base py-2.5 sm:py-3">
-            Browse Textbooks <BookOpen size={18} className="group-hover:rotate-12 transition-transform duration-300" />
+        <div className="flex flex-col sm:flex-row gap-2.5 sm:gap-3 w-full sm:w-auto">
+          <Link href="/listings" className="w-full sm:w-auto">
+            <NeoButton variant="secondary" className="w-full sm:w-auto bg-neo-yellow text-black flex items-center justify-center gap-2 group hover:scale-105 transition-transform text-sm sm:text-base py-2.5 sm:py-3 border-3 sm:border-4 border-black shadow-neo font-black">
+              <Package size={18} className="text-black" />
+              Your Listings
+            </NeoButton>
+          </Link>
+          <Link href="/browse" className="w-full sm:w-auto">
+            <NeoButton variant="primary" className="w-full sm:w-auto bg-neo-green text-black flex items-center justify-center gap-2 group hover:scale-105 transition-transform text-sm sm:text-base py-2.5 sm:py-3">
+              Browse Catalog <BookOpen size={18} className="group-hover:rotate-12 transition-transform duration-300" />
+            </NeoButton>
+          </Link>
+        </div>
+      </div>
+
+      {/* Quick Switch Banner: Your Listings vs Rental Requests */}
+      <div className="mb-6 border-3 sm:border-4 border-black bg-white p-3.5 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 shadow-neo">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 sm:w-11 sm:h-11 bg-neo-yellow border-2 sm:border-3 border-black flex items-center justify-center shadow-xs shrink-0">
+            <Package className="w-5 h-5 sm:w-6 sm:h-6 text-black" />
+          </div>
+          <div>
+            <h2 className="font-serif text-sm sm:text-base font-black text-black leading-tight">Looking for materials you uploaded?</h2>
+            <p className="font-medium text-xs sm:text-sm text-gray-700 leading-snug">Manage, edit, or delete the textbooks and exam notes you posted for rent.</p>
+          </div>
+        </div>
+        <Link href="/listings" className="w-full sm:w-auto shrink-0">
+          <NeoButton variant="primary" className="w-full sm:w-auto bg-neo-purple text-black font-black text-xs sm:text-sm px-4 sm:px-5 py-2 sm:py-2.5 flex items-center justify-center gap-1.5 hover:scale-105 transition-transform">
+            Go to Your Listings <ArrowRight size={15} />
           </NeoButton>
         </Link>
       </div>
@@ -298,9 +324,16 @@ function DashboardContent() {
             <div className="border-3 sm:border-4 border-black border-dashed p-8 sm:p-12 text-center bg-white shadow-sm">
               <h3 className="font-serif text-xl sm:text-2xl font-black mb-2">No incoming requests</h3>
               <p className="font-medium text-sm sm:text-base text-gray-600 mb-6">When other students request your textbooks, they will appear here for your review.</p>
-              <Link href="/books/upload">
-                <NeoButton variant="primary" size="lg" className="text-sm sm:text-base">List Another Book</NeoButton>
-              </Link>
+              <div className="flex flex-wrap gap-3 justify-center">
+                <Link href="/listings">
+                  <NeoButton variant="secondary" size="lg" className="text-sm sm:text-base bg-neo-yellow text-black border-3 border-black font-black flex items-center justify-center gap-1.5 shadow-sm">
+                    <Package size={17} /> View Your Listings
+                  </NeoButton>
+                </Link>
+                <Link href="/books/upload">
+                  <NeoButton variant="primary" size="lg" className="text-sm sm:text-base bg-neo-green">List a Book or Note</NeoButton>
+                </Link>
+              </div>
             </div>
           ) : (
             lent.map((rental: any) => {
